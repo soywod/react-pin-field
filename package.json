@@ -1,7 +1,7 @@
 {
   "name": "react-pin-field",
   "description": "A React component for entering PIN codes.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "private": false,
   "keywords": [
@@ -23,6 +23,7 @@
     "lib/*.d.ts",
     "lib/*.js"
   ],
+  "main": "lib/index.js",
   "devDependencies": {
     "@types/classnames": "^2.2.9",
     "@types/jest": "24.0.23",
