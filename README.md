@@ -24,20 +24,22 @@ import PinField from "react-pin-field"
 
 ```typescript
 type PinFieldProps = {
-  allowedChars?: string
+  allowedChars?: string | RegExp
   className?: string
   length?: number
   onChange?: (code: string) => void
   onComplete?: (code: string) => void
+  onReceiveKey: (key: string) => string
   style?: React.CSSProperties
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const defaultProps = {
-  allowedChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+  allowedChars: /^[a-zA-Z0-9]$/,
   className: "",
   length: 5,
-  onChange: NOOP,
-  onComplete: NOOP,
+  onChange: () => {},
+  onComplete: () => {},
+  onReceiveKey: (key: string) => key,
   style: {},
 }
 ```
@@ -74,16 +76,28 @@ You can pass a custom `className`, a custom `style`, or override the CSS class
 ### With custom length
 
 ```typescript
-<PinField className="my-class-name" length={3} />
+<PinField length={3} />
+```
+
+### With custom validation
+
+```typescript
+<PinField allowedChars="0123456789" />
+<PinField allowedChars={/^[0-9]$/} />
 ```
 
 ### With custom events
 
 - onChange: when a char change
 - onComplete: when all the chars have been filled
+- onReceiveKey: when receive a key (used to format it, for eg: set to upper case)
 
 ```typescript
-<PinField onChange={handleChange} onComplete={handleComplete} />
+<PinField
+  onChange={handleChange}
+  onComplete={handleComplete}
+  onReceiveKey={key => key.toUpperCase()}
+/>
 ```
 
 ### With custom InputHTMLAttributes
@@ -118,7 +132,7 @@ To build the lib:
 yarn build:lib
 ```
 
-## ChangeLog
+## Changelog
 
 See [CHANGELOG.md](https://github.com/soywod/react-pin-field/blob/master/CHANGELOG.md)
 

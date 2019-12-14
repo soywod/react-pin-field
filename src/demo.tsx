@@ -40,6 +40,7 @@ const App: FC = () => {
             <PinField
               className={classNames("field-a", {"field-a-complete": demoCompleted})}
               onComplete={() => setDemoCompleted(true)}
+              onReceiveKey={k => k.toUpperCase()}
               autoFocus
               disabled={demoCompleted}
             />
@@ -74,12 +75,25 @@ const App: FC = () => {
         </p>
         <PinField className="field-a" length={3} />
 
+        <h2 className="display-5 mt-5">With custom validation</h2>
+        <p className="mb-4 text-muted">
+          You can restrict input with a string of allowed chars, or a regex.
+        </p>
+        <p>Only numbers:</p>
+        <PinField className="field-a" allowedChars="0123456789" />
+
         <h2 className="display-5 mt-5">With custom events</h2>
         <ul className="mb-4 text-muted">
           <li>onChange: when a char change</li>
           <li>onComplete: when all the chars have been filled</li>
+          <li>onReceiveKey: when receive a key (used to format it, for eg: set to upper case)</li>
         </ul>
-        <PinField className="field-a" onChange={setCode} onComplete={() => setCompleted(true)} />
+        <PinField
+          className="field-a"
+          onChange={setCode}
+          onComplete={() => setCompleted(true)}
+          onReceiveKey={k => k.toUpperCase()}
+        />
         <div>Current code: {code}</div>
         <div>Completed: {String(completed)}</div>
 

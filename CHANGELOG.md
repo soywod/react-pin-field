@@ -10,3 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Docs (readme, license, changelog)
+- New event onReceiveKey
+
+### Fixed
+
+- Base system on evt.key instead of evt.keyCode, to avoid conflicts (uppercase/lowercase, numeric keypad) [#1]
+
+[#1]: https://github.com/unfog-io/unfog-cli/issues/1
