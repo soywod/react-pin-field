@@ -53,7 +53,8 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-          You can pass a custom className, a custom style, or override the class .react-pin-field
+          You can pass a custom className, a custom style, or override the CSS class
+          .react-pin-field
         </p>
         <PinField
           style={{

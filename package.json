@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": false,
   "keywords": [
     "react",
@@ -22,7 +22,8 @@
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
   "files": [
-    "lib"
+    "lib/index*",
+    "lib/pin-field*"
   ],
   "main": "lib/index.js",
   "devDependencies": {
@@ -53,13 +54,12 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
+  "dependencies": {
+    "classnames": "^2.2.6"
+  },
   "scripts": {
     "start": "parcel serve -p 3000 src/index.html",
     "build:demo": "parcel build src/index.html",
-    "build:lib": "tsc -p lib.tsconfig.json",
-    "prepublish": "yarn build:lib"
-  },
-  "dependencies": {
-    "classnames": "^2.2.6"
+    "build:lib": "tsc --noEmit false"
   }
 }

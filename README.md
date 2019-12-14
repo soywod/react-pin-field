@@ -1,44 +1,128 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# react-pin-field
 
-## Available Scripts
+A React component for entering PIN codes.
 
-In the project directory, you can run:
+![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
 
-### `yarn start`
+*Live demo at https://react-pin-field.soywod.me.*
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Installation
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+```bash
+yarn add react-pin-field
+# or
+npm install react-pin-field
+```
 
-### `yarn test`
+## Usage
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```typescript
+import PinField from "react-pin-field"
+```
 
-### `yarn build`
+## Props
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```typescript
+type PinFieldProps = {
+  allowedChars?: string
+  className?: string
+  length?: number
+  onChange?: (code: string) => void
+  onComplete?: (code: string) => void
+  style?: React.CSSProperties
+} & React.InputHTMLAttributes<HTMLInputElement>
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+const defaultProps = {
+  allowedChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+  className: "",
+  length: 5,
+  onChange: NOOP,
+  onComplete: NOOP,
+  style: {},
+}
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Examples
 
-### `yarn eject`
+Refer to the [live demo](https://react-pin-field.soywod.me) to see the result.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Basic
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```typescript
+<PinField />
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### With custom style
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+You can pass a custom `className`, a custom `style`, or override the CSS class
+`.react-pin-field`.
 
-## Learn More
+```typescript
+<PinField
+  style={{
+    width: 50,
+    height: 50,
+    borderRadius: "50%",
+    border: "1px solid gray",
+    outline: "none",
+    textAlign: "center",
+    margin: 10,
+  }}
+/>
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### With custom length
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```typescript
+<PinField className="my-class-name" length={3} />
+```
+
+### With custom events
+
+- onChange: when a char change
+- onComplete: when all the chars have been filled
+
+```typescript
+<PinField onChange={handleChange} onComplete={handleComplete} />
+```
+
+### With custom InputHTMLAttributes
+
+```typescript
+<PinField type="password" autoFocus disabled={loading} />
+```
+
+## Development
+
+```bash
+git clone https://github.com/soywod/react-pin-field.git
+cd react-pin-field
+yarn install
+```
+
+To start the development server:
+
+```bash
+yarn start
+```
+
+To build the demo:
+
+```bash
+yarn build:demo
+```
+
+To build the lib:
+
+```bash
+yarn build:lib
+```
+
+## ChangeLog
+
+See [CHANGELOG.md](https://github.com/soywod/react-pin-field/blob/master/CHANGELOG.md)
+
+## License
+
+[MIT](https://github.com/soywod/react-pin-field/blob/master/LICENSE) -
+Copyright (c) 2019 Clément DOUIN
