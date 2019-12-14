@@ -1,0 +1,49 @@
+$white: #ffffff;
+$blue: #686de0;
+$green: #6ab04c;
+$gray: #d3d3d3;
+$black: #333333;
+
+code {
+  padding: 5px 10px;
+  display: inline-block;
+}
+
+.container-a {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  grid-column-gap: 10px;
+  justify-content: center;
+  margin: 64px 0;
+}
+
+.field-a {
+  width: 75px;
+  height: 75px;
+  font-size: 40px;
+  text-align: center;
+  outline: none;
+  border-radius: 5px;
+  border: 1px solid $gray;
+  transition-property: color, border, box-shadow, transform;
+  transition-duration: 250ms;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 7px rgba($blue, 0.5);
+    border: 1px solid $blue;
+    transform: scale(1.05);
+  }
+}
+
+.field-a-complete {
+  border: 1px solid $green;
+  color: $green;
+
+  &[disabled] {
+    background: rgba($green, 0.1);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

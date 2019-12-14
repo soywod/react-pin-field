@@ -2,40 +2,36 @@ import React, {FC, useCallback, useEffect, useRef, useState} from "react"
 import classNames from "classnames"
 
 const NOOP = () => {}
-const KEY_CODE_BACKSPACE = 8
-const KEY_CODE_TAB = 9
-const KEY_CODE_ENTER = 13
-const KEY_CODE_LEFT = 37
-const KEY_CODE_RIGHT = 39
 
 type KeyCode = number
 type KeyCodeStack = KeyCode[]
 
+const KEY_CODE_BACKSPACE: KeyCode = 8
+const KEY_CODE_TAB: KeyCode = 9
+const KEY_CODE_ENTER: KeyCode = 13
+const KEY_CODE_LEFT: KeyCode = 37
+const KEY_CODE_RIGHT: KeyCode = 39
+
+type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">
 type PinFieldProps = {
   allowedChars: string
-  autoFocus: boolean
   className: string
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>
   length: number
   onChange: (code: string) => void
   onComplete: (code: string) => void
   style: React.CSSProperties
-  uppercase: boolean
 }
 
 const defaultProps: PinFieldProps = {
   allowedChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-  autoFocus: false,
   className: "",
-  inputProps: {},
   length: 5,
   onChange: NOOP,
   onComplete: NOOP,
   style: {},
-  uppercase: true,
 }
 
-const PinField: FC<Partial<PinFieldProps>> = userProps => {
+const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
   const {
     allowedChars,
     autoFocus,
@@ -44,13 +40,12 @@ const PinField: FC<Partial<PinFieldProps>> = userProps => {
     onChange: handleChange,
     onComplete: handleComplete,
     style,
-    uppercase,
     ...inputProps
-  } = Object.assign(defaultProps, userProps)
+  } = {...defaultProps, ...props}
 
   const idxs = [...Array(length)].map((_, i) => i)
   const refs = useRef<HTMLInputElement[]>([])
-  const allowedKeyCodes: number[] = allowedChars.split("").map(c => c.charCodeAt(0))
+  const allowedKeyCodes: number[] = allowedChars.split("").map(c => c.toUpperCase().charCodeAt(0))
 
   const [focusIdx, setFocusIdx] = useState(0)
   const [stack, setStack] = useState<KeyCodeStack>([])
@@ -76,17 +71,20 @@ const PinField: FC<Partial<PinFieldProps>> = userProps => {
     if (!keyCode) return
 
     refs.current[focusIdx].value = String.fromCharCode(keyCode)
-    let code = refs.current.map(r => r.value.trim()).join("")
-    if (uppercase) code = code.toUpperCase()
+    const code = refs.current
+      .map(r => r.value.trim())
+      .join("")
+      .toUpperCase()
+
     setStack([...stack])
+    handleChange(code)
     focusNext()
 
-    handleChange(code)
     if (!complete && code.length === length) {
       handleComplete(code)
       setComplete(true)
     }
-  }, [handleChange, handleComplete, complete, focusIdx, focusNext, length, stack, uppercase])
+  }, [handleChange, handleComplete, complete, focusIdx, focusNext, length, stack])
 
   function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
     switch (evt.keyCode) {
@@ -99,7 +97,7 @@ const PinField: FC<Partial<PinFieldProps>> = userProps => {
         break
 
       case KEY_CODE_RIGHT:
-        focusPrev()
+        focusNext()
         break
 
       case KEY_CODE_BACKSPACE: {

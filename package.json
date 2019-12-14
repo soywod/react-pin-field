@@ -46,6 +46,7 @@
     "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "sass": "^1.23.7",
     "typescript": "3.7.2"
   },
   "peerDependencies": {
@@ -53,8 +54,8 @@
     "react-dom": "^16.12.0"
   },
   "scripts": {
-    "start": "parcel serve -p 3000 src/demo.html",
-    "build:demo": "parcel build src/demo.html",
+    "start": "parcel serve -p 3000 src/index.html",
+    "build:demo": "parcel build src/index.html",
     "build:lib": "tsc -p lib.tsconfig.json",
     "prepublish": "yarn build:lib"
   },
