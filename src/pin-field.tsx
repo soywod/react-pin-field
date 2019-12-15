@@ -61,6 +61,11 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
     const key = keyStack.pop()
     if (!key) return
 
+    if (key  == 'Unidentified') {
+      refs.current[focusIdx].value = ''
+      return
+    }
+
     refs.current[focusIdx].value = formatKey(key)
     const code = refs.current.map(r => r.value.trim()).join("")
     setKeyStack([...keyStack])
@@ -110,7 +115,9 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
       default: {
         if (isKeyAllowed(evt.key)) {
           setKeyStack([...keyStack, evt.key])
-        } else {
+        } else if (evt.key == 'Unidentified') {
+          setKeyStack([...keyStack, evt.key])
+        } else  {
           evt.preventDefault()
         }
       }
