@@ -22,21 +22,26 @@
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
   "files": [
-    "lib/index*",
-    "lib/pin-field*"
+    "lib/index.js",
+    "lib/index.d.ts",
+    "lib/pin-field.js",
+    "lib/pin-field.d.ts"
   ],
   "main": "lib/index.js",
   "devDependencies": {
+    "@cypress/webpack-preprocessor": "^4.1.1",
     "@types/classnames": "^2.2.9",
     "@types/react": "16.9.14",
     "@types/react-dom": "16.9.4",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "babel-eslint": "^10.0.3",
+    "cypress": "^3.8.0",
     "eslint": "^6.7.2",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-react-app": "^5.0.2",
+    "eslint-plugin-cypress": "^2.8.0",
     "eslint-plugin-flowtype": "3",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
@@ -48,7 +53,9 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "sass": "^1.23.7",
-    "typescript": "3.7.2"
+    "ts-loader": "^6.2.1",
+    "typescript": "3.7.2",
+    "webpack": "^4.41.3"
   },
   "peerDependencies": {
     "react": "^16.12.0",
@@ -60,6 +67,7 @@
   "scripts": {
     "start": "parcel serve -p 3000 src/index.html",
     "build:demo": "parcel build src/index.html",
-    "build:lib": "tsc --noEmit false"
+    "build:lib": "tsc --noEmit false",
+    "e2e": "cypress run"
   }
 }

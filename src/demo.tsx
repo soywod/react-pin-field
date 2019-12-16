@@ -50,7 +50,7 @@ const App: FC = () => {
 
       <div className="container mb-5">
         <h2 className="display-5 mb-4">Default</h2>
-        <PinField />
+        <PinField data-cy="pin-field" />
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">

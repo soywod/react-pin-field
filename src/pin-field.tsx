@@ -125,7 +125,7 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
           {...inputProps}
           key={idx}
           ref={setRef}
-          className={classNames("react-pin-field", className)}
+          className={classNames("react-pin-field__input", className)}
           autoFocus={idx === 0 && autoFocus}
           onKeyDown={handleKeyDown}
           onFocus={handleFocus(idx)}
