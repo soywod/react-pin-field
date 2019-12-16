@@ -67,7 +67,7 @@
   "scripts": {
     "start": "parcel serve -p 3000 src/index.html",
     "build:demo": "parcel build src/index.html",
-    "build:lib": "tsc --noEmit false",
-    "e2e": "cypress run"
+    "build:lib": "tsc",
+    "test:e2e": "cypress run"
   }
 }

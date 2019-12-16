@@ -1,23 +1,16 @@
 language: node_js
-
-node_js:
-  - 10
+node_js: 10
 
 addons:
   apt:
     packages:
     - libgconf-2-4
 
-cache:
-  directories:
-    - ~/.npm
-    - ~/.cache
-
 install:
   - yarn install --frozen-lock file
 
 before_script:
-  - yarn start -- --log-level 0 &
+  - yarn start --log-level 0 &
 
 script:
-  - yarn e2e
+  - yarn test:e2e

@@ -1,4 +1,4 @@
-# react-pin-field
+# react-pin-field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field)
 
 A React component for entering PIN codes.
 
@@ -57,7 +57,7 @@ Refer to the [live demo](https://react-pin-field.soywod.me) to see the result.
 ### With custom style
 
 You can pass a custom `className`, a custom `style`, or override the CSS class
-`.react-pin-field`.
+`.react-pin-field__input`.
 
 ```typescript
 <PinField
@@ -130,6 +130,20 @@ To build the lib:
 
 ```bash
 yarn build:lib
+```
+
+## Tests
+### Unit tests
+
+TODO
+
+### End-to-end tests
+
+End-to-end tests are handled by [Cypress](https://www.cypress.io).
+
+```bash
+yarn start
+yarn test:e2e
 ```
 
 ## Changelog

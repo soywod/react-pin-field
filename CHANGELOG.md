@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Docs (readme, license, changelog)
 - New event onReceiveKey
+- End-to-end tests with Cypress
 
 ### Fixed
 

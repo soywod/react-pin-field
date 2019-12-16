@@ -3,6 +3,6 @@
   "fixturesFolder": false,
   "integrationFolder": "src",
   "supportFile": false,
-  "testFiles": "**/*.e2e.ts",
+  "testFiles": "**/*.spec.ts",
   "video": false
 }
