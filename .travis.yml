@@ -6,6 +6,10 @@ addons:
     packages:
     - libgconf-2-4
 
+cache:
+  directories:
+    - ~/.cache
+
 install:
   - yarn install --frozen-lock file
 
