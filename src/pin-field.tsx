@@ -1,6 +1,8 @@
 import React, {FC, useCallback, useEffect, useRef, useState} from "react"
 import classNames from "classnames"
 
+const WRONG_KEYS = ["Unidentified", "Dead"]
+
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">
 type PinFieldProps = {
   allowedChars: string | RegExp
@@ -61,8 +63,8 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
     const key = keyStack.pop()
     if (!key) return
 
-    if (key  == 'Unidentified') {
-      refs.current[focusIdx].value = ''
+    if (WRONG_KEYS.indexOf(key) !== -1) {
+      refs.current[focusIdx].value = ""
       return
     }
 
@@ -115,9 +117,9 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
       default: {
         if (isKeyAllowed(evt.key)) {
           setKeyStack([...keyStack, evt.key])
-        } else if (evt.key == 'Unidentified') {
+        } else if (WRONG_KEYS.indexOf(evt.key) !== -1) {
           setKeyStack([...keyStack, evt.key])
-        } else  {
+        } else {
           evt.preventDefault()
         }
       }
