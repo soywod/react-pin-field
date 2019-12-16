@@ -1,8 +1,6 @@
 import React, {FC, useCallback, useEffect, useRef, useState} from "react"
 import classNames from "classnames"
 
-const WRONG_KEYS = ["Unidentified", "Dead"]
-
 type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">
 type PinFieldProps = {
   allowedChars: string | RegExp
@@ -56,46 +54,36 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
     refs.current[nextFocusIdx].focus()
   }, [focusIdx, length])
 
+  const isKeyAllowed = useCallback(
+    (key?: string) => {
+      if (!key) return false
+      if (key.length > 1) return false
+
+      if (typeof allowedChars === "string") {
+        return allowedChars.split("").includes(key)
+      }
+
+      if (allowedChars instanceof RegExp) {
+        return allowedChars.test(key)
+      }
+
+      return false
+    },
+    [allowedChars],
+  )
+
   const setRef = useCallback((ref: HTMLInputElement) => refs.current.push(ref), [])
   const handleFocus = useCallback((idx: number) => () => setFocusIdx(idx), [])
 
   useEffect(() => {
+    if (keyStack.length === 0) return
+
     const key = keyStack.pop()
-    if (!key) return
-
-    if (WRONG_KEYS.indexOf(key) !== -1) {
-      refs.current[focusIdx].value = ""
-      return
-    }
-
-    refs.current[focusIdx].value = formatKey(key)
-    const code = refs.current.map(r => r.value.trim()).join("")
-    setKeyStack([...keyStack])
-    handleChange(code)
-    focusNext()
-
-    if (!complete && code.length === length) {
-      handleComplete(code)
-      setComplete(true)
-    }
-  }, [handleChange, handleComplete, complete, focusIdx, focusNext, length, keyStack, formatKey])
-
-  function isKeyAllowed(key: string) {
-    if (typeof allowedChars === "string") {
-      return allowedChars.split("").includes(key)
-    }
-
-    if (allowedChars instanceof RegExp) {
-      return allowedChars.test(key)
-    }
-
-    return false
-  }
-
-  function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
-    switch (evt.key) {
-      case "Tab":
-      case "Enter":
+    switch (key) {
+      case undefined:
+      case "Unidentified":
+      case "Dead":
+        refs.current[focusIdx].value = ""
         break
 
       case "ArrowLeft":
@@ -107,22 +95,44 @@ const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
         break
 
       case "Backspace": {
-        const prevValue = refs.current[focusIdx].value.trim()
         refs.current[focusIdx].value = ""
-        if (prevValue === "") focusPrev()
+        focusPrev()
         setComplete(false)
         break
       }
 
-      default: {
-        if (isKeyAllowed(evt.key)) {
-          setKeyStack([...keyStack, evt.key])
-        } else if (WRONG_KEYS.indexOf(evt.key) !== -1) {
-          setKeyStack([...keyStack, evt.key])
-        } else {
-          evt.preventDefault()
+      default:
+        if (isKeyAllowed(key)) {
+          refs.current[focusIdx].value = formatKey(key)
+          focusNext()
         }
-      }
+    }
+
+    const code = refs.current.map(r => r.value.trim()).join("")
+    setKeyStack([...keyStack])
+    handleChange(code)
+
+    if (!complete && code.length === length) {
+      handleComplete(code)
+      setComplete(true)
+    }
+  }, [
+    complete,
+    focusIdx,
+    focusNext,
+    focusPrev,
+    formatKey,
+    handleChange,
+    handleComplete,
+    isKeyAllowed,
+    keyStack,
+    length,
+  ])
+
+  function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
+    if (!["Tab", "Enter"].includes(evt.key)) {
+      evt.preventDefault()
+      setKeyStack([...keyStack, evt.key])
     }
   }
 
