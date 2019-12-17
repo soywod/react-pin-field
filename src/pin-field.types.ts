@@ -19,8 +19,7 @@ export type PinFieldState = {
   focusIdx: number
   codeCompleted: boolean
   codeLength: PinFieldDefaultProps["length"]
-  validate: PinFieldDefaultProps["validate"]
-  format: PinFieldDefaultProps["format"]
+  isKeyAllowed: (key: string) => boolean
 }
 
 export type PinFieldAction =

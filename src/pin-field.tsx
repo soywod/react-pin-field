@@ -36,7 +36,7 @@ export function getNextFocusIdx(currFocusIdx: number, lastFocusIdx: number) {
 }
 
 // TODO: unit tests
-export function isKeyAllowed(predicate: DefaultProps["validate"], key: string) {
+export const isKeyAllowed = (predicate: DefaultProps["validate"]) => (key: string) => {
   if (!key) return false
   if (key.length > 1) return false
   if (typeof predicate === "string") return predicate.split("").includes(key)
@@ -47,8 +47,7 @@ export function isKeyAllowed(predicate: DefaultProps["validate"], key: string) {
 
 // TODO: unit tests
 function reducer(state: State, action: Action): State {
-  const {format, validate} = state
-
+  const {isKeyAllowed} = state
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
@@ -59,21 +58,18 @@ function reducer(state: State, action: Action): State {
             {type: "reject-key", idx: state.focusIdx, key: action.key},
             {type: "handle-code-change"},
           ]
-
           return {...state, effectStack}
         }
 
         case "ArrowLeft": {
           const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
           const effectStack: Effect[] = [{type: "focus-input", idx: prevFocusIdx}]
-
           return {...state, focusIdx: prevFocusIdx, effectStack}
         }
 
         case "ArrowRight": {
           const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
           const effectStack: Effect[] = [{type: "focus-input", idx: nextFocusIdx}]
-
           return {...state, focusIdx: nextFocusIdx, effectStack}
         }
 
@@ -84,28 +80,23 @@ function reducer(state: State, action: Action): State {
             {type: "focus-input", idx: prevFocusIdx},
             {type: "handle-code-change"},
           ]
-
           return {...state, focusIdx: prevFocusIdx, codeCompleted: false, effectStack}
         }
 
         default: {
-          if (!isKeyAllowed(validate, action.key)) {
+          if (isKeyAllowed(action.key)) {
+            const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
             const effectStack: Effect[] = [
-              {type: "reject-key", idx: state.focusIdx, key: action.key},
+              {type: "set-input-val", idx: state.focusIdx, val: action.key},
+              {type: "resolve-key", idx: state.focusIdx, key: action.key},
+              {type: "focus-input", idx: nextFocusIdx},
+              {type: "handle-code-change"},
             ]
-
-            return {...state, effectStack}
+            return {...state, focusIdx: nextFocusIdx, effectStack}
           }
 
-          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
-          const effectStack: Effect[] = [
-            {type: "set-input-val", idx: state.focusIdx, val: format(action.key)},
-            {type: "resolve-key", idx: state.focusIdx, key: action.key},
-            {type: "focus-input", idx: nextFocusIdx},
-            {type: "handle-code-change"},
-          ]
-
-          return {...state, focusIdx: nextFocusIdx, effectStack}
+          const effectStack: Effect[] = [{type: "reject-key", idx: state.focusIdx, key: action.key}]
+          return {...state, effectStack}
         }
       }
     }
@@ -143,8 +134,7 @@ const PinField: FC<Props> = props => {
     focusIdx: 0,
     codeCompleted: false,
     codeLength,
-    validate,
-    format,
+    isKeyAllowed: isKeyAllowed(validate),
   })
 
   const setRef = useCallback((ref: HTMLInputElement) => refs.current.push(ref), [])
@@ -165,7 +155,7 @@ const PinField: FC<Props> = props => {
 
         case "set-input-val": {
           const val = format(eff.val)
-          refs.current[eff.idx].value = val
+          refs.current[eff.idx].value = format(val)
           if (val === "") refs.current[eff.idx].classList.remove("react-pin-field__input--success")
           break
         }
@@ -186,16 +176,15 @@ const PinField: FC<Props> = props => {
         case "handle-code-change": {
           const code = refs.current.map(r => r.value.trim()).join("")
           handleChange(code)
-
           if (!state.codeCompleted && code.length === codeLength) {
             handleComplete(code)
             dispatch({type: "mark-code-as-completed"})
           }
-
           break
         }
 
         default:
+          break
       }
     })
   }, [
