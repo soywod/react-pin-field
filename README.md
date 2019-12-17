@@ -24,22 +24,26 @@ import PinField from "react-pin-field"
 
 ```typescript
 type PinFieldProps = {
-  allowedChars?: string | RegExp
   className?: string
   length?: number
+  validate?: string | string[] | RegExp | ((key: string) => boolean)
+  format?: (char: string) => string
+  onResolveKey?: (key: string, ref?: HTMLInputElement) => any
+  onRejectKey?: (key: string, ref?: HTMLInputElement) => any
   onChange?: (code: string) => void
   onComplete?: (code: string) => void
-  onReceiveKey: (key: string) => string
   style?: React.CSSProperties
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const defaultProps = {
-  allowedChars: /^[a-zA-Z0-9]$/,
   className: "",
   length: 5,
+  validate: /^[a-zA-Z0-9]$/,
+  format: key => key,
+  onResolveKey: () => {},
+  onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
-  onReceiveKey: (key: string) => key,
   style: {},
 }
 ```
@@ -57,7 +61,9 @@ Refer to the [live demo](https://react-pin-field.soywod.me) to see the result.
 ### With custom style
 
 You can pass a custom `className`, a custom `style`, or override the CSS class
-`.react-pin-field__input`.
+`.react-pin-field__input`. You have also access to `.react-pin-field__success`
+when a key is resolved and `.react-pin-field__input--error` when a key is
+rejected.
 
 ```typescript
 <PinField
@@ -82,21 +88,25 @@ You can pass a custom `className`, a custom `style`, or override the CSS class
 ### With custom validation
 
 ```typescript
-<PinField allowedChars="0123456789" />
-<PinField allowedChars={/^[0-9]$/} />
+<PinField validate="0123456789" />
+<PinField validate={/^[0-9]$/} />
+<PinField validate={key => "0123456789".indexOf(key) > -1} />
 ```
 
 ### With custom events
 
-- onChange: when a char change
-- onComplete: when all the chars have been filled
-- onReceiveKey: when receive a key (used to format it, for eg: set to upper case)
+- onChange: when the code changes
+- onComplete: when the code has been filled
+- onResolveKey: when receive a good key
+- onRejectKey: when receive a bad key
 
 ```typescript
 <PinField
   onChange={handleChange}
   onComplete={handleComplete}
-  onReceiveKey={key => key.toUpperCase()}
+  onResolveKey={handleResolveKey}
+  onRejectKey={handleRejectKey}
+  format={k => k.toUpperCase()}
 />
 ```
 

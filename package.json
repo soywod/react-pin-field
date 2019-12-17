@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "private": false,
   "keywords": [
     "react",
@@ -25,7 +25,8 @@
     "lib/index.js",
     "lib/index.d.ts",
     "lib/pin-field.js",
-    "lib/pin-field.d.ts"
+    "lib/pin-field.d.ts",
+    "lib/pin-field.types.d.ts"
   ],
   "main": "lib/index.js",
   "husky": {

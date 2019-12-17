@@ -1,140 +1,213 @@
-import React, {FC, useCallback, useEffect, useRef, useState} from "react"
+import React, {FC, useCallback, useEffect, useRef, useReducer} from "react"
 import classNames from "classnames"
 
-type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">
-type PinFieldProps = {
-  allowedChars: string | RegExp
-  className: string
-  length: number
-  onChange: (code: string) => void
-  onComplete: (code: string) => void
-  onReceiveKey: (key: string) => string
-  style: React.CSSProperties
-}
+import {
+  PinFieldDefaultProps as DefaultProps,
+  PinFieldProps as Props,
+  PinFieldState as State,
+  PinFieldAction as Action,
+  PinFieldEffect as Effect,
+} from "./pin-field.types"
 
-const defaultProps: PinFieldProps = {
-  allowedChars: /^[a-zA-Z0-9]$/,
+// TODO: unit tests
+export const IGNORED_META_KEYS = ["Tab", "Enter", "Shift", "Meta", "Control", "Alt"]
+
+// TODO: unit tests
+export const defaultProps: DefaultProps = {
   className: "",
   length: 5,
+  validate: /^[a-zA-Z0-9]$/,
+  format: key => key,
+  onResolveKey: () => {},
+  onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
-  onReceiveKey: (key: string) => key,
   style: {},
 }
 
-const PinField: FC<Partial<PinFieldProps & InputProps>> = props => {
+// TODO: unit tests
+export function getPrevFocusIdx(currFocusIdx: number) {
+  return Math.max(0, currFocusIdx - 1)
+}
+
+// TODO: unit tests
+export function getNextFocusIdx(currFocusIdx: number, lastFocusIdx: number) {
+  return Math.min(currFocusIdx + 1, lastFocusIdx - 1)
+}
+
+// TODO: unit tests
+export function isKeyAllowed(predicate: DefaultProps["validate"], key: string) {
+  if (!key) return false
+  if (key.length > 1) return false
+  if (typeof predicate === "string") return predicate.split("").includes(key)
+  if (predicate instanceof Array) return predicate.includes(key)
+  if (predicate instanceof RegExp) return predicate.test(key)
+  return predicate(key)
+}
+
+// TODO: unit tests
+function reducer(state: State, action: Action): State {
+  const {format, validate} = state
+
+  switch (action.type) {
+    case "handle-key-down": {
+      switch (action.key) {
+        case "Unidentified":
+        case "Dead": {
+          const effectStack: Effect[] = [
+            {type: "set-input-val", idx: state.focusIdx, val: ""},
+            {type: "reject-key", idx: state.focusIdx, key: action.key},
+            {type: "handle-code-change"},
+          ]
+
+          return {...state, effectStack}
+        }
+
+        case "ArrowLeft": {
+          const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
+          const effectStack: Effect[] = [{type: "focus-input", idx: prevFocusIdx}]
+
+          return {...state, focusIdx: prevFocusIdx, effectStack}
+        }
+
+        case "ArrowRight": {
+          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
+          const effectStack: Effect[] = [{type: "focus-input", idx: nextFocusIdx}]
+
+          return {...state, focusIdx: nextFocusIdx, effectStack}
+        }
+
+        case "Backspace": {
+          const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
+          const effectStack: Effect[] = [
+            {type: "set-input-val", idx: state.focusIdx, val: ""},
+            {type: "focus-input", idx: prevFocusIdx},
+            {type: "handle-code-change"},
+          ]
+
+          return {...state, focusIdx: prevFocusIdx, codeCompleted: false, effectStack}
+        }
+
+        default: {
+          if (!isKeyAllowed(validate, action.key)) {
+            const effectStack: Effect[] = [
+              {type: "reject-key", idx: state.focusIdx, key: action.key},
+            ]
+
+            return {...state, effectStack}
+          }
+
+          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
+          const effectStack: Effect[] = [
+            {type: "set-input-val", idx: state.focusIdx, val: format(action.key)},
+            {type: "resolve-key", idx: state.focusIdx, key: action.key},
+            {type: "focus-input", idx: nextFocusIdx},
+            {type: "handle-code-change"},
+          ]
+
+          return {...state, focusIdx: nextFocusIdx, effectStack}
+        }
+      }
+    }
+
+    case "focus-input":
+      return {...state, focusIdx: action.idx}
+
+    case "mark-code-as-completed":
+      return {...state, codeCompleted: true}
+
+    default:
+      return state
+  }
+}
+
+const PinField: FC<Props> = props => {
   const {
-    allowedChars,
     autoFocus,
     className,
-    length,
+    length: codeLength,
+    validate,
+    format,
+    onResolveKey: handleResolveKey,
+    onRejectKey: handleRejectKey,
     onChange: handleChange,
     onComplete: handleComplete,
-    onReceiveKey: formatKey,
     style,
     ...inputProps
   } = {...defaultProps, ...props}
 
-  const idxs = [...Array(length)].map((_, i) => i)
+  const idxs = [...Array(codeLength)].map((_, i) => i)
   const refs = useRef<HTMLInputElement[]>([])
-
-  const [focusIdx, setFocusIdx] = useState(0)
-  const [keyStack, setKeyStack] = useState<string[]>([])
-  const [complete, setComplete] = useState(false)
-
-  const focusPrev = useCallback(() => {
-    const nextFocusIdx = Math.max(0, focusIdx - 1)
-    setFocusIdx(nextFocusIdx)
-    refs.current[nextFocusIdx].focus()
-  }, [focusIdx])
-
-  const focusNext = useCallback(() => {
-    const nextFocusIdx = Math.min(focusIdx + 1, length - 1)
-    setFocusIdx(nextFocusIdx)
-    refs.current[nextFocusIdx].focus()
-  }, [focusIdx, length])
-
-  const isKeyAllowed = useCallback(
-    (key?: string) => {
-      if (!key) return false
-      if (key.length > 1) return false
-
-      if (typeof allowedChars === "string") {
-        return allowedChars.split("").includes(key)
-      }
-
-      if (allowedChars instanceof RegExp) {
-        return allowedChars.test(key)
-      }
-
-      return false
-    },
-    [allowedChars],
-  )
+  const [state, dispatch] = useReducer(reducer, {
+    effectStack: [],
+    focusIdx: 0,
+    codeCompleted: false,
+    codeLength,
+    validate,
+    format,
+  })
 
   const setRef = useCallback((ref: HTMLInputElement) => refs.current.push(ref), [])
-  const handleFocus = useCallback((idx: number) => () => setFocusIdx(idx), [])
-
-  useEffect(() => {
-    if (keyStack.length === 0) return
-
-    const key = keyStack.pop()
-    switch (key) {
-      case undefined:
-      case "Unidentified":
-      case "Dead":
-        refs.current[focusIdx].value = ""
-        break
-
-      case "ArrowLeft":
-        focusPrev()
-        break
-
-      case "ArrowRight":
-        focusNext()
-        break
-
-      case "Backspace": {
-        refs.current[focusIdx].value = ""
-        focusPrev()
-        setComplete(false)
-        break
-      }
-
-      default:
-        if (isKeyAllowed(key)) {
-          refs.current[focusIdx].value = formatKey(key)
-          focusNext()
-        }
-    }
-
-    const code = refs.current.map(r => r.value.trim()).join("")
-    setKeyStack([...keyStack])
-    handleChange(code)
-
-    if (!complete && code.length === length) {
-      handleComplete(code)
-      setComplete(true)
-    }
-  }, [
-    complete,
-    focusIdx,
-    focusNext,
-    focusPrev,
-    formatKey,
-    handleChange,
-    handleComplete,
-    isKeyAllowed,
-    keyStack,
-    length,
-  ])
-
-  function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
-    if (!["Tab", "Enter"].includes(evt.key)) {
+  const handleFocus = useCallback((idx: number) => () => dispatch({type: "focus-input", idx}), [])
+  const handleKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!IGNORED_META_KEYS.includes(evt.key) && !evt.altKey && !evt.ctrlKey) {
       evt.preventDefault()
-      setKeyStack([...keyStack, evt.key])
+      dispatch({type: "handle-key-down", key: evt.key})
     }
   }
+
+  useEffect(() => {
+    state.effectStack.forEach(eff => {
+      switch (eff.type) {
+        case "focus-input":
+          refs.current[eff.idx].focus()
+          break
+
+        case "set-input-val": {
+          const val = format(eff.val)
+          refs.current[eff.idx].value = val
+          if (val === "") refs.current[eff.idx].classList.remove("react-pin-field__input--success")
+          break
+        }
+
+        case "resolve-key":
+          refs.current[eff.idx].classList.remove("react-pin-field__input--error")
+          refs.current[eff.idx].classList.add("react-pin-field__input--success")
+          handleResolveKey(eff.key, refs.current[eff.idx])
+          break
+
+        case "reject-key":
+          refs.current[eff.idx].value = ""
+          refs.current[eff.idx].classList.remove("react-pin-field__input--success")
+          refs.current[eff.idx].classList.add("react-pin-field__input--error")
+          handleRejectKey(eff.key, refs.current[eff.idx])
+          break
+
+        case "handle-code-change": {
+          const code = refs.current.map(r => r.value.trim()).join("")
+          handleChange(code)
+
+          if (!state.codeCompleted && code.length === codeLength) {
+            handleComplete(code)
+            dispatch({type: "mark-code-as-completed"})
+          }
+
+          break
+        }
+
+        default:
+      }
+    })
+  }, [
+    codeLength,
+    format,
+    handleChange,
+    handleComplete,
+    handleRejectKey,
+    handleResolveKey,
+    state.codeCompleted,
+    state.effectStack,
+  ])
 
   return (
     <>

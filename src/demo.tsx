@@ -6,7 +6,6 @@ import PinField from "./pin-field"
 
 const App: FC = () => {
   const [demoCompleted, setDemoCompleted] = useState(false)
-
   const [code, setCode] = useState("")
   const [completed, setCompleted] = useState(false)
 
@@ -40,7 +39,7 @@ const App: FC = () => {
             <PinField
               className={classNames("field-a", {"field-a-complete": demoCompleted})}
               onComplete={() => setDemoCompleted(true)}
-              onReceiveKey={k => k.toUpperCase()}
+              format={k => k.toUpperCase()}
               autoFocus
               disabled={demoCompleted}
             />
@@ -55,7 +54,8 @@ const App: FC = () => {
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
           You can pass a custom className, a custom style, or override the CSS class
-          .react-pin-field
+          .react-pin-field__input. You have also access to .react-pin-field__success when a key is
+          resolved and .react-pin-field__input--error when a key is rejected.
         </p>
         <PinField
           style={{
@@ -77,22 +77,23 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-5">With custom validation</h2>
         <p className="mb-4 text-muted">
-          You can restrict input with a string of allowed chars, or a regex.
+          You can restrict input with a string of allowed chars, or a regex, or a function.
         </p>
         <p>Only numbers:</p>
-        <PinField className="field-a" allowedChars="0123456789" />
+        <PinField className="field-a" validate="0123456789" />
 
         <h2 className="display-5 mt-5">With custom events</h2>
         <ul className="mb-4 text-muted">
-          <li>onChange: when a char change</li>
-          <li>onComplete: when all the chars have been filled</li>
-          <li>onReceiveKey: when receive a key (used to format it, for eg: set to upper case)</li>
+          <li>onChange: when the code changes</li>
+          <li>onComplete: when the code has been filled</li>
+          <li>onResolveKey: when receive a good key</li>
+          <li>onRejectKey: when receive a bad key</li>
         </ul>
         <PinField
           className="field-a"
           onChange={setCode}
           onComplete={() => setCompleted(true)}
-          onReceiveKey={k => k.toUpperCase()}
+          format={k => k.toUpperCase()}
         />
         <div>Current code: {code}</div>
         <div>Completed: {String(completed)}</div>
