@@ -1,4 +1,4 @@
-import React, {FC, Dispatch, useCallback, useRef} from "react"
+import React, {FC, useCallback, useRef} from "react"
 import classNames from "classnames"
 
 import useMVU from "./mvu"
@@ -103,6 +103,23 @@ function apply(state: State, action: Action): [State, Effect[]] {
       }
     }
 
+    case "handle-paste": {
+      if (!action.val.split("").every(state.isKeyAllowed)) return [state, NO_EFFECT]
+      const pasteLen = Math.min(action.val.length, state.codeLength - state.focusIdx)
+      const idxs = [...Array(pasteLen)].map((_, i) => i)
+      const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength)
+      const effects: Effect[] = idxs.map(idx => ({
+        type: "set-input-val",
+        idx: idx + state.focusIdx,
+        val: action.val[idx],
+      }))
+
+      effects.push({type: "focus-input", idx: nextFocusIdx})
+      effects.push({type: "handle-code-change"})
+
+      return [{...state, focusIdx: nextFocusIdx}, effects]
+    }
+
     case "focus-input":
       return [{...state, focusIdx: action.idx}, NO_EFFECT]
 
@@ -139,7 +156,7 @@ const PinField: FC<Props> = props => {
   }
 
   const notify = useCallback(
-    (eff: Effect, state: State, dispatch: Dispatch<Action>) => {
+    (eff: Effect, state: State, dispatch: React.Dispatch<Action>) => {
       switch (eff.type) {
         case "focus-input":
           refs.current[eff.idx].focus()
@@ -195,6 +212,11 @@ const PinField: FC<Props> = props => {
     }
   }
 
+  function handlePaste(evt: React.ClipboardEvent<HTMLInputElement>) {
+    evt.preventDefault()
+    dispatch({type: "handle-paste", val: evt.clipboardData.getData("Text")})
+  }
+
   return (
     <>
       {idxs.map(idx => (
@@ -208,6 +230,7 @@ const PinField: FC<Props> = props => {
           maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           style={style}
         />
       ))}

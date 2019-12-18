@@ -23,6 +23,7 @@ export type PinFieldState = {
 
 export type PinFieldAction =
   | {type: "handle-key-down"; key: string}
+  | {type: "handle-paste"; val: string}
   | {type: "focus-input"; idx: number}
   | {type: "mark-code-as-completed"}
 
