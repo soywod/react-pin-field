@@ -1,5 +1,7 @@
-import React, {FC, useCallback, useEffect, useRef, useReducer} from "react"
+import React, {FC, Dispatch, useCallback, useRef} from "react"
 import classNames from "classnames"
+
+import useMVU from "./mvu"
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -10,7 +12,8 @@ import {
 } from "./pin-field.types"
 
 // TODO: unit tests
-export const IGNORED_META_KEYS = ["Tab", "Enter", "Shift", "Meta", "Control", "Alt"]
+export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]
+export const NO_EFFECT: Effect[] = []
 
 // TODO: unit tests
 export const defaultProps: DefaultProps = {
@@ -46,69 +49,68 @@ export const isKeyAllowed = (predicate: DefaultProps["validate"]) => (key: strin
 }
 
 // TODO: unit tests
-function reducer(state: State, action: Action): State {
-  const {isKeyAllowed} = state
+function apply(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
         case "Unidentified":
         case "Dead": {
-          const effectStack: Effect[] = [
+          const effects: Effect[] = [
             {type: "set-input-val", idx: state.focusIdx, val: ""},
             {type: "reject-key", idx: state.focusIdx, key: action.key},
             {type: "handle-code-change"},
           ]
-          return {...state, effectStack}
+          return [state, effects]
         }
 
         case "ArrowLeft": {
           const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
-          const effectStack: Effect[] = [{type: "focus-input", idx: prevFocusIdx}]
-          return {...state, focusIdx: prevFocusIdx, effectStack}
+          const effects: Effect[] = [{type: "focus-input", idx: prevFocusIdx}]
+          return [{...state, focusIdx: prevFocusIdx}, effects]
         }
 
         case "ArrowRight": {
           const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
-          const effectStack: Effect[] = [{type: "focus-input", idx: nextFocusIdx}]
-          return {...state, focusIdx: nextFocusIdx, effectStack}
+          const effects: Effect[] = [{type: "focus-input", idx: nextFocusIdx}]
+          return [{...state, focusIdx: nextFocusIdx}, effects]
         }
 
         case "Backspace": {
           const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
-          const effectStack: Effect[] = [
+          const effects: Effect[] = [
             {type: "set-input-val", idx: state.focusIdx, val: ""},
             {type: "focus-input", idx: prevFocusIdx},
             {type: "handle-code-change"},
           ]
-          return {...state, focusIdx: prevFocusIdx, codeCompleted: false, effectStack}
+          return [{...state, focusIdx: prevFocusIdx, codeCompleted: false}, effects]
         }
 
         default: {
-          if (isKeyAllowed(action.key)) {
+          if (state.isKeyAllowed(action.key)) {
             const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength)
-            const effectStack: Effect[] = [
+            const effects: Effect[] = [
               {type: "set-input-val", idx: state.focusIdx, val: action.key},
               {type: "resolve-key", idx: state.focusIdx, key: action.key},
               {type: "focus-input", idx: nextFocusIdx},
               {type: "handle-code-change"},
             ]
-            return {...state, focusIdx: nextFocusIdx, effectStack}
+            return [{...state, focusIdx: nextFocusIdx}, effects]
           }
 
-          const effectStack: Effect[] = [{type: "reject-key", idx: state.focusIdx, key: action.key}]
-          return {...state, effectStack}
+          const effects: Effect[] = [{type: "reject-key", idx: state.focusIdx, key: action.key}]
+          return [state, effects]
         }
       }
     }
 
     case "focus-input":
-      return {...state, focusIdx: action.idx}
+      return [{...state, focusIdx: action.idx}, NO_EFFECT]
 
     case "mark-code-as-completed":
-      return {...state, codeCompleted: true}
+      return [{...state, codeCompleted: true}, NO_EFFECT]
 
     default:
-      return state
+      return [state, NO_EFFECT]
   }
 }
 
@@ -127,27 +129,17 @@ const PinField: FC<Props> = props => {
     ...inputProps
   } = {...defaultProps, ...props}
 
-  const idxs = [...Array(codeLength)].map((_, i) => i)
   const refs = useRef<HTMLInputElement[]>([])
-  const [state, dispatch] = useReducer(reducer, {
-    effectStack: [],
+  const idxs = [...Array(codeLength)].map((_, i) => i)
+  const defaultState: State = {
     focusIdx: 0,
     codeCompleted: false,
     codeLength,
     isKeyAllowed: isKeyAllowed(validate),
-  })
-
-  const setRef = useCallback((ref: HTMLInputElement) => refs.current.push(ref), [])
-  const handleFocus = useCallback((idx: number) => () => dispatch({type: "focus-input", idx}), [])
-  const handleKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!IGNORED_META_KEYS.includes(evt.key) && !evt.altKey && !evt.ctrlKey) {
-      evt.preventDefault()
-      dispatch({type: "handle-key-down", key: evt.key})
-    }
   }
 
-  useEffect(() => {
-    state.effectStack.forEach(eff => {
+  const notify = useCallback(
+    (eff: Effect, state: State, dispatch: Dispatch<Action>) => {
       switch (eff.type) {
         case "focus-input":
           refs.current[eff.idx].focus()
@@ -186,17 +178,22 @@ const PinField: FC<Props> = props => {
         default:
           break
       }
-    })
-  }, [
-    codeLength,
-    format,
-    handleChange,
-    handleComplete,
-    handleRejectKey,
-    handleResolveKey,
-    state.codeCompleted,
-    state.effectStack,
-  ])
+    },
+    [codeLength, format, handleChange, handleComplete, handleRejectKey, handleResolveKey],
+  )
+
+  const dispatch = useMVU(defaultState, apply, notify)
+
+  function handleFocus(idx: number) {
+    return () => dispatch({type: "focus-input", idx})
+  }
+
+  function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
+    if (!IGNORED_META_KEYS.includes(evt.key) && !evt.altKey && !evt.ctrlKey) {
+      evt.preventDefault()
+      dispatch({type: "handle-key-down", key: evt.key})
+    }
+  }
 
   return (
     <>
@@ -205,13 +202,13 @@ const PinField: FC<Props> = props => {
           type="text"
           {...inputProps}
           key={idx}
-          ref={setRef}
+          ref={ref => ref && (refs.current[idx] = ref)}
           className={classNames("react-pin-field__input", className)}
           autoFocus={idx === 0 && autoFocus}
-          onKeyDown={handleKeyDown}
-          onFocus={handleFocus(idx)}
-          style={style}
           maxLength={1}
+          onFocus={handleFocus(idx)}
+          onKeyDown={handleKeyDown}
+          style={style}
         />
       ))}
     </>

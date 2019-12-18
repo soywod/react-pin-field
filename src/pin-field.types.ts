@@ -15,7 +15,6 @@ export type PinFieldDefaultProps = {
 export type PinFieldProps = Partial<PinFieldDefaultProps> & InputProps
 
 export type PinFieldState = {
-  effectStack: PinFieldEffect[]
   focusIdx: number
   codeCompleted: boolean
   codeLength: PinFieldDefaultProps["length"]
