@@ -4,8 +4,7 @@ import {Updater, Notifier} from "./mvu.types"
 
 /**
  * Model-View-Update hook.
- * Ensures good practices by separating your state management
- * from your side effects.
+ * Ensures good practices by separating your state management from your side effects.
  */
 function useMVU<M, A, E>(defaultModel: M, update: Updater<M, A, E>, notify: Notifier<M, A, E>) {
   const [effects, setEffects] = useState<E[]>([])

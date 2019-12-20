@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": false,
   "keywords": [
     "react",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.1",
     "@types/classnames": "^2.2.9",
+    "@types/lodash": "^4.14.149",
     "@types/react": "16.9.14",
     "@types/react-dom": "16.9.4",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
@@ -73,7 +74,8 @@
     "react-dom": "^16.12.0"
   },
   "dependencies": {
-    "classnames": "^2.2.6"
+    "classnames": "^2.2.6",
+    "lodash": "^4.17.15"
   },
   "scripts": {
     "start": "parcel serve -p 3000 src/index.html",

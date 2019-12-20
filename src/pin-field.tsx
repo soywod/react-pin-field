@@ -1,19 +1,25 @@
 import React, {FC, useCallback, useRef} from "react"
 import classNames from "classnames"
+import omit from "lodash/fp/omit"
+import range from "lodash/fp/range"
 
 import useMVU from "./mvu"
 
 import {
   PinFieldDefaultProps as DefaultProps,
+  PinFieldInputProps as InputProps,
   PinFieldProps as Props,
+  PinFieldNotifierProps as NotifierProps,
   PinFieldState as State,
   PinFieldAction as Action,
   PinFieldEffect as Effect,
 } from "./pin-field.types"
 
 // TODO: unit tests
-export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]
 export const NO_EFFECT: Effect[] = []
+export const PROP_KEYS = ["autoFocus", "className", "length", "validate", "format", "style"]
+export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"]
+export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]
 
 // TODO: unit tests
 export const defaultProps: DefaultProps = {
@@ -39,17 +45,19 @@ export function getNextFocusIdx(currFocusIdx: number, lastFocusIdx: number) {
 }
 
 // TODO: unit tests
-export const isKeyAllowed = (predicate: DefaultProps["validate"]) => (key: string) => {
-  if (!key) return false
-  if (key.length > 1) return false
-  if (typeof predicate === "string") return predicate.split("").includes(key)
-  if (predicate instanceof Array) return predicate.includes(key)
-  if (predicate instanceof RegExp) return predicate.test(key)
-  return predicate(key)
+export function isKeyAllowed(predicate: DefaultProps["validate"]) {
+  return (key: string) => {
+    if (!key) return false
+    if (key.length > 1) return false
+    if (typeof predicate === "string") return predicate.split("").includes(key)
+    if (predicate instanceof Array) return predicate.includes(key)
+    if (predicate instanceof RegExp) return predicate.test(key)
+    return predicate(key)
+  }
 }
 
 // TODO: unit tests
-function apply(state: State, action: Action): [State, Effect[]] {
+export function apply(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
@@ -106,9 +114,8 @@ function apply(state: State, action: Action): [State, Effect[]] {
     case "handle-paste": {
       if (!action.val.split("").every(state.isKeyAllowed)) return [state, NO_EFFECT]
       const pasteLen = Math.min(action.val.length, state.codeLength - state.focusIdx)
-      const idxs = [...Array(pasteLen)].map((_, i) => i)
       const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength)
-      const effects: Effect[] = idxs.map(idx => ({
+      const effects: Effect[] = range(0, pasteLen).map(idx => ({
         type: "set-input-val",
         idx: idx + state.focusIdx,
         val: action.val[idx],
@@ -131,31 +138,9 @@ function apply(state: State, action: Action): [State, Effect[]] {
   }
 }
 
-const PinField: FC<Props> = props => {
-  const {
-    autoFocus,
-    className,
-    length: codeLength,
-    validate,
-    format,
-    onResolveKey: handleResolveKey,
-    onRejectKey: handleRejectKey,
-    onChange: handleChange,
-    onComplete: handleComplete,
-    style,
-    ...inputProps
-  } = {...defaultProps, ...props}
-
-  const refs = useRef<HTMLInputElement[]>([])
-  const idxs = [...Array(codeLength)].map((_, i) => i)
-  const defaultState: State = {
-    focusIdx: 0,
-    codeCompleted: false,
-    codeLength,
-    isKeyAllowed: isKeyAllowed(validate),
-  }
-
-  const notify = useCallback(
+// TODO: unit tests
+export function useNotifier({refs, ...props}: NotifierProps) {
+  return useCallback(
     (eff: Effect, state: State, dispatch: React.Dispatch<Action>) => {
       switch (eff.type) {
         case "focus-input":
@@ -163,8 +148,8 @@ const PinField: FC<Props> = props => {
           break
 
         case "set-input-val": {
-          const val = format(eff.val)
-          refs.current[eff.idx].value = format(val)
+          const val = props.format(eff.val)
+          refs.current[eff.idx].value = props.format(val)
           if (val === "") refs.current[eff.idx].classList.remove("react-pin-field__input--success")
           break
         }
@@ -172,21 +157,21 @@ const PinField: FC<Props> = props => {
         case "resolve-key":
           refs.current[eff.idx].classList.remove("react-pin-field__input--error")
           refs.current[eff.idx].classList.add("react-pin-field__input--success")
-          handleResolveKey(eff.key, refs.current[eff.idx])
+          props.onResolveKey(eff.key, refs.current[eff.idx])
           break
 
         case "reject-key":
           refs.current[eff.idx].value = ""
           refs.current[eff.idx].classList.remove("react-pin-field__input--success")
           refs.current[eff.idx].classList.add("react-pin-field__input--error")
-          handleRejectKey(eff.key, refs.current[eff.idx])
+          props.onRejectKey(eff.key, refs.current[eff.idx])
           break
 
         case "handle-code-change": {
           const code = refs.current.map(r => r.value.trim()).join("")
-          handleChange(code)
-          if (!state.codeCompleted && code.length === codeLength) {
-            handleComplete(code)
+          props.onChange(code)
+          if (!state.codeCompleted && code.length === props.length) {
+            props.onComplete(code)
             dispatch({type: "mark-code-as-completed"})
           }
           break
@@ -196,10 +181,28 @@ const PinField: FC<Props> = props => {
           break
       }
     },
-    [codeLength, format, handleChange, handleComplete, handleRejectKey, handleResolveKey],
+    [props, refs],
   )
+}
 
-  const dispatch = useMVU(defaultState, apply, notify)
+// TODO: unit test
+export function emptyState(props: Pick<DefaultProps, "validate" | "length">): State {
+  return {
+    focusIdx: 0,
+    codeCompleted: false,
+    codeLength: props.length,
+    isKeyAllowed: isKeyAllowed(props.validate),
+  }
+}
+
+const PinField: FC<Props> = userProps => {
+  const props: DefaultProps & InputProps = {...defaultProps, ...userProps}
+  const {autoFocus, className, length: codeLength, style} = props
+  const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
+  const refs = useRef<HTMLInputElement[]>([])
+  const notify = useNotifier({refs, ...props})
+  const model = emptyState(props)
+  const dispatch = useMVU(model, apply, notify)
 
   function handleFocus(idx: number) {
     return () => dispatch({type: "focus-input", idx})
@@ -219,7 +222,7 @@ const PinField: FC<Props> = props => {
 
   return (
     <>
-      {idxs.map(idx => (
+      {range(0, codeLength).map(idx => (
         <input
           type="text"
           {...inputProps}

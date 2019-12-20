@@ -1,4 +1,7 @@
-type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">
+export type PinFieldInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "value"
+>
 
 export type PinFieldDefaultProps = {
   className: string
@@ -12,7 +15,11 @@ export type PinFieldDefaultProps = {
   style: React.CSSProperties
 }
 
-export type PinFieldProps = Partial<PinFieldDefaultProps> & InputProps
+export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps
+
+export type PinFieldNotifierProps = {
+  refs: React.MutableRefObject<HTMLInputElement[]>
+} & PinFieldDefaultProps
 
 export type PinFieldState = {
   focusIdx: number
