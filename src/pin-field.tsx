@@ -84,13 +84,11 @@ export function apply(state: State, action: Action): [State, Effect[]] {
         }
 
         case "Backspace": {
-          const prevFocusIdx = getPrevFocusIdx(state.focusIdx)
           const effects: Effect[] = [
-            {type: "set-input-val", idx: state.focusIdx, val: ""},
-            {type: "focus-input", idx: prevFocusIdx},
+            {type: "handle-backspace", idx: state.focusIdx},
             {type: "handle-code-change"},
           ]
-          return [{...state, focusIdx: prevFocusIdx, codeCompleted: false}, effects]
+          return [state, effects]
         }
 
         default: {
@@ -167,6 +165,20 @@ export function useNotifier({refs, ...props}: NotifierProps) {
           props.onRejectKey(eff.key, refs.current[eff.idx])
           break
 
+        case "handle-backspace": {
+          const prevVal = refs.current[eff.idx].value
+          refs.current[eff.idx].classList.remove("react-pin-field__input--success")
+          refs.current[eff.idx].value = ""
+
+          if (!prevVal) {
+            const prevIdx = getPrevFocusIdx(eff.idx)
+            refs.current[prevIdx].focus()
+            refs.current[prevIdx].classList.remove("react-pin-field__input--success")
+            refs.current[prevIdx].value = ""
+          }
+          break
+        }
+
         case "handle-code-change": {
           const code = refs.current.map(r => r.value.trim()).join("")
           props.onChange(code)
@@ -200,8 +212,8 @@ const PinField: FC<Props> = userProps => {
   const {autoFocus, className, length: codeLength, style} = props
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
   const refs = useRef<HTMLInputElement[]>([])
-  const notify = useNotifier({refs, ...props})
   const model = emptyState(props)
+  const notify = useNotifier({refs, ...props})
   const dispatch = useMVU(model, apply, notify)
 
   function handleFocus(idx: number) {
