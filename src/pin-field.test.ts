@@ -1,4 +1,30 @@
+import "react"
+import noop from "lodash/fp/noop"
+
 import * as pinField from "./pin-field"
+
+jest.mock("react", () => ({
+  useCallback: (f: any) => f,
+}))
+
+function mockInput(value: string) {
+  const setValMock = jest.fn()
+  const ref = {
+    focus: jest.fn(),
+    classList: {
+      add: jest.fn(),
+      remove: jest.fn(),
+    },
+    set value(val: string) {
+      setValMock(val)
+    },
+    get value() {
+      return value
+    },
+  }
+
+  return {ref, setValMock}
+}
 
 test("constants", () => {
   const {NO_EFFECT, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField
@@ -65,6 +91,7 @@ describe("is key allowed", () => {
 
   test("string", () => {
     const str = isKeyAllowed("a")
+
     expect(str("a")).toStrictEqual(true)
     expect(str("b")).toStrictEqual(false)
     expect(str("ab")).toStrictEqual(false)
@@ -72,6 +99,7 @@ describe("is key allowed", () => {
 
   test("array", () => {
     const arr = isKeyAllowed(["a", "b"])
+
     expect(arr("a")).toStrictEqual(true)
     expect(arr("a")).toStrictEqual(true)
     expect(arr("b")).toStrictEqual(true)
@@ -80,6 +108,7 @@ describe("is key allowed", () => {
 
   test("regex", () => {
     const exp = isKeyAllowed(/^[ab]$/)
+
     expect(exp("a")).toStrictEqual(true)
     expect(exp("b")).toStrictEqual(true)
     expect(exp("ab")).toStrictEqual(false)
@@ -87,6 +116,7 @@ describe("is key allowed", () => {
 
   test("function", () => {
     const func = isKeyAllowed(k => k === "a" || k === "b")
+
     expect(func("a")).toStrictEqual(true)
     expect(func("b")).toStrictEqual(true)
     expect(func("ab")).toStrictEqual(false)
@@ -248,5 +278,143 @@ describe("apply", () => {
 
     expect(state).toMatchObject({...state, codeCompleted: true})
     expect(eff).toEqual(NO_EFFECT)
+  })
+})
+
+describe("notify", () => {
+  const {defaultState, defaultProps, useNotifier} = pinField
+  const inputA = mockInput("a")
+  const inputB = mockInput("b")
+  const inputC = mockInput("")
+  const propsFormatMock = jest.fn()
+  const propsMock = {
+    ...defaultProps,
+    length: 3,
+    format: (char: string) => {
+      propsFormatMock.apply(char)
+      return char
+    },
+    onResolveKey: jest.fn(),
+    onRejectKey: jest.fn(),
+    onChange: jest.fn(),
+    onComplete: jest.fn(),
+  }
+
+  const state = defaultState(defaultProps)
+  const refs = {current: [inputA.ref, inputB.ref, inputC.ref]} as React.MutableRefObject<any>
+  const notify = useNotifier({...propsMock, refs})
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  test("focus input", () => {
+    notify({type: "focus-input", idx: 0}, state, noop)
+
+    expect(inputA.ref.focus).toHaveBeenCalledTimes(1)
+  })
+
+  describe("set input val", () => {
+    test("empty char", () => {
+      notify({type: "set-input-val", idx: 0, val: ""}, state, noop)
+
+      expect(propsFormatMock).toHaveBeenCalledTimes(1)
+      expect(inputA.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputA.setValMock).toHaveBeenCalledWith("")
+      expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
+      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+    })
+
+    test("non empty char", () => {
+      notify({type: "set-input-val", idx: 0, val: "a"}, state, noop)
+
+      expect(propsFormatMock).toHaveBeenCalledTimes(1)
+      expect(inputA.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputA.setValMock).toHaveBeenCalledWith("a")
+      expect(inputA.ref.classList.remove).not.toHaveBeenCalled()
+    })
+  })
+
+  test("resolve key", () => {
+    notify({type: "resolve-key", idx: 0, key: "a"}, state, noop)
+
+    expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--error")
+    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.add).toHaveBeenCalledWith("react-pin-field__input--success")
+    expect(propsMock.onResolveKey).toHaveBeenCalledTimes(1)
+    expect(propsMock.onResolveKey).toHaveBeenCalledWith("a", inputA.ref)
+  })
+
+  test("reject key", () => {
+    notify({type: "reject-key", idx: 0, key: "a"}, state, noop)
+
+    expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.add).toHaveBeenCalledWith("react-pin-field__input--error")
+    expect(propsMock.onRejectKey).toHaveBeenCalledTimes(1)
+    expect(propsMock.onRejectKey).toHaveBeenCalledWith("a", inputA.ref)
+  })
+
+  describe("handle backspace", () => {
+    test("from input A, not empty val", () => {
+      notify({type: "handle-backspace", idx: 0}, state, noop)
+
+      expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
+      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputA.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputA.setValMock).toHaveBeenCalledWith("")
+    })
+
+    test("from input B, not empty val", () => {
+      notify({type: "handle-backspace", idx: 1}, state, noop)
+
+      expect(inputB.ref.classList.remove).toHaveBeenCalledTimes(1)
+      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputB.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputB.setValMock).toHaveBeenCalledWith("")
+    })
+
+    test("from input C, empty val", () => {
+      notify({type: "handle-backspace", idx: 2}, state, noop)
+
+      expect(inputC.ref.classList.remove).toHaveBeenCalledTimes(1)
+      expect(inputC.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputC.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputC.setValMock).toHaveBeenCalledWith("")
+      expect(inputB.ref.focus).toHaveBeenCalledTimes(1)
+      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputB.setValMock).toHaveBeenCalledTimes(1)
+      expect(inputB.setValMock).toHaveBeenCalledWith("")
+    })
+  })
+
+  describe("handle-code-change", () => {
+    test("code not complete", () => {
+      notify({type: "handle-code-change"}, state, noop)
+
+      expect(propsMock.onChange).toHaveBeenCalledTimes(1)
+      expect(propsMock.onChange).toHaveBeenCalledWith("ab")
+    })
+
+    test("code complete", () => {
+      const dispatchMock = jest.fn()
+      const inputA = mockInput("a")
+      const inputB = mockInput("b")
+      const inputC = mockInput("c")
+      const state = defaultState(defaultProps)
+      const refs = {current: [inputA.ref, inputB.ref, inputC.ref]} as React.MutableRefObject<any>
+      const notify = useNotifier({...propsMock, refs})
+
+      notify({type: "handle-code-change"}, state, dispatchMock)
+
+      expect(propsMock.onChange).toHaveBeenCalledTimes(1)
+      expect(propsMock.onChange).toHaveBeenCalledWith("abc")
+      expect(propsMock.onComplete).toHaveBeenCalledTimes(1)
+      expect(propsMock.onComplete).toHaveBeenCalledWith("abc")
+      expect(dispatchMock).toHaveBeenCalledTimes(1)
+      expect(dispatchMock).toHaveBeenCalledWith({type: "mark-code-as-completed"})
+    })
   })
 })

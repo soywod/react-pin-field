@@ -152,7 +152,7 @@ export function useNotifier({refs, ...props}: NotifierProps) {
 
         case "set-input-val": {
           const val = props.format(eff.val)
-          refs.current[eff.idx].value = props.format(val)
+          refs.current[eff.idx].value = val
           if (val === "") refs.current[eff.idx].classList.remove("react-pin-field__input--success")
           break
         }
