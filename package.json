@@ -35,7 +35,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint",
-      "pre-push": "yarn lint"
+      "pre-push": "run-p lint test:unit"
     }
   },
   "devDependencies": {
@@ -86,9 +86,9 @@
     "start": "parcel serve -p 3000 src/index.html",
     "build:demo": "parcel build src/index.html",
     "build:lib": "tsc",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint src/**/*.ts{,x}",
     "test:unit": "jest",
     "test:e2e": "cypress run",
-    "test": "run-s test:unit test:e2e"
+    "test": "run-p test:unit test:e2e"
   }
 }
