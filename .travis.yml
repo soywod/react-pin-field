@@ -9,12 +9,17 @@ addons:
 cache:
   directories:
     - ~/.cache
+    - ~/.config/yarn
 
 install:
   - yarn install --frozen-lock file
 
 before_script:
+  - yarn global add codecov
   - yarn start --log-level 0 &
 
 script:
   - yarn test
+
+after_success:
+  - codecov
