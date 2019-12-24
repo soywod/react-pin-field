@@ -62,7 +62,6 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
   }
 }
 
-// TODO: unit tests
 export function apply(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "handle-key-down": {
