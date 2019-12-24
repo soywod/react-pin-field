@@ -17,6 +17,6 @@
     "sourceMap": true,
     "strict": true,
     "target": "es5",
-    "types": ["cypress"]
+    "types": ["@types/jest", "cypress"]
   }
 }

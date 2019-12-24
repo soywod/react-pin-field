@@ -1,5 +1,6 @@
 import React, {FC, useCallback, useRef} from "react"
 import classNames from "classnames"
+import noop from "lodash/fp/noop"
 import omit from "lodash/fp/omit"
 import range from "lodash/fp/range"
 
@@ -15,36 +16,41 @@ import {
   PinFieldEffect as Effect,
 } from "./pin-field.types"
 
-// TODO: unit tests
 export const NO_EFFECT: Effect[] = []
 export const PROP_KEYS = ["autoFocus", "className", "length", "validate", "format", "style"]
 export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"]
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]
 
-// TODO: unit tests
 export const defaultProps: DefaultProps = {
   className: "",
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
-  onResolveKey: () => {},
-  onRejectKey: () => {},
-  onChange: () => {},
-  onComplete: () => {},
+  onResolveKey: noop,
+  onRejectKey: noop,
+  onChange: noop,
+  onComplete: noop,
   style: {},
 }
 
-// TODO: unit tests
+export function defaultState(props: Pick<DefaultProps, "validate" | "length">): State {
+  return {
+    focusIdx: 0,
+    codeCompleted: false,
+    codeLength: props.length,
+    isKeyAllowed: isKeyAllowed(props.validate),
+  }
+}
+
 export function getPrevFocusIdx(currFocusIdx: number) {
   return Math.max(0, currFocusIdx - 1)
 }
 
-// TODO: unit tests
 export function getNextFocusIdx(currFocusIdx: number, lastFocusIdx: number) {
+  if (lastFocusIdx === 0) return 0
   return Math.min(currFocusIdx + 1, lastFocusIdx - 1)
 }
 
-// TODO: unit tests
 export function isKeyAllowed(predicate: DefaultProps["validate"]) {
   return (key: string) => {
     if (!key) return false
@@ -197,22 +203,12 @@ export function useNotifier({refs, ...props}: NotifierProps) {
   )
 }
 
-// TODO: unit test
-export function emptyState(props: Pick<DefaultProps, "validate" | "length">): State {
-  return {
-    focusIdx: 0,
-    codeCompleted: false,
-    codeLength: props.length,
-    isKeyAllowed: isKeyAllowed(props.validate),
-  }
-}
-
 const PinField: FC<Props> = userProps => {
   const props: DefaultProps & InputProps = {...defaultProps, ...userProps}
   const {autoFocus, className, length: codeLength, style} = props
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
   const refs = useRef<HTMLInputElement[]>([])
-  const model = emptyState(props)
+  const model = defaultState(props)
   const notify = useNotifier({refs, ...props})
   const dispatch = useMVU(model, apply, notify)
 

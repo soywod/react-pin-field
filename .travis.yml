@@ -17,4 +17,4 @@ before_script:
   - yarn start --log-level 0 &
 
 script:
-  - yarn test:e2e
+  - yarn test
