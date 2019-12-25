@@ -141,7 +141,6 @@ export function apply(state: State, action: Action): [State, Effect[]] {
   }
 }
 
-// TODO: unit tests
 export function useNotifier({refs, ...props}: NotifierProps) {
   return useCallback(
     (eff: Effect, state: State, dispatch: React.Dispatch<Action>) => {
@@ -202,7 +201,7 @@ export function useNotifier({refs, ...props}: NotifierProps) {
   )
 }
 
-const PinField: FC<Props> = userProps => {
+export const PinField: FC<Props> = userProps => {
   const props: DefaultProps & InputProps = {...defaultProps, ...userProps}
   const {autoFocus, className, length: codeLength, style} = props
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
@@ -236,7 +235,7 @@ const PinField: FC<Props> = userProps => {
           key={idx}
           ref={ref => ref && (refs.current[idx] = ref)}
           className={classNames("react-pin-field__input", className)}
-          autoFocus={idx === 0 && autoFocus}
+          autoFocus={Boolean(idx === 0 && autoFocus)}
           maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown}

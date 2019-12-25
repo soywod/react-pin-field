@@ -37,8 +37,8 @@ rules:
   import/no-extraneous-dependencies:
     - error
     - devDependencies:
-      - "**/*.spec.ts"
-      - "**/*.test.ts"
+      - "**/*spec.ts{,x}"
+      - "**/*test.ts{,x}"
       - cypress/**/*.js
   import/prefer-default-export: 0
   jsx-a11y/label-has-associated-control: 0

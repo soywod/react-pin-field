@@ -308,6 +308,11 @@ describe("notify", () => {
     jest.resetAllMocks()
   })
 
+  test("default action", () => {
+    // @ts-ignore
+    notify({type: "default-action"}, state, noop)
+  })
+
   test("focus input", () => {
     notify({type: "focus-input", idx: 0}, state, noop)
 
