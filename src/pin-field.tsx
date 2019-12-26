@@ -124,7 +124,10 @@ export function apply(state: State, action: Action): [State, Effect[]] {
         val: action.val[idx],
       }))
 
-      effects.push({type: "focus-input", idx: nextFocusIdx})
+      if (state.focusIdx !== nextFocusIdx) {
+        effects.push({type: "focus-input", idx: nextFocusIdx})
+      }
+
       effects.push({type: "handle-code-change"})
 
       return [{...state, focusIdx: nextFocusIdx}, effects]
@@ -184,7 +187,9 @@ export function useNotifier({refs, ...props}: NotifierProps) {
         }
 
         case "handle-code-change": {
-          const code = refs.current.map(r => r.value.trim()).join("")
+          const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase()
+          const codeArr = refs.current.map(r => r.value.trim())
+          const code = dir === "rtl" ? codeArr.reverse().join("") : codeArr.join("")
           props.onChange(code)
           if (!state.codeCompleted && code.length === props.length) {
             props.onComplete(code)

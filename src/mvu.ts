@@ -18,7 +18,10 @@ function useMVU<M, A, E>(defaultModel: M, update: Updater<M, A, E>, notify: Noti
   const [model, dispatch] = useReducer(reducer, defaultModel)
 
   useEffect(() => {
-    effects.forEach(eff => notify(eff, model, dispatch))
+    if (effects.length > 0) {
+      effects.forEach(eff => notify(eff, model, dispatch))
+      setEffects([])
+    }
   }, [effects, model, notify])
 
   return dispatch

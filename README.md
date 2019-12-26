@@ -146,8 +146,8 @@ yarn build:lib
 
 ### Unit tests
 
-Unit tests are handled by [Jest](https://jestjs.io/) and
-[Enzyme](https://airbnb.io/enzyme/).
+Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files) and
+[Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
 
 ```bash
 yarn test:unit
@@ -155,7 +155,8 @@ yarn test:unit
 
 ### End-to-end tests
 
-End-to-end tests are handled by [Cypress](https://www.cypress.io).
+End-to-end tests are handled by [Cypress](https://www.cypress.io) (`.e2e`
+files).
 
 ```bash
 yarn start

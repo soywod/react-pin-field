@@ -258,11 +258,7 @@ describe("apply", () => {
       const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-paste", val: "abc"})
 
       expect(state).toMatchObject({...state, focusIdx: 4})
-      expect(eff).toEqual([
-        {type: "set-input-val", idx: 4, val: "a"},
-        {type: "focus-input", idx: 4},
-        {type: "handle-code-change"},
-      ])
+      expect(eff).toEqual([{type: "set-input-val", idx: 4, val: "a"}, {type: "handle-code-change"}])
     })
   })
 
