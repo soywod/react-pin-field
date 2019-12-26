@@ -48,73 +48,41 @@ const defaultProps = {
 }
 ```
 
-## Examples
-
-Refer to the [live demo](https://react-pin-field.soywod.me) to see the result.
-
-### Basic
-
-```typescript
-<PinField />
-```
-
-### With custom style
+### Style
 
 You can pass a custom `className`, a custom `style`, or override the CSS class
 `.react-pin-field__input`. You have also access to `.react-pin-field__success`
 when a key is resolved and `.react-pin-field__input--error` when a key is
 rejected.
 
-```typescript
-<PinField
-  style={{
-    width: 50,
-    height: 50,
-    borderRadius: "50%",
-    border: "1px solid gray",
-    outline: "none",
-    textAlign: "center",
-    margin: 10,
-  }}
-/>
-```
+### Length
 
-### With custom length
+Length of the code (number of characters to type). Default: `5`.
 
-```typescript
-<PinField length={3} />
-```
+### Validate
 
-### With custom validation
+Hook called to validate a char. It can be:
 
-```typescript
-<PinField validate="0123456789" />
-<PinField validate={/^[0-9]$/} />
-<PinField validate={key => "0123456789".indexOf(key) > -1} />
-```
+- A string of allowed characters: `abcABC123`
+- A list of allowed chars: `["a", "b", "c", "1", "2", "3"]`
+- A RegExp: `/^[a-zA-Z0-9]$/`
+- A function: `(char: string) => boolean`
 
-### With custom events
+### Format
 
-- onChange: when the code changes
-- onComplete: when the code has been filled
-- onResolveKey: when receive a good key
-- onRejectKey: when receive a bad key
+Hook called before adding a new char to the code. For example, to set the code
+to upper case: `(char: string) => char.toUpperCase()`
 
-```typescript
-<PinField
-  onChange={handleChange}
-  onComplete={handleComplete}
-  onResolveKey={handleResolveKey}
-  onRejectKey={handleRejectKey}
-  format={k => k.toUpperCase()}
-/>
-```
+### Events
 
-### With custom InputHTMLAttributes
+- onResolveKey: called when a char passes successfully the `validate` function
+- onRejectKey: the opposite of `onResolveKey`
+- onChange: called when the code changes
+- onComplete: called when the code has been filled
 
-```typescript
-<PinField type="password" autoFocus disabled={loading} />
-```
+## Examples
+
+See the [live demo](https://react-pin-field.soywod.me).
 
 ## Development
 

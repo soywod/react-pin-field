@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": false,
   "keywords": [
     "react",
