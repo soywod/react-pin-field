@@ -143,9 +143,15 @@ yarn build:lib
 ```
 
 ## Tests
+
 ### Unit tests
 
-TODO
+Unit tests are handled by [Jest](https://jestjs.io/) and
+[Enzyme](https://airbnb.io/enzyme/).
+
+```bash
+yarn test:unit
+```
 
 ### End-to-end tests
 

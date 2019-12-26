@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Docs (readme, license, changelog)
 - New event onReceiveKey
-- End-to-end tests with Cypress
+- Unit tests with Jest + Enzyme [#2]
+- End-to-end tests with Cypress [#3]
 - Handle clipboard paste [#11]
 
 ### Fixed
@@ -19,4 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base system on evt.key instead of evt.keyCode, to avoid conflicts (uppercase/lowercase, numeric keypad) [#1]
 
 [#1]: https://github.com/unfog-io/unfog-cli/issues/1
+[#2]: https://github.com/unfog-io/unfog-cli/issues/2
+[#3]: https://github.com/unfog-io/unfog-cli/issues/3
 [#11]: https://github.com/unfog-io/unfog-cli/issues/11
