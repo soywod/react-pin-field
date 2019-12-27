@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.2.5",
+  "version": "0.2.7",
   "private": false,
   "keywords": [
     "react",
@@ -27,6 +27,8 @@
     "lib/mvu.js",
     "lib/mvu.d.ts",
     "lib/mvu.types.d.ts",
+    "lib/kb-event.js",
+    "lib/kb-event.d.ts",
     "lib/pin-field.js",
     "lib/pin-field.d.ts",
     "lib/pin-field.types.d.ts"

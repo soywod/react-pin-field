@@ -2,7 +2,7 @@ import React, {FC, useState} from "react"
 import ReactDOM from "react-dom"
 import classNames from "classnames"
 
-import PinField from "./pin-field"
+import PinField from "."
 
 const App: FC = () => {
   const [demoCompleted, setDemoCompleted] = useState(false)

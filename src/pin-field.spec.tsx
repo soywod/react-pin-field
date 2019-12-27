@@ -53,15 +53,17 @@ test("events", () => {
   const handleChangeMock = jest.fn()
   const handleCompleteMock = jest.fn()
   const wrapper = mount(
-    <PinField length={3} onChange={handleChangeMock} onComplete={handleCompleteMock} />,
+    <PinField length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />,
   )
   const input = wrapper.find("input").first()
 
   input.simulate("focus")
-  input.simulate("keydown", {key: "a", preventDefault: noop})
-  input.simulate("paste", {clipboardData: {getData: () => "bc"}})
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "a"}})
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {which: 66}})
+  input.simulate("input", {preventDefault: noop, nativeEvent: {data: "c"}})
+  input.simulate("paste", {clipboardData: {getData: () => "d"}})
 
-  expect(handleChangeMock).toHaveBeenCalledTimes(2)
+  expect(handleChangeMock).toHaveBeenCalledTimes(4)
   expect(handleCompleteMock).toHaveBeenCalledTimes(1)
-  expect(handleCompleteMock).toHaveBeenCalledWith("abc")
+  expect(handleCompleteMock).toHaveBeenCalledWith("abcd")
 })

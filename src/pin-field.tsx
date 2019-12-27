@@ -5,6 +5,7 @@ import omit from "lodash/fp/omit"
 import range from "lodash/fp/range"
 
 import useMVU from "./mvu"
+import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "./kb-event"
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -220,9 +221,20 @@ export const PinField: FC<Props> = userProps => {
   }
 
   function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
-    if (!IGNORED_META_KEYS.includes(evt.key) && !evt.altKey && !evt.ctrlKey) {
+    const key = getKeyFromKeyboardEvent(evt.nativeEvent)
+
+    if (!IGNORED_META_KEYS.includes(key) && !evt.altKey && !evt.ctrlKey) {
       evt.preventDefault()
-      dispatch({type: "handle-key-down", key: evt.key})
+      dispatch({type: "handle-key-down", key})
+    }
+  }
+
+  function handleInput(evt: React.FormEvent<HTMLInputElement>) {
+    const key = getKeyFromInputEvent(evt.nativeEvent as InputEvent)
+
+    if (!IGNORED_META_KEYS.includes(key)) {
+      evt.preventDefault()
+      dispatch({type: "handle-key-down", key})
     }
   }
 
@@ -244,6 +256,7 @@ export const PinField: FC<Props> = userProps => {
           maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown}
+          onInput={handleInput}
           onPaste={handlePaste}
           style={style}
         />
