@@ -5,6 +5,7 @@ import * as pinField from "./pin-field"
 
 jest.mock("react", () => ({
   useCallback: (f: any) => f,
+  forwardRef: (f: any) => f,
 }))
 
 function mockInput(value: string) {
@@ -266,7 +267,7 @@ describe("apply", () => {
     const [state, eff] = apply(currState, {type: "focus-input", idx: 2})
 
     expect(state).toMatchObject({...state, focusIdx: 2})
-    expect(eff).toEqual(NO_EFFECT)
+    expect(eff).toEqual([{type: "focus-input", idx: 2}])
   })
 
   test("mark-code-as-completed", () => {
@@ -297,7 +298,7 @@ describe("notify", () => {
   }
 
   const state = defaultState(defaultProps)
-  const refs = {current: [inputA.ref, inputB.ref, inputC.ref]} as React.MutableRefObject<any>
+  const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]}
   const notify = useNotifier({...propsMock, refs})
 
   beforeEach(() => {
@@ -313,6 +314,8 @@ describe("notify", () => {
     notify({type: "focus-input", idx: 0}, state, noop)
 
     expect(inputA.ref.focus).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
+    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-focus")
   })
 
   describe("set input val", () => {
@@ -323,7 +326,7 @@ describe("notify", () => {
       expect(inputA.setValMock).toHaveBeenCalledTimes(1)
       expect(inputA.setValMock).toHaveBeenCalledWith("")
       expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
-      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-success")
     })
 
     test("non empty char", () => {
@@ -340,9 +343,9 @@ describe("notify", () => {
     notify({type: "resolve-key", idx: 0, key: "a"}, state, noop)
 
     expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
-    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--error")
+    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error")
     expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
-    expect(inputA.ref.classList.add).toHaveBeenCalledWith("react-pin-field__input--success")
+    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-success")
     expect(propsMock.onResolveKey).toHaveBeenCalledTimes(1)
     expect(propsMock.onResolveKey).toHaveBeenCalledWith("a", inputA.ref)
   })
@@ -351,9 +354,9 @@ describe("notify", () => {
     notify({type: "reject-key", idx: 0, key: "a"}, state, noop)
 
     expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
-    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-success")
     expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
-    expect(inputA.ref.classList.add).toHaveBeenCalledWith("react-pin-field__input--error")
+    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-error")
     expect(propsMock.onRejectKey).toHaveBeenCalledTimes(1)
     expect(propsMock.onRejectKey).toHaveBeenCalledWith("a", inputA.ref)
   })
@@ -363,7 +366,7 @@ describe("notify", () => {
       notify({type: "handle-backspace", idx: 0}, state, noop)
 
       expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
-      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
       expect(inputA.setValMock).toHaveBeenCalledTimes(1)
       expect(inputA.setValMock).toHaveBeenCalledWith("")
     })
@@ -372,7 +375,7 @@ describe("notify", () => {
       notify({type: "handle-backspace", idx: 1}, state, noop)
 
       expect(inputB.ref.classList.remove).toHaveBeenCalledTimes(1)
-      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
       expect(inputB.setValMock).toHaveBeenCalledTimes(1)
       expect(inputB.setValMock).toHaveBeenCalledWith("")
     })
@@ -381,11 +384,11 @@ describe("notify", () => {
       notify({type: "handle-backspace", idx: 2}, state, noop)
 
       expect(inputC.ref.classList.remove).toHaveBeenCalledTimes(1)
-      expect(inputC.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputC.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
       expect(inputC.setValMock).toHaveBeenCalledTimes(1)
       expect(inputC.setValMock).toHaveBeenCalledWith("")
       expect(inputB.ref.focus).toHaveBeenCalledTimes(1)
-      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("react-pin-field__input--success")
+      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
       expect(inputB.setValMock).toHaveBeenCalledTimes(1)
       expect(inputB.setValMock).toHaveBeenCalledWith("")
     })
@@ -405,7 +408,7 @@ describe("notify", () => {
       const inputB = mockInput("b")
       const inputC = mockInput("c")
       const state = defaultState(defaultProps)
-      const refs = {current: [inputA.ref, inputB.ref, inputC.ref]} as React.MutableRefObject<any>
+      const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]}
       const notify = useNotifier({...propsMock, refs})
 
       notify({type: "handle-code-change"}, state, dispatchMock)

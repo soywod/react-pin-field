@@ -9,16 +9,25 @@ test("structure", () => {
   const inputs = wrapper.find("input")
 
   expect(inputs).toHaveLength(5)
-  inputs.forEach(input => {
-    expect(input.prop("type")).toStrictEqual("text")
-    expect(input.hasClass("react-pin-field__input")).toStrictEqual(true)
-    expect(input.prop("autoFocus")).toStrictEqual(false)
-    expect(typeof input.prop("onFocus")).toStrictEqual("function")
-    expect(typeof input.prop("onKeyDown")).toStrictEqual("function")
-    expect(typeof input.prop("onPaste")).toStrictEqual("function")
-    expect(input.prop("maxLength")).toStrictEqual(1)
+  inputs.forEach((input, idx) => {
+    expect(input.prop("type")).toBe("text")
+    expect(input.hasClass("a-reactPinField__input")).toBe(true)
+    expect(input.hasClass(`-${idx}`)).toBe(true)
+    expect(input.prop("autoFocus")).toBe(false)
+    expect(typeof input.prop("onFocus")).toBe("function")
+    expect(typeof input.prop("onKeyDown")).toBe("function")
+    expect(typeof input.prop("onPaste")).toBe("function")
+    expect(input.prop("maxLength")).toBe(1)
     expect(input.prop("style")).toEqual({})
   })
+})
+
+test("ref", () => {
+  const ref = React.createRef<HTMLInputElement[]>()
+  mount(<PinField ref={ref} autoFocus />)
+
+  expect(Array.isArray(ref.current)).toBe(true)
+  expect(ref.current).toHaveLength(5)
 })
 
 test("autoFocus", () => {
@@ -26,7 +35,8 @@ test("autoFocus", () => {
   const inputs = wrapper.find("input")
 
   inputs.forEach((input, idx) => {
-    expect(input.prop("autoFocus")).toStrictEqual(idx === 0)
+    expect(input.prop("autoFocus")).toBe(idx === 0)
+    expect(input.hasClass("-focus")).toBe(idx === 0)
   })
 })
 
@@ -35,8 +45,8 @@ test("className", () => {
   const inputs = wrapper.find("input")
 
   inputs.forEach(input => {
-    expect(input.hasClass("react-pin-field__input")).toStrictEqual(true)
-    expect(input.hasClass("custom-class-name")).toStrictEqual(true)
+    expect(input.hasClass("a-reactPinField__input")).toBe(true)
+    expect(input.hasClass("custom-class-name")).toBe(true)
   })
 })
 

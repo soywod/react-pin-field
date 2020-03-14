@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useRef} from "react"
+import React, {FC, forwardRef, useCallback, useRef} from "react"
 import classNames from "classnames"
 import noop from "lodash/fp/noop"
 import omit from "lodash/fp/omit"
@@ -23,6 +23,7 @@ export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onCompl
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]
 
 export const defaultProps: DefaultProps = {
+  ref: {current: []},
   className: "",
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
@@ -134,8 +135,10 @@ export function apply(state: State, action: Action): [State, Effect[]] {
       return [{...state, focusIdx: nextFocusIdx}, effects]
     }
 
-    case "focus-input":
-      return [{...state, focusIdx: action.idx}, NO_EFFECT]
+    case "focus-input": {
+      const effects: Effect[] = [{type: "focus-input", idx: action.idx}]
+      return [{...state, focusIdx: action.idx}, effects]
+    }
 
     case "mark-code-as-completed":
       return [{...state, codeCompleted: true}, NO_EFFECT]
@@ -151,37 +154,39 @@ export function useNotifier({refs, ...props}: NotifierProps) {
       switch (eff.type) {
         case "focus-input":
           refs.current[eff.idx].focus()
+          refs.current.forEach(input => input.classList.remove("-focus"))
+          refs.current[eff.idx].classList.add("-focus")
           break
 
         case "set-input-val": {
           const val = props.format(eff.val)
           refs.current[eff.idx].value = val
-          if (val === "") refs.current[eff.idx].classList.remove("react-pin-field__input--success")
+          if (val === "") refs.current[eff.idx].classList.remove("-success")
           break
         }
 
         case "resolve-key":
-          refs.current[eff.idx].classList.remove("react-pin-field__input--error")
-          refs.current[eff.idx].classList.add("react-pin-field__input--success")
+          refs.current[eff.idx].classList.remove("-error")
+          refs.current[eff.idx].classList.add("-success")
           props.onResolveKey(eff.key, refs.current[eff.idx])
           break
 
         case "reject-key":
           refs.current[eff.idx].value = ""
-          refs.current[eff.idx].classList.remove("react-pin-field__input--success")
-          refs.current[eff.idx].classList.add("react-pin-field__input--error")
+          refs.current[eff.idx].classList.remove("-success")
+          refs.current[eff.idx].classList.add("-error")
           props.onRejectKey(eff.key, refs.current[eff.idx])
           break
 
         case "handle-backspace": {
           const prevVal = refs.current[eff.idx].value
-          refs.current[eff.idx].classList.remove("react-pin-field__input--success")
+          refs.current[eff.idx].classList.remove("-error", "-success")
           refs.current[eff.idx].value = ""
 
           if (!prevVal) {
             const prevIdx = getPrevFocusIdx(eff.idx)
             refs.current[prevIdx].focus()
-            refs.current[prevIdx].classList.remove("react-pin-field__input--success")
+            refs.current[prevIdx].classList.remove("-error", "-success")
             refs.current[prevIdx].value = ""
           }
           break
@@ -207,7 +212,7 @@ export function useNotifier({refs, ...props}: NotifierProps) {
   )
 }
 
-export const PinField: FC<Props> = userProps => {
+export const PinField: FC<Props> = forwardRef((userProps, userRef) => {
   const props: DefaultProps & InputProps = {...defaultProps, ...userProps}
   const {autoFocus, className, length: codeLength, style} = props
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
@@ -215,6 +220,23 @@ export const PinField: FC<Props> = userProps => {
   const model = defaultState(props)
   const notify = useNotifier({refs, ...props})
   const dispatch = useMVU(model, apply, notify)
+
+  function setRefAtIndex(idx: number) {
+    return (ref: HTMLInputElement) => {
+      if (ref) {
+        refs.current[idx] = ref
+      }
+
+      if (userRef && idx === codeLength - 1) {
+        if (typeof userRef === "function") {
+          userRef(refs.current)
+        } else {
+          // @ts-ignore
+          userRef.current = refs.current
+        }
+      }
+    }
+  }
 
   function handleFocus(idx: number) {
     return () => dispatch({type: "focus-input", idx})
@@ -243,6 +265,10 @@ export const PinField: FC<Props> = userProps => {
     dispatch({type: "handle-paste", val: evt.clipboardData.getData("Text")})
   }
 
+  function hasAutoFocus(idx: number) {
+    return Boolean(idx === 0 && autoFocus)
+  }
+
   return (
     <>
       {range(0, codeLength).map(idx => (
@@ -250,9 +276,11 @@ export const PinField: FC<Props> = userProps => {
           type="text"
           {...inputProps}
           key={idx}
-          ref={ref => ref && (refs.current[idx] = ref)}
-          className={classNames("react-pin-field__input", className)}
-          autoFocus={Boolean(idx === 0 && autoFocus)}
+          ref={setRefAtIndex(idx)}
+          className={classNames(className, "a-reactPinField__input", `-${idx}`, {
+            "-focus": hasAutoFocus(idx),
+          })}
+          autoFocus={hasAutoFocus(idx)}
           maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown}
@@ -263,6 +291,6 @@ export const PinField: FC<Props> = userProps => {
       ))}
     </>
   )
-}
+})
 
 export default PinField

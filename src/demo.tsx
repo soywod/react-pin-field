@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react"
+import React, {FC, useRef, useState} from "react"
 import ReactDOM from "react-dom"
 import classNames from "classnames"
 
@@ -8,12 +8,13 @@ const App: FC = () => {
   const [demoCompleted, setDemoCompleted] = useState(false)
   const [code, setCode] = useState("")
   const [completed, setCompleted] = useState(false)
+  const ref = useRef<HTMLInputElement[]>([])
 
   return (
     <>
       <nav className="navbar navbar-dark bg-dark">
         <a className="navbar-brand" href="/">
-          react-pin-field
+          React PIN Field
         </a>
         <ul className="navbar-nav mr-auto" />
         <ul className="navbar-nav">
@@ -32,7 +33,7 @@ const App: FC = () => {
 
       <div className="jumbotron pb-3">
         <div className="container text-center">
-          <h1 className="display-3">react-pin-field</h1>
+          <h1 className="display-3">React PIN Field</h1>
           <p className="lead">A React component for entering PIN codes.</p>
           <code className="bg-light">$ npm install react-pin-field</code>
           <div className="container-a">
@@ -51,11 +52,40 @@ const App: FC = () => {
         <h2 className="display-5 mb-4">Default</h2>
         <PinField data-cy="pin-field" />
 
+        <h2 className="display-5 mt-4">With ref</h2>
+        <p className="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
+        <PinField ref={ref} data-cy="pin-field" />
+        <div>
+          <button onClick={() => ref && ref.current && ref.current[1].focus()}>
+            Focus 2nd input
+          </button>
+          <button
+            onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}
+          >
+            Reset values
+          </button>
+        </div>
+
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-          You can pass a custom className, a custom style, or override the CSS class
-          .react-pin-field__input. You have also access to .react-pin-field__success when a key is
-          resolved and .react-pin-field__input--error when a key is rejected.
+          React pin field follows the{" "}
+          <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention. Each
+          input has a class named <code>a-reactPinField__input</code>, plus:
+          <ul>
+            <li>
+              <code>-{"{index}"}</code> where index is the position of the input. Eg: `-0` for the
+              first input, `-2` for the third etc.
+            </li>
+            <li>
+              <code>-focus</code> when the current input is focused
+            </li>
+            <li>
+              <code>-success</code> when a key is resolved
+            </li>
+            <li>
+              <code>-error</code> when a key is rejected
+            </li>
+          </ul>
         </p>
         <PinField
           style={{

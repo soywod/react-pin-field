@@ -1,69 +1,53 @@
 extends:
-  - react-app
-  - airbnb
-  - airbnb/hooks
-  - prettier
-  - prettier/react
+  - "plugin:react/recommended"
+  - "eslint:recommended"
+  - "plugin:@typescript-eslint/eslint-recommended"
+  - "plugin:@typescript-eslint/recommended"
+  - "prettier"
+  - "prettier/@typescript-eslint"
 
 plugins:
+  - "react"
+  - "react-hooks"
   - "@typescript-eslint"
-  - cypress
-  - jest
-  - prettier
 
 parser: "@typescript-eslint/parser"
+
 parserOptions:
   ecmaVersion: 8
 
 env:
-  browser: true
-  cypress/globals: true
   es6: true
+  browser: true
   jest: true
+  node: true
 
 settings:
+  react:
+    version: detect
   import/resolver:
     node:
-      paths:
-        - src
-      extensions:
-        - .js
-        - .ts
-        - .tsx
+      extensions: [.js, .jsx, .ts, .tsx]
 
 rules:
-  class-methods-use-this: 0
-  consistent-return: 0
-  import/no-extraneous-dependencies:
-    - error
-    - devDependencies:
-      - "**/*.spec.ts{,x}"
-      - "**/*.test.ts{,x}"
-      - "**/*.e2e.ts{,x}"
-      - cypress/**/*.js
-  import/prefer-default-export: 0
-  jsx-a11y/label-has-associated-control: 0
-  jsx-a11y/no-autofocus: 0
-  max-classes-per-file: 0
+  prefer-const: 0
   no-console: 0
-  no-empty-function: 0
-  no-param-reassign: 0
-  no-return-assign: 0
-  no-shadow: 0
-  no-underscore-dangle: 0
-  no-use-before-define: 0
-  no-useless-constructor: 0
-  prefer-template: 0
-  prettier/prettier: error
   react-hooks/exhaustive-deps: warn
   react-hooks/rules-of-hooks: error
-  react/destructuring-assignment: 0
-  react/jsx-filename-extension:
-    - 1
-    - extensions:
-      - .tsx
-  react/jsx-one-expression-per-line: 0
-  react/jsx-props-no-spreading: 0
-  react/no-danger: 0
-  react/prop-types: 0
-  space-in-brackets: 0
+  react/display-name: off
+  react/prop-types: off
+  "@typescript-eslint/ban-ts-ignore": off
+  "@typescript-eslint/array-type": off
+  "@typescript-eslint/explicit-function-return-type": off
+  "@typescript-eslint/no-explicit-any": off
+  "@typescript-eslint/no-non-null-assertion": off
+  "@typescript-eslint/no-object-literal-type-assertion": off
+  "@typescript-eslint/no-use-before-define": off
+  "@typescript-eslint/prefer-interface": off
+  "@typescript-eslint/no-unused-vars":
+    - error
+    -
+      vars: all
+      args: after-used
+      ignoreRestSiblings: true
+      varsIgnorePattern: ^_

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle clipboard paste [#11]
 - Unit tests with Jest + Enzyme [#2]
 - Right-to-left support [#9]
+- Add ref support [#14]
 
 ### Fixed
 
@@ -26,3 +27,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#3]: https://github.com/unfog-io/unfog-cli/issues/3
 [#9]: https://github.com/unfog-io/unfog-cli/issues/9
 [#11]: https://github.com/unfog-io/unfog-cli/issues/11
+[#14]: https://github.com/unfog-io/unfog-cli/issues/14

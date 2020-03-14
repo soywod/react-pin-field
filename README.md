@@ -1,4 +1,4 @@
-# react-pin-field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field)
+# React PIN Field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field)
 
 A React component for entering PIN codes.
 
@@ -24,6 +24,7 @@ import PinField from "react-pin-field"
 
 ```typescript
 type PinFieldProps = {
+  ref?: React.Ref<HTMLInputElement[]>
   className?: string
   length?: number
   validate?: string | string[] | RegExp | ((key: string) => boolean)
@@ -36,6 +37,7 @@ type PinFieldProps = {
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 const defaultProps = {
+  ref: {current: []},
   className: "",
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
@@ -48,12 +50,31 @@ const defaultProps = {
 }
 ```
 
+### Ref
+
+You can control each inputs with the pin field ref:
+
+```typescript
+<PinField ref={ref} data-cy="pin-field" />
+
+// To reset the pin field
+ref.current.forEach(input => (input.value = ""))
+
+// To focus one particular input
+ref.current[2].focus()
+```
+
 ### Style
 
-You can pass a custom `className`, a custom `style`, or override the CSS class
-`.react-pin-field__input`. You have also access to `.react-pin-field__success`
-when a key is resolved and `.react-pin-field__input--error` when a key is
-rejected.
+React pin field follows the [ABEM
+convention](https://css-tricks.com/abem-useful-adaptation-bem/). Each input has a class named `a-reactPinField__input`, plus:
+
+  - `-{index}` where index is the position of the input. Eg: `-0` for the first input, `-2` for the third etc.
+  - `-focus` when the current input is focused.
+  - `-success` when a key is resolved.
+  - `-error` when a key is rejected.
+
+You can also pass a custom `className` or a custom `style`.
 
 ### Length
 
