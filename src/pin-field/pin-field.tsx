@@ -231,7 +231,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
     const key = getKeyFromKeyboardEvent(evt.nativeEvent)
 
-    if (!IGNORED_META_KEYS.includes(key) && !evt.altKey && !evt.ctrlKey) {
+    if (!IGNORED_META_KEYS.includes(key) && !evt.ctrlKey && !evt.altKey && !evt.metaKey) {
       evt.preventDefault()
       dispatch({type: "handle-key-down", key})
     }

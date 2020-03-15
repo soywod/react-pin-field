@@ -21,10 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Base system on evt.key instead of evt.keyCode, to avoid conflicts (uppercase/lowercase, numeric keypad) [#1]
 - Unnecessary re-renders (useMVU)
+- Paste on MacOS [#13]
 
 [#1]: https://github.com/unfog-io/unfog-cli/issues/1
 [#2]: https://github.com/unfog-io/unfog-cli/issues/2
 [#3]: https://github.com/unfog-io/unfog-cli/issues/3
 [#9]: https://github.com/unfog-io/unfog-cli/issues/9
 [#11]: https://github.com/unfog-io/unfog-cli/issues/11
+[#13]: https://github.com/unfog-io/unfog-cli/issues/13
 [#14]: https://github.com/unfog-io/unfog-cli/issues/14
