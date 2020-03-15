@@ -38,7 +38,6 @@ export const defaultProps: DefaultProps = {
 export function defaultState(props: Pick<DefaultProps, "validate" | "length">): State {
   return {
     focusIdx: 0,
-    codeCompleted: false,
     codeLength: props.length,
     isKeyAllowed: isKeyAllowed(props.validate),
   }
@@ -140,9 +139,6 @@ export function apply(state: State, action: Action): [State, Effect[]] {
       return [{...state, focusIdx: action.idx}, effects]
     }
 
-    case "mark-code-as-completed":
-      return [{...state, codeCompleted: true}, NO_EFFECT]
-
     default:
       return [state, NO_EFFECT]
   }
@@ -150,7 +146,7 @@ export function apply(state: State, action: Action): [State, Effect[]] {
 
 export function useNotifier({refs, ...props}: NotifierProps) {
   return useCallback(
-    (eff: Effect, state: State, dispatch: React.Dispatch<Action>) => {
+    (eff: Effect) => {
       switch (eff.type) {
         case "focus-input":
           refs.current[eff.idx].focus()
@@ -195,12 +191,9 @@ export function useNotifier({refs, ...props}: NotifierProps) {
         case "handle-code-change": {
           const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase()
           const codeArr = refs.current.map(r => r.value.trim())
-          const code = dir === "rtl" ? codeArr.reverse().join("") : codeArr.join("")
+          const code = (dir === "rtl" ? codeArr.reverse() : codeArr).join("")
           props.onChange(code)
-          if (!state.codeCompleted && code.length === props.length) {
-            props.onComplete(code)
-            dispatch({type: "mark-code-as-completed"})
-          }
+          code.length === props.length && props.onComplete(code)
           break
         }
 

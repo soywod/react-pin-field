@@ -59,7 +59,6 @@ test("default state", () => {
   const state = defaultState(defaultProps)
 
   expect(state).toHaveProperty("focusIdx", 0)
-  expect(state).toHaveProperty("codeCompleted", false)
   expect(state).toHaveProperty("codeLength", 5)
   expect(state).toHaveProperty("isKeyAllowed")
   expect(typeof state.isKeyAllowed).toStrictEqual("function")
@@ -269,13 +268,6 @@ describe("apply", () => {
     expect(state).toMatchObject({...state, focusIdx: 2})
     expect(eff).toEqual([{type: "focus-input", idx: 2}])
   })
-
-  test("mark-code-as-completed", () => {
-    const [state, eff] = apply(currState, {type: "mark-code-as-completed"})
-
-    expect(state).toMatchObject({...state, codeCompleted: true})
-    expect(eff).toEqual(NO_EFFECT)
-  })
 })
 
 describe("notify", () => {
@@ -311,7 +303,7 @@ describe("notify", () => {
   })
 
   test("focus input", () => {
-    notify({type: "focus-input", idx: 0}, state, noop)
+    notify({type: "focus-input", idx: 0})
 
     expect(inputA.ref.focus).toHaveBeenCalledTimes(1)
     expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1)
@@ -320,7 +312,7 @@ describe("notify", () => {
 
   describe("set input val", () => {
     test("empty char", () => {
-      notify({type: "set-input-val", idx: 0, val: ""}, state, noop)
+      notify({type: "set-input-val", idx: 0, val: ""})
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1)
       expect(inputA.setValMock).toHaveBeenCalledTimes(1)
@@ -330,7 +322,7 @@ describe("notify", () => {
     })
 
     test("non empty char", () => {
-      notify({type: "set-input-val", idx: 0, val: "a"}, state, noop)
+      notify({type: "set-input-val", idx: 0, val: "a"})
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1)
       expect(inputA.setValMock).toHaveBeenCalledTimes(1)
@@ -340,7 +332,7 @@ describe("notify", () => {
   })
 
   test("resolve key", () => {
-    notify({type: "resolve-key", idx: 0, key: "a"}, state, noop)
+    notify({type: "resolve-key", idx: 0, key: "a"})
 
     expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
     expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error")
@@ -351,7 +343,7 @@ describe("notify", () => {
   })
 
   test("reject key", () => {
-    notify({type: "reject-key", idx: 0, key: "a"}, state, noop)
+    notify({type: "reject-key", idx: 0, key: "a"})
 
     expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
     expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-success")
@@ -363,7 +355,7 @@ describe("notify", () => {
 
   describe("handle backspace", () => {
     test("from input A, not empty val", () => {
-      notify({type: "handle-backspace", idx: 0}, state, noop)
+      notify({type: "handle-backspace", idx: 0})
 
       expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
@@ -372,7 +364,7 @@ describe("notify", () => {
     })
 
     test("from input B, not empty val", () => {
-      notify({type: "handle-backspace", idx: 1}, state, noop)
+      notify({type: "handle-backspace", idx: 1})
 
       expect(inputB.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
@@ -381,7 +373,7 @@ describe("notify", () => {
     })
 
     test("from input C, empty val", () => {
-      notify({type: "handle-backspace", idx: 2}, state, noop)
+      notify({type: "handle-backspace", idx: 2})
 
       expect(inputC.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputC.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
@@ -396,29 +388,25 @@ describe("notify", () => {
 
   describe("handle-code-change", () => {
     test("code not complete", () => {
-      notify({type: "handle-code-change"}, state, noop)
+      notify({type: "handle-code-change"})
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1)
       expect(propsMock.onChange).toHaveBeenCalledWith("ab")
     })
 
     test("code complete", () => {
-      const dispatchMock = jest.fn()
       const inputA = mockInput("a")
       const inputB = mockInput("b")
       const inputC = mockInput("c")
-      const state = defaultState(defaultProps)
       const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]}
       const notify = useNotifier({...propsMock, refs})
 
-      notify({type: "handle-code-change"}, state, dispatchMock)
+      notify({type: "handle-code-change"})
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1)
       expect(propsMock.onChange).toHaveBeenCalledWith("abc")
       expect(propsMock.onComplete).toHaveBeenCalledTimes(1)
       expect(propsMock.onComplete).toHaveBeenCalledWith("abc")
-      expect(dispatchMock).toHaveBeenCalledTimes(1)
-      expect(dispatchMock).toHaveBeenCalledWith({type: "mark-code-as-completed"})
     })
   })
 })

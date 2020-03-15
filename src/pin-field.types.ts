@@ -24,7 +24,6 @@ export type PinFieldNotifierProps = {
 
 export type PinFieldState = {
   focusIdx: number
-  codeCompleted: boolean
   codeLength: PinFieldDefaultProps["length"]
   isKeyAllowed: (key: string) => boolean
 }
@@ -33,7 +32,6 @@ export type PinFieldAction =
   | {type: "handle-key-down"; key: string}
   | {type: "handle-paste"; val: string}
   | {type: "focus-input"; idx: number}
-  | {type: "mark-code-as-completed"}
 
 export type PinFieldEffect =
   | {type: "focus-input"; idx: number}

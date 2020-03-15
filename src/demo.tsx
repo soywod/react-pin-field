@@ -71,22 +71,22 @@ const App: FC = () => {
           React pin field follows the{" "}
           <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention. Each
           input has a class named <code>a-reactPinField__input</code>, plus:
-          <ul>
-            <li>
-              <code>-{"{index}"}</code> where index is the position of the input. Eg: `-0` for the
-              first input, `-2` for the third etc.
-            </li>
-            <li>
-              <code>-focus</code> when the current input is focused
-            </li>
-            <li>
-              <code>-success</code> when a key is resolved
-            </li>
-            <li>
-              <code>-error</code> when a key is rejected
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li>
+            <code>-{"{index}"}</code> where index is the position of the input. Eg: <code>-0</code>{" "}
+            for the first input, <code>-2</code> for the third etc.
+          </li>
+          <li>
+            <code>-focus</code> when the current input is focused
+          </li>
+          <li>
+            <code>-success</code> when a key is resolved
+          </li>
+          <li>
+            <code>-error</code> when a key is rejected
+          </li>
+        </ul>
         <PinField
           style={{
             width: 50,
