@@ -1,4 +1,4 @@
-import React, {createRef} from "react"
+import React from "react"
 import {shallow, mount} from "enzyme"
 import noop from "lodash/fp/noop"
 
@@ -22,9 +22,17 @@ test("structure", () => {
   })
 })
 
-test("ref", () => {
-  const ref = createRef<HTMLInputElement[]>()
-  mount(<PinField ref={ref} autoFocus />)
+test("ref as object", () => {
+  const ref: {current: HTMLInputElement[] | null} = {current: []}
+  mount(<PinField ref={ref} />)
+
+  expect(Array.isArray(ref.current)).toBe(true)
+  expect(ref.current).toHaveLength(5)
+})
+
+test("ref as func", () => {
+  const ref: {current: HTMLInputElement[] | null} = {current: []}
+  mount(<PinField ref={el => (ref.current = el)} />)
 
   expect(Array.isArray(ref.current)).toBe(true)
   expect(ref.current).toHaveLength(5)

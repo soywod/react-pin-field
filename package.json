@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": false,
   "keywords": [
     "react",
@@ -21,19 +21,14 @@
   "bugs": {
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
-  "files": [
-    "lib/index.js",
-    "lib/index.d.ts",
-    "lib/mvu.js",
-    "lib/mvu.d.ts",
-    "lib/mvu.types.d.ts",
-    "lib/kb-event.js",
-    "lib/kb-event.d.ts",
-    "lib/pin-field.js",
-    "lib/pin-field.d.ts",
-    "lib/pin-field.types.d.ts"
-  ],
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/index.{js|d.ts}",
+    "lib/mvu/*.{js|d.ts}",
+    "lib/kb-event/*.{js|d.ts}",
+    "lib/pin-field/*.{js|d.ts}"
+  ],
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint",
@@ -82,9 +77,9 @@
     "lodash": "^4.17.15"
   },
   "scripts": {
-    "start": "parcel serve -p 3000 src/index.html",
+    "start": "parcel serve -d lib -p 3000 src/demo/index.html",
     "build": "tsc",
-    "build:demo": "parcel build src/index.html",
+    "build:demo": "parcel build -d lib src/demo/index.html",
     "lint": "eslint src/**/*.ts{,x}",
     "test:unit": "jest",
     "test:e2e": "cypress run",

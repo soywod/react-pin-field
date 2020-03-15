@@ -1,11 +1,11 @@
-import React, {FC, forwardRef, useCallback, useRef} from "react"
+import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react"
 import classNames from "classnames"
 import noop from "lodash/fp/noop"
 import omit from "lodash/fp/omit"
 import range from "lodash/fp/range"
 
-import useMVU from "./mvu"
-import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "./kb-event"
+import useMVU from "../mvu"
+import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "../kb-event"
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -205,8 +205,8 @@ export function useNotifier({refs, ...props}: NotifierProps) {
   )
 }
 
-export const PinField: FC<Props> = forwardRef((userProps, userRef) => {
-  const props: DefaultProps & InputProps = {...defaultProps, ...userProps}
+export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
+  const props: DefaultProps & InputProps = {...defaultProps, ...customProps}
   const {autoFocus, className, length: codeLength, style} = props
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props)
   const refs = useRef<HTMLInputElement[]>([])
@@ -214,19 +214,12 @@ export const PinField: FC<Props> = forwardRef((userProps, userRef) => {
   const notify = useNotifier({refs, ...props})
   const dispatch = useMVU(model, apply, notify)
 
+  useImperativeHandle(fwdRef, () => refs.current, [refs])
+
   function setRefAtIndex(idx: number) {
     return (ref: HTMLInputElement) => {
       if (ref) {
         refs.current[idx] = ref
-      }
-
-      if (userRef && idx === codeLength - 1) {
-        if (typeof userRef === "function") {
-          userRef(refs.current)
-        } else {
-          // @ts-ignore
-          userRef.current = refs.current
-        }
       }
     }
   }

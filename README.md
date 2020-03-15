@@ -119,16 +119,16 @@ To start the development server:
 yarn start
 ```
 
+To build the lib:
+
+```bash
+yarn build
+```
+
 To build the demo:
 
 ```bash
 yarn build:demo
-```
-
-To build the lib:
-
-```bash
-yarn build:lib
 ```
 
 ## Tests

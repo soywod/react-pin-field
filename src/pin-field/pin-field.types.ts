@@ -4,7 +4,7 @@ export type PinFieldInputProps = Omit<
 >
 
 export type PinFieldDefaultProps = {
-  ref: React.Ref<HTMLInputElement[]>
+  ref: React.Ref<HTMLInputElement[] | null>
   className: string
   length: number
   validate: string | string[] | RegExp | ((key: string) => boolean)
