@@ -54,7 +54,7 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-4">With ref</h2>
         <p className="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
-        <PinField ref={ref} data-cy="pin-field" />
+        <PinField ref={ref} />
         <div>
           <button onClick={() => ref && ref.current && ref.current[1].focus()}>
             Focus 2nd input

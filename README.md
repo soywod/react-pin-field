@@ -52,12 +52,12 @@ const defaultProps = {
 
 ### Ref
 
-You can control each inputs with the pin field ref:
+You can control each inputs with the PIN field ref:
 
 ```typescript
-<PinField ref={ref} data-cy="pin-field" />
+<PinField ref={ref} />
 
-// To reset the pin field
+// To reset the PIN field
 ref.current.forEach(input => (input.value = ""))
 
 // To focus one particular input
@@ -66,7 +66,7 @@ ref.current[2].focus()
 
 ### Style
 
-React pin field follows the [ABEM
+React PIN field follows the [ABEM
 convention](https://css-tricks.com/abem-useful-adaptation-bem/). Each input has a class named `a-reactPinField__input`, plus:
 
   - `-{index}` where index is the position of the input. Eg: `-0` for the first input, `-2` for the third etc.
