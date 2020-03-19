@@ -33,9 +33,23 @@ const App: FC = () => {
 
       <div className="jumbotron pb-3">
         <div className="container text-center">
-          <h1 className="display-3">React PIN Field</h1>
+          <h1 className="display-3">📟 React PIN Field</h1>
           <p className="lead">A React component for entering PIN codes.</p>
-          <code className="bg-light">$ npm install react-pin-field</code>
+          <div className="mb-4">
+            <a className="mr-2" href="https://travis-ci.org/soywod/react-pin-field">
+              <img src="https://travis-ci.org/soywod/react-pin-field.svg?branch=master" alt="" />
+            </a>
+            <a className="mr-2" href="https://codecov.io/gh/soywod/react-pin-field">
+              <img
+                src="https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg"
+                alt=""
+              />
+            </a>
+            <a className="mr-2" href="https://www.npmjs.com/package/react-pin-field">
+              <img src="https://img.shields.io/npm/v/react-pin-field?label=npm" alt="" />
+            </a>
+            <kbd>$ yarn add react-pin-field</kbd>
+          </div>
           <div className="container-a">
             <PinField
               className={classNames("field-a", {"field-a-complete": demoCompleted})}

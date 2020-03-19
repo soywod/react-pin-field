@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2020-03-19
+
+### Changed
+
+- Add npm version badge and missing icons in docs
+- Remove test files from npm pack
+
 ## [1.0.0] - 2020-03-15
 
 ### Added
@@ -25,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/unfog-io/unfog-cli/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/unfog-io/unfog-cli/releases/tag/v1.0.0
 
 [#1]: https://github.com/unfog-io/unfog-cli/issues/1

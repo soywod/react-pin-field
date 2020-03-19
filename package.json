@@ -3,7 +3,7 @@
   "description": "A React component for entering PIN codes.",
   "author": "Clément DOUIN <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "keywords": [
     "react",
@@ -24,10 +24,11 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/index.{js|d.ts}",
-    "lib/mvu/*.{js|d.ts}",
-    "lib/kb-event/*.{js|d.ts}",
-    "lib/pin-field/*.{js|d.ts}"
+    "lib/pin-field/pin-field.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
+    "lib/mvu/mvu.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
+    "lib/kb-event/kb-event.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
+    "lib/**/index.{js|js.map|d.ts}",
+    "lib/index.{js|js.map|d.ts}"
   ],
   "husky": {
     "hooks": {
@@ -77,9 +78,9 @@
     "lodash": "^4.17.15"
   },
   "scripts": {
-    "start": "parcel serve -d lib -p 3000 src/demo/index.html",
+    "start": "parcel serve -d lib -p 3000 src/_demo/index.html",
     "build": "tsc",
-    "build:demo": "parcel build -d lib src/demo/index.html",
+    "build:demo": "parcel build -d lib src/_demo/index.html",
     "lint": "eslint src/**/*.ts{,x}",
     "test:unit": "jest",
     "test:e2e": "cypress run",
