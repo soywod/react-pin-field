@@ -38,5 +38,5 @@ export type PinFieldEffect =
   | {type: "set-input-val"; idx: number; val: string}
   | {type: "resolve-key"; idx: number; key: string}
   | {type: "reject-key"; idx: number; key: string}
-  | {type: "handle-backspace"; idx: number}
+  | {type: "handle-delete"; idx: number}
   | {type: "handle-code-change"}

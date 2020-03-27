@@ -89,9 +89,10 @@ export function apply(state: State, action: Action): [State, Effect[]] {
           return [{...state, focusIdx: nextFocusIdx}, effects]
         }
 
+        case "Delete":
         case "Backspace": {
           const effects: Effect[] = [
-            {type: "handle-backspace", idx: state.focusIdx},
+            {type: "handle-delete", idx: state.focusIdx},
             {type: "handle-code-change"},
           ]
           return [state, effects]
@@ -174,7 +175,7 @@ export function useNotifier({refs, ...props}: NotifierProps) {
           props.onRejectKey(eff.key, refs.current[eff.idx])
           break
 
-        case "handle-backspace": {
+        case "handle-delete": {
           const prevVal = refs.current[eff.idx].value
           refs.current[eff.idx].classList.remove("-error", "-success")
           refs.current[eff.idx].value = ""

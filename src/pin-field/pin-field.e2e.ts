@@ -111,8 +111,8 @@ describe("Pin field", () => {
       .should("not.have.class", "-success")
   })
 
-  it("should remove chars on backspace", () => {
-    cy.get(nthInput(1)).type("abc{backspace}{backspace}defg{backspace}")
+  it("should remove chars on backspace or delete", () => {
+    cy.get(nthInput(1)).type("abc{backspace}{del}defg{backspace}")
 
     cy.get(nthInput(1))
       .should("not.be.focused")

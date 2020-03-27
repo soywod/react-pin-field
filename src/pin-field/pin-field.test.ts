@@ -200,7 +200,14 @@ describe("apply", () => {
       const [state, eff] = apply(currState, {type: "handle-key-down", key: "Backspace"})
 
       expect(state).toMatchObject({...state, focusIdx: 0})
-      expect(eff).toEqual([{type: "handle-backspace", idx: 0}, {type: "handle-code-change"}])
+      expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}])
+    })
+
+    test("delete", () => {
+      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Delete"})
+
+      expect(state).toMatchObject({...state, focusIdx: 0})
+      expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}])
     })
 
     describe("default", () => {
@@ -355,7 +362,7 @@ describe("notify", () => {
 
   describe("handle backspace", () => {
     test("from input A, not empty val", () => {
-      notify({type: "handle-backspace", idx: 0})
+      notify({type: "handle-delete", idx: 0})
 
       expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
@@ -364,7 +371,7 @@ describe("notify", () => {
     })
 
     test("from input B, not empty val", () => {
-      notify({type: "handle-backspace", idx: 1})
+      notify({type: "handle-delete", idx: 1})
 
       expect(inputB.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
@@ -373,7 +380,7 @@ describe("notify", () => {
     })
 
     test("from input C, empty val", () => {
-      notify({type: "handle-backspace", idx: 2})
+      notify({type: "handle-delete", idx: 2})
 
       expect(inputC.ref.classList.remove).toHaveBeenCalledTimes(1)
       expect(inputC.ref.classList.remove).toHaveBeenCalledWith("-error", "-success")
