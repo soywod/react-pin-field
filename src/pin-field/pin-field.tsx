@@ -169,7 +169,6 @@ export function useNotifier({refs, ...props}: NotifierProps) {
           break
 
         case "reject-key":
-          refs.current[eff.idx].value = ""
           refs.current[eff.idx].classList.remove("-success")
           refs.current[eff.idx].classList.add("-error")
           props.onRejectKey(eff.key, refs.current[eff.idx])

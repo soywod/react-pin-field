@@ -77,7 +77,7 @@ describe("Pin field", () => {
   })
 
   it("should not focus next input on denied entry", () => {
-    cy.get(nthInput(1)).type("ab-_*c=d$|")
+    cy.get(nthInput(1)).type("ab-_*c=d{leftArrow}$|")
 
     cy.get(nthInput(1))
       .should("not.be.focused")
@@ -98,16 +98,16 @@ describe("Pin field", () => {
       .should("not.have.class", "-error")
       .should("have.class", "-success")
     cy.get(nthInput(4))
-      .should("not.be.focused")
-      .should("have.value", "d")
-      .should("not.have.class", "-focus")
-      .should("not.have.class", "-error")
-      .should("have.class", "-success")
-    cy.get(nthInput(5))
       .should("be.focused")
-      .should("have.value", "")
+      .should("have.value", "d")
       .should("have.class", "-focus")
       .should("have.class", "-error")
+      .should("not.have.class", "-success")
+    cy.get(nthInput(5))
+      .should("not.be.focused")
+      .should("have.value", "")
+      .should("not.have.class", "-focus")
+      .should("not.have.class", "-error")
       .should("not.have.class", "-success")
   })
 
