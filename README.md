@@ -1,6 +1,6 @@
-# 📟 React PIN Field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field) [![ko-fi](https://img.shields.io/badge/ko--fi-Buy%20me%20a%20coffee!-red)](https://ko-fi.com/soywod#linkModal)
+# 📟 React PIN Field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
 
-A React component for entering PIN codes.
+React component for entering PIN codes.
 
 ![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
 
@@ -151,12 +151,3 @@ files).
 yarn start
 yarn test:e2e
 ```
-
-## Changelog
-
-See [CHANGELOG.md](https://github.com/soywod/react-pin-field/blob/master/CHANGELOG.md)
-
-## License
-
-[MIT](https://github.com/soywod/react-pin-field/blob/master/LICENSE) -
-Copyright (c) 2019 Clément DOUIN
