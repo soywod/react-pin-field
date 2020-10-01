@@ -1,8 +1,5 @@
 import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react"
 import classNames from "classnames"
-import noop from "lodash/fp/noop"
-import omit from "lodash/fp/omit"
-import range from "lodash/fp/range"
 
 import useMVU from "../mvu"
 import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "../kb-event"
@@ -16,6 +13,17 @@ import {
   PinFieldAction as Action,
   PinFieldEffect as Effect,
 } from "./pin-field.types"
+
+const noop = () => undefined
+const range = (start: number, end: number) => Array.from({length: end}, (_, i) => i + start)
+const omit = (keys: string[], obj: Record<string, any>): Record<string, any> => {
+  const poppedKey = keys.pop()
+  if (!poppedKey) {
+    return obj
+  }
+  const {[poppedKey]: omitted, ...rest} = obj
+  return omit(keys, rest)
+}
 
 export const NO_EFFECT: Effect[] = []
 export const PROP_KEYS = ["autoFocus", "className", "length", "validate", "format", "style"]
