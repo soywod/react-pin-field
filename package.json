@@ -67,15 +67,15 @@
     "ts-loader": "^6.2.1",
     "typescript": "3.7.2",
     "webpack": "^4.41.3",
-    "yarn-run-all": "^3.1.1"
+    "yarn-run-all": "^3.1.1",
+    "lodash": "^4.17.15"
   },
   "peerDependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
   "dependencies": {
-    "classnames": "^2.2.6",
-    "lodash": "^4.17.15"
+    "classnames": "^2.2.6"
   },
   "scripts": {
     "start": "parcel serve -d lib -p 3000 src/_demo/index.html",
