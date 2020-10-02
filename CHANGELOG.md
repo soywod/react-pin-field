@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2020-10-02
+
+### Removed
+
+- lodash deps
+
 ## [1.0.4] - 2020-08-20
 
 ### Fixed
@@ -50,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.0.4...HEAD
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/unfog-io/unfog-cli/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/unfog-io/unfog-cli/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/unfog-io/unfog-cli/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/unfog-io/unfog-cli/compare/v1.0.1...v1.0.2
