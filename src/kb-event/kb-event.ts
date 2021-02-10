@@ -73,43 +73,41 @@ const keyMap: {[key: number]: string | string[]} = {
   249: "EraseEof",
   250: "Play",
   251: "ZoomOut",
-}
+};
 
 // Function keys (F1-24).
-let i: number
+let i: number;
 for (i = 1; i < 25; i += 1) {
-  keyMap[111 + i] = "F" + i
+  keyMap[111 + i] = "F" + i;
 }
 
 // Printable ASCII characters.
-let letter = ""
+let letter = "";
 for (i = 65; i < 91; i += 1) {
-  letter = String.fromCharCode(i)
-  keyMap[i] = [letter.toLowerCase(), letter.toUpperCase()]
+  letter = String.fromCharCode(i);
+  keyMap[i] = [letter.toLowerCase(), letter.toUpperCase()];
 }
 
 // Numbers on numeric keyboard.
 for (i = 96; i < 106; i += 1) {
-  letter = String.fromCharCode(i - 48)
-  keyMap[i] = letter
+  letter = String.fromCharCode(i - 48);
+  keyMap[i] = letter;
 }
 
 export function getKeyFromKeyboardEvent(evt: KeyboardEvent) {
   if (evt.key && evt.key !== "Unidentified") {
-    return evt.key
+    return evt.key;
   }
 
-  const key = keyMap[evt.which || evt.keyCode] || "Unidentified"
+  const key = keyMap[evt.which || evt.keyCode] || "Unidentified";
 
   if (Array.isArray(key)) {
-    return key[+(evt.shiftKey || 0)]
+    return key[+(evt.shiftKey || 0)];
   }
 
-  return key
+  return key;
 }
 
 export function getKeyFromInputEvent(evt: InputEvent) {
-  return evt.data || "Unidentified"
+  return evt.data || "Unidentified";
 }
-
-export default {getKeyFromKeyboardEvent, getKeyFromInputEvent}

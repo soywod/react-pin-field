@@ -1,5 +1,5 @@
-const path = require("path")
-const webpack = require("@cypress/webpack-preprocessor")
+const path = require("path");
+const webpack = require("@cypress/webpack-preprocessor");
 
 const webpackOptions = {
   entry: "./src/index.ts",
@@ -19,13 +19,13 @@ const webpackOptions = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
-}
+};
 
 module.exports = on => {
   const options = {
     webpackOptions,
     watchOptions: {},
-  }
+  };
 
-  on("file:preprocessor", webpack(options))
-}
+  on("file:preprocessor", webpack(options));
+};

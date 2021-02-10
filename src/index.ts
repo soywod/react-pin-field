@@ -1,19 +1,2 @@
-import {
-  PinField,
-  PinFieldDefaultProps,
-  PinFieldProps,
-  PinFieldState,
-  PinFieldAction,
-  PinFieldEffect,
-} from "./pin-field"
-
-export {
-  PinField,
-  PinFieldDefaultProps,
-  PinFieldProps,
-  PinFieldState,
-  PinFieldAction,
-  PinFieldEffect,
-}
-
-export default PinField
+export * from "./pin-field";
+export {PinField as default} from "./pin-field";
