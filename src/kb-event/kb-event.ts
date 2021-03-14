@@ -107,7 +107,3 @@ export function getKeyFromKeyboardEvent(evt: KeyboardEvent) {
 
   return key;
 }
-
-export function getKeyFromInputEvent(evt: InputEvent) {
-  return evt.data || "Unidentified";
-}

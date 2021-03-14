@@ -1,6 +1,6 @@
 import React, {FC, useRef, useState} from "react";
 import ReactDOM from "react-dom";
-import classNames from "classnames";
+import cn from "classnames";
 
 import PinField from "..";
 
@@ -47,9 +47,9 @@ const App: FC = () => {
             </a>
             <kbd>$ yarn add react-pin-field</kbd>
           </div>
-          <div className="container-a">
+          <div className="pin-field-container">
             <PinField
-              className={classNames("field-a", {"field-a-complete": demoCompleted})}
+              className={cn("pin-field", {complete: demoCompleted})}
               onComplete={() => setDemoCompleted(true)}
               format={k => k.toUpperCase()}
               autoFocus
@@ -61,11 +61,15 @@ const App: FC = () => {
 
       <div className="container mb-5">
         <h2 className="display-5 mb-4">Default</h2>
-        <PinField data-cy="pin-field" />
+        <div>
+          <PinField data-cy="pin-field" />
+        </div>
 
         <h2 className="display-5 mt-4">With ref</h2>
         <p className="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
-        <PinField ref={ref} />
+        <div>
+          <PinField ref={ref} />
+        </div>
         <div>
           <button onClick={() => ref && ref.current && ref.current[1].focus()}>Focus 2nd input</button>
           <button onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}>
@@ -75,7 +79,7 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-          React pin field follows the <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention.
+          React PIN Field follows the <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention.
           Each input has a class named <code>a-reactPinField__input</code>, plus:
         </p>
         <ul>
@@ -93,28 +97,24 @@ const App: FC = () => {
             <code>-error</code> when a key is rejected
           </li>
         </ul>
-        <PinField
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: "50%",
-            border: "1px solid gray",
-            outline: "none",
-            textAlign: "center",
-            margin: 10,
-          }}
-        />
+        <div>
+          <PinField className="pin-field" />
+        </div>
 
         <h2 className="display-5 mt-5">With custom length</h2>
         <p className="mb-4 text-muted">You can set the number of chars with the length prop. Default set to 5 chars.</p>
-        <PinField className="field-a" length={3} />
+        <div>
+          <PinField className="pin-field" length={3} />
+        </div>
 
         <h2 className="display-5 mt-5">With custom validation</h2>
         <p className="mb-4 text-muted">
           You can restrict input with a string of allowed chars, or a regex, or a function.
         </p>
         <p>Only numbers:</p>
-        <PinField className="field-a" validate="0123456789" />
+        <div>
+          <PinField className="pin-field" validate="0123456789" inputMode="numeric" />
+        </div>
 
         <h2 className="display-5 mt-5">With custom events</h2>
         <ul className="mb-4 text-muted">
@@ -123,18 +123,22 @@ const App: FC = () => {
           <li>onResolveKey: when receive a good key</li>
           <li>onRejectKey: when receive a bad key</li>
         </ul>
-        <PinField
-          className="field-a"
-          onChange={setCode}
-          onComplete={() => setCompleted(true)}
-          format={k => k.toUpperCase()}
-        />
+        <div>
+          <PinField
+            className="pin-field"
+            onChange={setCode}
+            onComplete={() => setCompleted(true)}
+            format={k => k.toUpperCase()}
+          />
+        </div>
         <div>Current code: {code}</div>
         <div>Completed: {String(completed)}</div>
 
         <h2 className="display-5 mt-5">With custom InputHTMLAttributes</h2>
         <p className="mb-4 text-muted">Props inherit from InputHTMLAttributes. For eg. with a password type prop:</p>
-        <PinField className="field-a" type="password" />
+        <div>
+          <PinField className="pin-field" type="password" />
+        </div>
       </div>
     </>
   );

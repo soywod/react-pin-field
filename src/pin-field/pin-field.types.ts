@@ -2,7 +2,6 @@ export type PinFieldInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement
 
 export type PinFieldDefaultProps = {
   ref: React.Ref<HTMLInputElement[] | null>;
-  className: string;
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
@@ -10,7 +9,6 @@ export type PinFieldDefaultProps = {
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
   onChange: (code: string) => void;
   onComplete: (code: string) => void;
-  style: React.CSSProperties;
 };
 
 export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;
@@ -23,11 +21,13 @@ export type PinFieldState = {
   focusIdx: number;
   codeLength: PinFieldDefaultProps["length"];
   isKeyAllowed: (key: string) => boolean;
+  fallback: {idx: number; val: string} | null;
 };
 
 export type PinFieldAction =
-  | {type: "handle-key-down"; key: string}
-  | {type: "handle-paste"; val: string}
+  | {type: "handle-key-down"; key: string; idx: number; val: string}
+  | {type: "handle-key-up"; idx: number; val: string}
+  | {type: "handle-paste"; idx: number; val: string}
   | {type: "focus-input"; idx: number};
 
 export type PinFieldEffect =
