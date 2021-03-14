@@ -1,4 +1,4 @@
-import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "./kb-event";
+import {getKeyFromKeyboardEvent} from "./kb-event";
 
 test("getKeyFromKeyboardEvent", () => {
   const cases = [
@@ -11,16 +11,5 @@ test("getKeyFromKeyboardEvent", () => {
   cases.forEach(([opts, expected]) => {
     const evt = new KeyboardEvent("keydown", opts);
     expect(getKeyFromKeyboardEvent(evt)).toEqual(expected);
-  });
-});
-
-test("getKeyFromInputEvent", () => {
-  const cases = [
-    [{}, "Unidentified"],
-    [{data: "a"}, "a"],
-  ];
-
-  cases.forEach(([evt, expected]) => {
-    expect(getKeyFromInputEvent(evt as InputEvent)).toEqual(expected);
   });
 });

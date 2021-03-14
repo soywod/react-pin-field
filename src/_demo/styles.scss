@@ -2,48 +2,83 @@ $black: #333333;
 $blue: #686de0;
 $gray: #d3d3d3;
 $green: #6ab04c;
+$red: #dc3545;
 $white: #ffffff;
 
 code {
-  padding: 5px 10px;
   display: inline-block;
+  padding: 0.25rem 0.5rem;
 }
 
-.container-a {
+.pin-field-container {
   display: grid;
-  grid-auto-flow: column;
   grid-auto-columns: max-content;
-  grid-column-gap: 10px;
+  grid-auto-flow: column;
   justify-content: center;
-  margin: 64px 0;
+  margin: 4rem 0;
 }
 
-.field-a {
-  width: 75px;
-  height: 75px;
-  font-size: 40px;
-  text-align: center;
-  outline: none;
-  border-radius: 5px;
+.pin-field {
   border: 1px solid $gray;
-  transition-property: color, border, box-shadow, transform;
+  border-right: none;
+  font-size: 2rem;
+  height: 4rem;
+  outline: none;
+  text-align: center;
   transition-duration: 250ms;
+  transition-property: color, border, box-shadow, transform;
+  width: 4rem;
+
+  &:first-of-type {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+
+  &:last-of-type {
+    border-radius: 0 0.5rem 0.5rem 0;
+    border-right: 1px solid $gray;
+  }
 
   &:focus {
+    border-color: $blue;
+    box-shadow: 0 0 0.25rem rgba($blue, 0.5);
     outline: none;
-    box-shadow: 0 0 7px rgba($blue, 0.5);
-    border: 1px solid $blue;
-    transform: scale(1.05);
+
+    & + .pin-field {
+      border-left-color: $blue;
+    }
+  }
+
+  &:invalid {
+    animation: shake 5 linear 75ms;
+    border-color: $red;
+    box-shadow: 0 0 0.25rem rgba($red, 0.5);
+
+    & + .pin-field {
+      border-left-color: $red;
+    }
+  }
+
+  &.complete {
+    border-color: $green;
+    color: $green;
+
+    &[disabled] {
+      background: rgba($green, 0.1);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    & + .pin-field {
+      border-left-color: $green;
+    }
   }
 }
 
-.field-a-complete {
-  border: 1px solid $green;
-  color: $green;
-
-  &[disabled] {
-    background: rgba($green, 0.1);
-    opacity: 0.5;
-    cursor: not-allowed;
+@keyframes shake {
+  from {
+    transform: scale(1.05) translateX(-3%);
+  }
+  to {
+    transform: scale(1.05) translateX(3%);
   }
 }

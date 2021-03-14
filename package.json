@@ -27,6 +27,7 @@
     "lib/pin-field/pin-field.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
     "lib/mvu/mvu.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
     "lib/kb-event/kb-event.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
+    "lib/utils/utils.{js|js.map|d.ts}",
     "lib/**/index.{js|js.map|d.ts}",
     "lib/index.{js|js.map|d.ts}"
   ],
@@ -73,9 +74,6 @@
     "react": ">=16.8",
     "react-dom": ">=16.8"
   },
-  "dependencies": {
-    "classnames": "^2.2.6"
-  },
   "scripts": {
     "start": "parcel serve -d lib -p 3000 src/_demo/index.html",
     "build": "tsc",
@@ -84,5 +82,8 @@
     "test:unit": "jest",
     "test:e2e": "cypress run",
     "test": "run-p test:unit test:e2e"
+  },
+  "dependencies": {
+    "classnames": "^2.2.6"
   }
 }

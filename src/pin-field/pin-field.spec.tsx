@@ -1,27 +1,26 @@
 import React from "react";
 import enzyme, {shallow, mount} from "enzyme";
-import noop from "lodash/fp/noop";
 import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 
 import PinField from "./pin-field";
+import {noop} from "../utils";
 
 enzyme.configure({adapter: new Adapter()});
+
+jest.spyOn(console, "debug").mockImplementation(noop);
 
 test("structure", () => {
   const wrapper = shallow(<PinField />);
   const inputs = wrapper.find("input");
 
   expect(inputs).toHaveLength(5);
-  inputs.forEach((input, idx) => {
+  inputs.forEach(input => {
     expect(input.prop("type")).toBe("text");
-    expect(input.hasClass("a-reactPinField__input")).toBe(true);
-    expect(input.hasClass(`-${idx}`)).toBe(true);
     expect(input.prop("autoFocus")).toBe(false);
     expect(typeof input.prop("onFocus")).toBe("function");
     expect(typeof input.prop("onKeyDown")).toBe("function");
     expect(typeof input.prop("onPaste")).toBe("function");
     expect(input.prop("maxLength")).toBe(1);
-    expect(input.prop("style")).toEqual({});
   });
 });
 
@@ -47,7 +46,6 @@ test("autoFocus", () => {
 
   inputs.forEach((input, idx) => {
     expect(input.prop("autoFocus")).toBe(idx === 0);
-    expect(input.hasClass("-focus")).toBe(idx === 0);
   });
 });
 
@@ -56,7 +54,6 @@ test("className", () => {
   const inputs = wrapper.find("input");
 
   inputs.forEach(input => {
-    expect(input.hasClass("a-reactPinField__input")).toBe(true);
     expect(input.hasClass("custom-class-name")).toBe(true);
   });
 });
@@ -77,12 +74,32 @@ test("events", () => {
   const input = wrapper.find("input").first();
 
   input.simulate("focus");
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "a"}});
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {which: 66}});
-  input.simulate("input", {preventDefault: noop, nativeEvent: {data: "c"}});
-  input.simulate("paste", {clipboardData: {getData: () => "d"}});
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Alt", target: document.createElement("input")}});
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "a", target: document.createElement("input")}});
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {which: 66, target: document.createElement("input")}});
+  input.simulate("paste", {clipboardData: {getData: () => "cde"}});
 
-  expect(handleChangeMock).toHaveBeenCalledTimes(4);
+  expect(handleChangeMock).toHaveBeenCalledTimes(3);
   expect(handleCompleteMock).toHaveBeenCalledTimes(1);
   expect(handleCompleteMock).toHaveBeenCalledWith("abcd");
+});
+
+test("fallback events", () => {
+  const handleChangeMock = jest.fn();
+  const handleCompleteMock = jest.fn();
+  const wrapper = mount(<PinField length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />);
+  const input = wrapper.find("input").first();
+
+  const keyDownInputMock = document.createElement("input");
+  keyDownInputMock.value = "";
+  const keyUpInputMock = document.createElement("input");
+  keyUpInputMock.value = "a";
+
+  input.simulate("focus");
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Unidentified", target: keyDownInputMock}});
+  input.simulate("keyup", {preventDefault: noop, nativeEvent: {target: keyUpInputMock}});
+  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Unidentified", target: keyDownInputMock}});
+  input.simulate("keyup", {preventDefault: noop, nativeEvent: {target: {value: "b"}}});
+  expect(handleChangeMock).toHaveBeenCalledTimes(1);
+  expect(handleChangeMock).toHaveBeenCalledWith("a");
 });
