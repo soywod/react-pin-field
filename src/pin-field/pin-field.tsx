@@ -1,8 +1,8 @@
 import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react";
-import classNames from "classnames";
 
 import {useMVU} from "../mvu";
-import {getKeyFromKeyboardEvent, getKeyFromInputEvent} from "../kb-event";
+import {getKeyFromKeyboardEvent} from "../kb-event";
+import {noop, range, omit, debug} from "../utils";
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -14,25 +14,13 @@ import {
   PinFieldEffect as Effect,
 } from "./pin-field.types";
 
-const noop = (): undefined => undefined;
-const range = (start: number, end: number) => Array.from({length: end}, (_, i) => i + start);
-const omit = (keys: string[], obj: Record<string, any>): Record<string, any> => {
-  const poppedKey = keys.pop();
-  if (!poppedKey) {
-    return obj;
-  }
-  const {[poppedKey]: omitted, ...rest} = obj;
-  return omit(keys, rest);
-};
-
 export const NO_EFFECT: Effect[] = [];
-export const PROP_KEYS = ["autoFocus", "className", "length", "validate", "format", "style"];
+export const PROP_KEYS = ["autoFocus", "length", "validate", "format"];
 export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"];
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
 export const defaultProps: DefaultProps = {
   ref: {current: []},
-  className: "",
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
@@ -40,7 +28,6 @@ export const defaultProps: DefaultProps = {
   onRejectKey: noop,
   onChange: noop,
   onComplete: noop,
-  style: {},
 };
 
 export function defaultState(props: Pick<DefaultProps, "validate" | "length">): State {
@@ -48,6 +35,7 @@ export function defaultState(props: Pick<DefaultProps, "validate" | "length">): 
     focusIdx: 0,
     codeLength: props.length,
     isKeyAllowed: isKeyAllowed(props.validate),
+    fallback: null,
   };
 }
 
@@ -74,55 +62,99 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
 export function apply(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "handle-key-down": {
+      debug("reducer", "handle-key-down", `key=${action.key}`);
+
       switch (action.key) {
-        case "Unidentified":
+        case "Unidentified": {
+          return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, []];
+        }
+
         case "Dead": {
-          const effects: Effect[] = [
-            {type: "set-input-val", idx: state.focusIdx, val: ""},
-            {type: "reject-key", idx: state.focusIdx, key: action.key},
-            {type: "handle-code-change"},
+          return [
+            state,
+            [
+              {type: "set-input-val", idx: state.focusIdx, val: ""},
+              {type: "reject-key", idx: state.focusIdx, key: action.key},
+              {type: "handle-code-change"},
+            ],
           ];
-          return [state, effects];
         }
 
         case "ArrowLeft": {
           const prevFocusIdx = getPrevFocusIdx(state.focusIdx);
-          const effects: Effect[] = [{type: "focus-input", idx: prevFocusIdx}];
-          return [{...state, focusIdx: prevFocusIdx}, effects];
+          return [{...state, focusIdx: prevFocusIdx}, [{type: "focus-input", idx: prevFocusIdx}]];
         }
 
         case "ArrowRight": {
           const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-          const effects: Effect[] = [{type: "focus-input", idx: nextFocusIdx}];
-          return [{...state, focusIdx: nextFocusIdx}, effects];
+          return [{...state, focusIdx: nextFocusIdx}, [{type: "focus-input", idx: nextFocusIdx}]];
         }
 
         case "Delete":
         case "Backspace": {
-          const effects: Effect[] = [{type: "handle-delete", idx: state.focusIdx}, {type: "handle-code-change"}];
-          return [state, effects];
+          return [state, [{type: "handle-delete", idx: state.focusIdx}, {type: "handle-code-change"}]];
         }
 
         default: {
           if (state.isKeyAllowed(action.key)) {
             const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-            const effects: Effect[] = [
-              {type: "set-input-val", idx: state.focusIdx, val: action.key},
-              {type: "resolve-key", idx: state.focusIdx, key: action.key},
-              {type: "focus-input", idx: nextFocusIdx},
-              {type: "handle-code-change"},
+            return [
+              {...state, focusIdx: nextFocusIdx},
+              [
+                {type: "set-input-val", idx: state.focusIdx, val: action.key},
+                {type: "resolve-key", idx: state.focusIdx, key: action.key},
+                {type: "focus-input", idx: nextFocusIdx},
+                {type: "handle-code-change"},
+              ],
             ];
-            return [{...state, focusIdx: nextFocusIdx}, effects];
           }
 
-          const effects: Effect[] = [{type: "reject-key", idx: state.focusIdx, key: action.key}];
-          return [state, effects];
+          return [state, [{type: "reject-key", idx: state.focusIdx, key: action.key}]];
         }
       }
     }
 
+    case "handle-key-up": {
+      if (!state.fallback) {
+        debug("reducer", "handle-key-up", "ignored");
+        return [state, NO_EFFECT];
+      }
+
+      debug("reducer", "handle-key-up");
+      const nextState: State = {...state, fallback: null};
+      const effects: Effect[] = [];
+      const {idx, val: prevVal} = state.fallback;
+      const val = action.val;
+
+      if (prevVal === "" && val === "") {
+        effects.push({type: "handle-delete", idx}, {type: "handle-code-change"});
+      } else if (prevVal === "" && val !== "") {
+        if (state.isKeyAllowed(val)) {
+          effects.push(
+            {type: "set-input-val", idx, val},
+            {type: "resolve-key", idx, key: val},
+            {type: "focus-input", idx: getNextFocusIdx(idx, state.codeLength)},
+            {type: "handle-code-change"},
+          );
+        } else {
+          effects.push(
+            {type: "set-input-val", idx: state.focusIdx, val: ""},
+            {type: "reject-key", idx, key: val},
+            {type: "handle-code-change"},
+          );
+        }
+      }
+
+      return [nextState, effects];
+    }
+
     case "handle-paste": {
-      if (!action.val.split("").every(state.isKeyAllowed)) return [state, NO_EFFECT];
+      if (!action.val.split("").slice(0, state.codeLength).every(state.isKeyAllowed)) {
+        debug("reducer", "handle-paste", `rejected,val=${action.val}`);
+        return [state, [{type: "reject-key", idx: action.idx, key: action.val}]];
+      }
+
+      debug("reducer", "handle-paste", `val=${action.val}`);
       const pasteLen = Math.min(action.val.length, state.codeLength - state.focusIdx);
       const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength);
       const effects: Effect[] = range(0, pasteLen).map(idx => ({
@@ -141,12 +173,12 @@ export function apply(state: State, action: Action): [State, Effect[]] {
     }
 
     case "focus-input": {
-      const effects: Effect[] = [{type: "focus-input", idx: action.idx}];
-      return [{...state, focusIdx: action.idx}, effects];
+      return [{...state, focusIdx: action.idx}, [{type: "focus-input", idx: action.idx}]];
     }
 
-    default:
+    default: {
       return [state, NO_EFFECT];
+    }
   }
 }
 
@@ -154,42 +186,46 @@ export function useNotifier({refs, ...props}: NotifierProps) {
   return useCallback(
     (eff: Effect) => {
       switch (eff.type) {
-        case "focus-input":
+        case "focus-input": {
+          debug("notifier", "focus-input", `idx=${eff.idx}`);
           refs.current[eff.idx].focus();
-          refs.current.forEach(input => input.classList.remove("-focus"));
-          refs.current[eff.idx].classList.add("-focus");
-          break;
-
-        case "set-input-val": {
-          const val = props.format(eff.val);
-          refs.current[eff.idx].value = val;
-          if (val === "") refs.current[eff.idx].classList.remove("-success");
           break;
         }
 
-        case "resolve-key":
-          refs.current[eff.idx].classList.remove("-error");
-          refs.current[eff.idx].classList.add("-success");
+        case "set-input-val": {
+          debug("notifier", "set-input-val", `idx=${eff.idx},val=${eff.val}`);
+          const val = props.format(eff.val);
+          refs.current[eff.idx].value = val;
+          break;
+        }
+
+        case "resolve-key": {
+          debug("notifier", "resolve-key", `idx=${eff.idx},key=${eff.key}`);
+          refs.current[eff.idx].setCustomValidity("");
           props.onResolveKey(eff.key, refs.current[eff.idx]);
           break;
+        }
 
-        case "reject-key":
-          refs.current[eff.idx].classList.remove("-success");
-          refs.current[eff.idx].classList.add("-error");
+        case "reject-key": {
+          debug("notifier", "reject-key", `idx=${eff.idx},key=${eff.key}`);
+          refs.current[eff.idx].setCustomValidity("Invalid key");
           props.onRejectKey(eff.key, refs.current[eff.idx]);
           break;
+        }
 
         case "handle-delete": {
+          debug("notifier", "handle-delete", `idx=${eff.idx}`);
           const prevVal = refs.current[eff.idx].value;
-          refs.current[eff.idx].classList.remove("-error", "-success");
+          refs.current[eff.idx].setCustomValidity("");
           refs.current[eff.idx].value = "";
 
           if (!prevVal) {
             const prevIdx = getPrevFocusIdx(eff.idx);
             refs.current[prevIdx].focus();
-            refs.current[prevIdx].classList.remove("-error", "-success");
+            refs.current[prevIdx].setCustomValidity("");
             refs.current[prevIdx].value = "";
           }
+
           break;
         }
 
@@ -197,13 +233,15 @@ export function useNotifier({refs, ...props}: NotifierProps) {
           const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
           const codeArr = refs.current.map(r => r.value.trim());
           const code = (dir === "rtl" ? codeArr.reverse() : codeArr).join("");
+          debug("notifier", "handle-code-change", `code={${code}}`);
           props.onChange(code);
           code.length === props.length && props.onComplete(code);
           break;
         }
 
-        default:
+        default: {
           break;
+        }
       }
     },
     [props, refs],
@@ -212,7 +250,7 @@ export function useNotifier({refs, ...props}: NotifierProps) {
 
 export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   const props: DefaultProps & InputProps = {...defaultProps, ...customProps};
-  const {autoFocus, className, length: codeLength, style} = props;
+  const {autoFocus, length: codeLength} = props;
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props);
   const refs = useRef<HTMLInputElement[]>([]);
   const model = defaultState(props);
@@ -221,39 +259,57 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
 
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
-  function setRefAtIndex(idx: number) {
-    return (ref: HTMLInputElement) => {
-      if (ref) {
-        refs.current[idx] = ref;
+  function handleFocus(idx: number) {
+    return function () {
+      debug("main", "event", `focus,idx=${idx}`);
+      dispatch({type: "focus-input", idx});
+    };
+  }
+
+  function handleKeyDown(idx: number) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
+      const key = getKeyFromKeyboardEvent(evt.nativeEvent);
+
+      if (
+        !IGNORED_META_KEYS.includes(key) &&
+        !evt.ctrlKey &&
+        !evt.altKey &&
+        !evt.metaKey &&
+        evt.nativeEvent.target instanceof HTMLInputElement
+      ) {
+        evt.preventDefault();
+        debug("main", "event", `key-down,idx=${idx},key=${key}`);
+        dispatch({type: "handle-key-down", idx, key, val: evt.nativeEvent.target.value});
+      } else {
+        debug("main", "event", `key-down,idx=${idx},ignored-key=${key}`);
       }
     };
   }
 
-  function handleFocus(idx: number) {
-    return () => dispatch({type: "focus-input", idx});
+  function handleKeyUp(idx: number) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
+      if (evt.nativeEvent.target instanceof HTMLInputElement) {
+        debug("main", "event", `key-up,idx=${idx}`);
+        dispatch({type: "handle-key-up", idx, val: evt.nativeEvent.target.value});
+      }
+    };
   }
 
-  function handleKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
-    const key = getKeyFromKeyboardEvent(evt.nativeEvent);
-
-    if (!IGNORED_META_KEYS.includes(key) && !evt.ctrlKey && !evt.altKey && !evt.metaKey) {
+  function handlePaste(idx: number) {
+    return function (evt: React.ClipboardEvent<HTMLInputElement>) {
       evt.preventDefault();
-      dispatch({type: "handle-key-down", key});
-    }
+      const val = evt.clipboardData.getData("Text");
+      debug("main", "event", `paste,idx=${idx},val=${val}`);
+      dispatch({type: "handle-paste", idx, val});
+    };
   }
 
-  function handleInput(evt: React.FormEvent<HTMLInputElement>) {
-    const key = getKeyFromInputEvent(evt.nativeEvent as InputEvent);
-
-    if (!IGNORED_META_KEYS.includes(key)) {
-      evt.preventDefault();
-      dispatch({type: "handle-key-down", key});
-    }
-  }
-
-  function handlePaste(evt: React.ClipboardEvent<HTMLInputElement>) {
-    evt.preventDefault();
-    dispatch({type: "handle-paste", val: evt.clipboardData.getData("Text")});
+  function setRefAtIndex(idx: number) {
+    return function (ref: HTMLInputElement) {
+      if (ref) {
+        refs.current[idx] = ref;
+      }
+    };
   }
 
   function hasAutoFocus(idx: number) {
@@ -265,19 +321,19 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
       {range(0, codeLength).map(idx => (
         <input
           type="text"
+          autoCapitalize="off"
+          autoCorrect="off"
+          autoComplete="off"
+          inputMode="text"
           {...inputProps}
           key={idx}
           ref={setRefAtIndex(idx)}
-          className={classNames(className, "a-reactPinField__input", `-${idx}`, {
-            "-focus": hasAutoFocus(idx),
-          })}
           autoFocus={hasAutoFocus(idx)}
           maxLength={1}
           onFocus={handleFocus(idx)}
-          onKeyDown={handleKeyDown}
-          onInput={handleInput}
-          onPaste={handlePaste}
-          style={style}
+          onKeyDown={handleKeyDown(idx)}
+          onKeyUp={handleKeyUp(idx)}
+          onPaste={handlePaste(idx)}
         />
       ))}
     </>

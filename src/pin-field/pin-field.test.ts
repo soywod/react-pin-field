@@ -1,20 +1,20 @@
 import "react";
 
 import * as pinField from "./pin-field";
+import {noop} from "../utils";
 
 jest.mock("react", () => ({
   useCallback: (f: any) => f,
   forwardRef: (f: any) => f,
 }));
 
+jest.spyOn(console, "debug").mockImplementation(noop);
+
 function mockInput(value: string) {
   const setValMock = jest.fn();
   const ref = {
     focus: jest.fn(),
-    classList: {
-      add: jest.fn(),
-      remove: jest.fn(),
-    },
+    setCustomValidity: jest.fn(),
     set value(val: string) {
       setValMock(val);
     },
@@ -30,7 +30,7 @@ test("constants", () => {
   const {NO_EFFECT, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField;
 
   expect(NO_EFFECT).toEqual([]);
-  expect(PROP_KEYS).toEqual(["autoFocus", "className", "length", "validate", "format", "style"]);
+  expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format"]);
   expect(HANDLER_KEYS).toEqual(["onResolveKey", "onRejectKey", "onChange", "onComplete"]);
   expect(IGNORED_META_KEYS).toEqual(["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]);
 });
@@ -38,7 +38,6 @@ test("constants", () => {
 test("default props", () => {
   const {defaultProps} = pinField;
 
-  expect(defaultProps).toHaveProperty("className", "");
   expect(defaultProps).toHaveProperty("length", 5);
   expect(defaultProps).toHaveProperty("validate", /^[a-zA-Z0-9]$/);
   expect(defaultProps).toHaveProperty("format");
@@ -50,7 +49,6 @@ test("default props", () => {
   expect(defaultProps.onChange("a")).toStrictEqual(undefined);
   expect(defaultProps).toHaveProperty("onComplete");
   expect(defaultProps.onComplete("a")).toStrictEqual(undefined);
-  expect(defaultProps).toHaveProperty("style", {});
 });
 
 test("default state", () => {
@@ -63,6 +61,7 @@ test("default state", () => {
   expect(typeof state.isKeyAllowed).toStrictEqual("function");
   expect(state.isKeyAllowed("a")).toStrictEqual(true);
   expect(state.isKeyAllowed("@")).toStrictEqual(false);
+  expect(state).toHaveProperty("fallback", null);
 });
 
 test("get previous focus index", () => {
@@ -91,6 +90,7 @@ describe("is key allowed", () => {
   test("string", () => {
     const str = isKeyAllowed("a");
 
+    expect(str("")).toStrictEqual(false);
     expect(str("a")).toStrictEqual(true);
     expect(str("b")).toStrictEqual(false);
     expect(str("ab")).toStrictEqual(false);
@@ -136,18 +136,14 @@ describe("apply", () => {
 
   describe("handle-key-down", () => {
     test("unidentified", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Unidentified"});
+      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Unidentified", idx: 0, val: ""});
 
       expect(state).toMatchObject(state);
-      expect(eff).toEqual([
-        {type: "set-input-val", idx: 0, val: ""},
-        {type: "reject-key", idx: 0, key: "Unidentified"},
-        {type: "handle-code-change"},
-      ]);
+      expect(eff).toEqual([]);
     });
 
     test("dead", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Dead"});
+      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Dead", idx: 0, val: ""});
 
       expect(state).toMatchObject(state);
       expect(eff).toEqual([
@@ -159,14 +155,17 @@ describe("apply", () => {
 
     describe("left arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowLeft"});
+        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowLeft", idx: 0, val: ""});
 
         expect(state).toMatchObject({...state, focusIdx: 0});
         expect(eff).toEqual([{type: "focus-input", idx: 0}]);
       });
 
       test("from the last input", () => {
-        const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-key-down", key: "ArrowLeft"});
+        const [state, eff] = apply(
+          {...currState, focusIdx: 4},
+          {type: "handle-key-down", key: "ArrowLeft", idx: 0, val: ""},
+        );
 
         expect(state).toMatchObject({...state, focusIdx: 3});
         expect(eff).toEqual([{type: "focus-input", idx: 3}]);
@@ -175,14 +174,17 @@ describe("apply", () => {
 
     describe("right arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowRight"});
+        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowRight", idx: 0, val: ""});
 
         expect(state).toMatchObject({...state, focusIdx: 1});
         expect(eff).toEqual([{type: "focus-input", idx: 1}]);
       });
 
       test("from the last input", () => {
-        const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-key-down", key: "ArrowRight"});
+        const [state, eff] = apply(
+          {...currState, focusIdx: 4},
+          {type: "handle-key-down", key: "ArrowRight", idx: 0, val: ""},
+        );
 
         expect(state).toMatchObject({...state, focusIdx: 4});
         expect(eff).toEqual([{type: "focus-input", idx: 4}]);
@@ -190,14 +192,14 @@ describe("apply", () => {
     });
 
     test("backspace", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Backspace"});
+      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Backspace", idx: 0, val: ""});
 
       expect(state).toMatchObject({...state, focusIdx: 0});
       expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
     });
 
     test("delete", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Delete"});
+      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Delete", idx: 0, val: ""});
 
       expect(state).toMatchObject({...state, focusIdx: 0});
       expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
@@ -205,7 +207,7 @@ describe("apply", () => {
 
     describe("default", () => {
       test("resolve", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "a"});
+        const [state, eff] = apply(currState, {type: "handle-key-down", key: "a", idx: 0, val: ""});
 
         expect(state).toMatchObject({...state, focusIdx: 1});
         expect(eff).toEqual([
@@ -217,7 +219,7 @@ describe("apply", () => {
       });
 
       test("reject", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "@"});
+        const [state, eff] = apply(currState, {type: "handle-key-down", key: "@", idx: 0, val: ""});
 
         expect(state).toMatchObject(state);
         expect(eff).toEqual([{type: "reject-key", idx: 0, key: "@"}]);
@@ -225,9 +227,64 @@ describe("apply", () => {
     });
   });
 
+  describe("handle-key-up", () => {
+    test("no fallback", () => {
+      const [state, eff] = apply(currState, {type: "handle-key-up", idx: 0, val: ""});
+
+      expect(state).toMatchObject(state);
+      expect(eff).toEqual([]);
+    });
+
+    test("empty prevVal, empty val", () => {
+      const [state, eff] = apply({...currState, fallback: {idx: 0, val: ""}}, {type: "handle-key-up", idx: 0, val: ""});
+
+      expect(state).toMatchObject({fallback: null});
+      expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
+    });
+
+    test("empty prevVal, not empty allowed val", () => {
+      const [state, eff] = apply(
+        {...currState, fallback: {idx: 0, val: ""}},
+        {type: "handle-key-up", idx: 0, val: "a"},
+      );
+
+      expect(state).toMatchObject({fallback: null});
+      expect(eff).toEqual([
+        {type: "set-input-val", idx: 0, val: "a"},
+        {type: "resolve-key", idx: 0, key: "a"},
+        {type: "focus-input", idx: 1},
+        {type: "handle-code-change"},
+      ]);
+    });
+
+    test("empty prevVal, not empty denied val", () => {
+      const [state, eff] = apply(
+        {...currState, fallback: {idx: 0, val: ""}},
+        {type: "handle-key-up", idx: 0, val: "@"},
+      );
+
+      expect(state).toMatchObject({fallback: null});
+      expect(eff).toEqual([
+        {type: "set-input-val", idx: 0, val: ""},
+        {type: "reject-key", idx: 0, key: "@"},
+        {type: "handle-code-change"},
+      ]);
+    });
+
+    test("not empty prevVal", () => {
+      const [state, eff] = apply(
+        {...currState, fallback: {idx: 0, val: "a"}},
+        {type: "handle-key-up", idx: 0, val: "a"},
+      );
+
+      expect(state).toMatchObject({fallback: null});
+      expect(eff).toEqual([]);
+    });
+  });
+
   describe("handle-paste", () => {
     test("paste smaller text than code length", () => {
-      const [state, eff] = apply(currState, {type: "handle-paste", val: "abc"});
+      const [state, eff] = apply(currState, {type: "handle-paste", idx: 0, val: "abc"});
 
       expect(state).toMatchObject({...state, focusIdx: 3});
       expect(eff).toEqual([
@@ -240,7 +297,7 @@ describe("apply", () => {
     });
 
     test("paste bigger text than code length", () => {
-      const [state, eff] = apply(currState, {type: "handle-paste", val: "abcdefgh"});
+      const [state, eff] = apply(currState, {type: "handle-paste", idx: 0, val: "abcdefgh"});
 
       expect(state).toMatchObject({...state, focusIdx: 4});
       expect(eff).toEqual([
@@ -255,10 +312,17 @@ describe("apply", () => {
     });
 
     test("paste on last input", () => {
-      const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-paste", val: "abc"});
+      const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-paste", idx: 0, val: "abc"});
 
       expect(state).toMatchObject({...state, focusIdx: 4});
       expect(eff).toEqual([{type: "set-input-val", idx: 4, val: "a"}, {type: "handle-code-change"}]);
+    });
+
+    test("paste with denied key", () => {
+      const [state, eff] = apply(currState, {type: "handle-paste", idx: 1, val: "ab@"});
+
+      expect(state).toMatchObject(state);
+      expect(eff).toEqual([{type: "reject-key", idx: 1, key: "ab@"}]);
     });
   });
 
@@ -303,10 +367,7 @@ describe("notify", () => {
 
   test("focus input", () => {
     notify({type: "focus-input", idx: 0});
-
     expect(inputA.ref.focus).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-focus");
   });
 
   describe("set input val", () => {
@@ -316,8 +377,6 @@ describe("notify", () => {
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledWith("");
-      expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1);
-      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-success");
     });
 
     test("non empty char", () => {
@@ -326,17 +385,14 @@ describe("notify", () => {
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledWith("a");
-      expect(inputA.ref.classList.remove).not.toHaveBeenCalled();
     });
   });
 
   test("resolve key", () => {
     notify({type: "resolve-key", idx: 0, key: "a"});
 
-    expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error");
-    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-success");
+    expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
+    expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
     expect(propsMock.onResolveKey).toHaveBeenCalledTimes(1);
     expect(propsMock.onResolveKey).toHaveBeenCalledWith("a", inputA.ref);
   });
@@ -344,10 +400,8 @@ describe("notify", () => {
   test("reject key", () => {
     notify({type: "reject-key", idx: 0, key: "a"});
 
-    expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-success");
-    expect(inputA.ref.classList.add).toHaveBeenCalledTimes(1);
-    expect(inputA.ref.classList.add).toHaveBeenCalledWith("-error");
+    expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
+    expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("Invalid key");
     expect(propsMock.onRejectKey).toHaveBeenCalledTimes(1);
     expect(propsMock.onRejectKey).toHaveBeenCalledWith("a", inputA.ref);
   });
@@ -356,8 +410,8 @@ describe("notify", () => {
     test("from input A, not empty val", () => {
       notify({type: "handle-delete", idx: 0});
 
-      expect(inputA.ref.classList.remove).toHaveBeenCalledTimes(1);
-      expect(inputA.ref.classList.remove).toHaveBeenCalledWith("-error", "-success");
+      expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
+      expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledWith("");
     });
@@ -365,8 +419,8 @@ describe("notify", () => {
     test("from input B, not empty val", () => {
       notify({type: "handle-delete", idx: 1});
 
-      expect(inputB.ref.classList.remove).toHaveBeenCalledTimes(1);
-      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success");
+      expect(inputB.ref.setCustomValidity).toHaveBeenCalledTimes(1);
+      expect(inputB.ref.setCustomValidity).toHaveBeenCalledWith("");
       expect(inputB.setValMock).toHaveBeenCalledTimes(1);
       expect(inputB.setValMock).toHaveBeenCalledWith("");
     });
@@ -374,12 +428,12 @@ describe("notify", () => {
     test("from input C, empty val", () => {
       notify({type: "handle-delete", idx: 2});
 
-      expect(inputC.ref.classList.remove).toHaveBeenCalledTimes(1);
-      expect(inputC.ref.classList.remove).toHaveBeenCalledWith("-error", "-success");
+      expect(inputC.ref.setCustomValidity).toHaveBeenCalledTimes(1);
+      expect(inputC.ref.setCustomValidity).toHaveBeenCalledWith("");
       expect(inputC.setValMock).toHaveBeenCalledTimes(1);
       expect(inputC.setValMock).toHaveBeenCalledWith("");
       expect(inputB.ref.focus).toHaveBeenCalledTimes(1);
-      expect(inputB.ref.classList.remove).toHaveBeenCalledWith("-error", "-success");
+      expect(inputB.ref.setCustomValidity).toHaveBeenCalledWith("");
       expect(inputB.setValMock).toHaveBeenCalledTimes(1);
       expect(inputB.setValMock).toHaveBeenCalledWith("");
     });
@@ -406,6 +460,23 @@ describe("notify", () => {
       expect(propsMock.onChange).toHaveBeenCalledWith("abc");
       expect(propsMock.onComplete).toHaveBeenCalledTimes(1);
       expect(propsMock.onComplete).toHaveBeenCalledWith("abc");
+    });
+
+    test("rtl", () => {
+      jest.spyOn(document.documentElement, "getAttribute").mockImplementation(() => "rtl");
+
+      const inputA = mockInput("a");
+      const inputB = mockInput("b");
+      const inputC = mockInput("c");
+      const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]};
+      const notify = useNotifier({...propsMock, refs});
+
+      notify({type: "handle-code-change"});
+
+      expect(propsMock.onChange).toHaveBeenCalledTimes(1);
+      expect(propsMock.onChange).toHaveBeenCalledWith("cba");
+      expect(propsMock.onComplete).toHaveBeenCalledTimes(1);
+      expect(propsMock.onComplete).toHaveBeenCalledWith("cba");
     });
   });
 });
