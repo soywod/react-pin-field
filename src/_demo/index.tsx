@@ -66,7 +66,7 @@ const App: FC = () => {
         </div>
 
         <h2 className="display-5 mt-4">With ref</h2>
-        <p className="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
+        <p className="mb-4 text-muted">You can control each input with the pin field ref:</p>
         <div>
           <PinField ref={ref} />
         </div>
@@ -79,37 +79,23 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-          React PIN Field follows the <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention.
-          Each input has a class named <code>a-reactPinField__input</code>, plus:
+          The attributes <code>className</code> and <code>style</code> are transmitted to all inputs. You can also use
+          pseudo-classes
+          <code>:valid</code>, <code>:invalid</code>, <code>:focus</code>, <code>:hover</code>…
         </p>
-        <ul>
-          <li>
-            <code>-{"{index}"}</code> where index is the position of the input. Eg: <code>-0</code> for the first input,{" "}
-            <code>-2</code> for the third etc.
-          </li>
-          <li>
-            <code>-focus</code> when the current input is focused
-          </li>
-          <li>
-            <code>-success</code> when a key is resolved
-          </li>
-          <li>
-            <code>-error</code> when a key is rejected
-          </li>
-        </ul>
         <div>
           <PinField className="pin-field" />
         </div>
 
         <h2 className="display-5 mt-5">With custom length</h2>
-        <p className="mb-4 text-muted">You can set the number of chars with the length prop. Default set to 5 chars.</p>
+        <p className="mb-4 text-muted">You can set the number of chars with the length attribute.</p>
         <div>
           <PinField className="pin-field" length={3} />
         </div>
 
         <h2 className="display-5 mt-5">With custom validation</h2>
         <p className="mb-4 text-muted">
-          You can restrict input with a string of allowed chars, or a regex, or a function.
+          You can restrict input with a string of allowed chars, a regex, or a function.
         </p>
         <p>Only numbers:</p>
         <div>
@@ -119,9 +105,9 @@ const App: FC = () => {
         <h2 className="display-5 mt-5">With custom events</h2>
         <ul className="mb-4 text-muted">
           <li>onChange: when the code changes</li>
-          <li>onComplete: when the code has been filled</li>
-          <li>onResolveKey: when receive a good key</li>
-          <li>onRejectKey: when receive a bad key</li>
+          <li>onComplete: when the code has been fully filled</li>
+          <li>onResolveKey: when receiving a good key</li>
+          <li>onRejectKey: when receiving a bad key</li>
         </ul>
         <div>
           <PinField
