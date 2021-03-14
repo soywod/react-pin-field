@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-03-14
+
+### Fixed
+
+- Support for all browsers [#19] and mobile [#26]
+
+### Deprecated
+
+- classes `-{index}`, `-focus`, `-success` and `-error` (replaced by standard pseudo-classes `:nth-of-type`, `:focus`, `:valid` and `:invalid`)
+
 ## [1.0.6] - 2021-02-10
 
 ### Changed
@@ -62,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...HEAD
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/unfog-io/unfog-cli/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/unfog-io/unfog-cli/compare/v1.0.3...v1.0.4
@@ -80,5 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#14]: https://github.com/unfog-io/unfog-cli/issues/14
 [#15]: https://github.com/unfog-io/unfog-cli/issues/15
 [#16]: https://github.com/unfog-io/unfog-cli/issues/16
+[#19]: https://github.com/unfog-io/unfog-cli/issues/19
 [#20]: https://github.com/unfog-io/unfog-cli/issues/20
 [#23]: https://github.com/unfog-io/unfog-cli/issues/23
+[#26]: https://github.com/unfog-io/unfog-cli/issues/26

@@ -3,7 +3,7 @@
   "description": "React component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "private": false,
   "keywords": [
     "react",
@@ -49,6 +49,7 @@
     "@typescript-eslint/parser": "^4.15.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
     "babel-eslint": "^10.0.3",
+    "classnames": "^2.2.6",
     "cypress": "^5.0.0",
     "enzyme": "^3.11.0",
     "eslint": "^6.7.2",
@@ -82,8 +83,5 @@
     "test:unit": "jest",
     "test:e2e": "cypress run",
     "test": "run-p test:unit test:e2e"
-  },
-  "dependencies": {
-    "classnames": "^2.2.6"
   }
 }

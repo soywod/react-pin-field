@@ -49,7 +49,7 @@ code {
   }
 
   &:invalid {
-    animation: shake 5 linear 75ms;
+    animation: shake 3 linear 75ms;
     border-color: $red;
     box-shadow: 0 0 0.25rem rgba($red, 0.5);
 
@@ -76,9 +76,9 @@ code {
 
 @keyframes shake {
   from {
-    transform: scale(1.05) translateX(-3%);
+    transform: translateY(-5%);
   }
   to {
-    transform: scale(1.05) translateX(3%);
+    transform: translateY(5%);
   }
 }
