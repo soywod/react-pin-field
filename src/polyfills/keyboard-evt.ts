@@ -1,6 +1,10 @@
-// Sources: https://github.com/soywod/keyboardevent-key-polyfill/blob/master/index.js
+/**
+ * KeyboardEvent.key polyfill.
+ *
+ * @see https://github.com/soywod/keyboardevent-key-polyfill/blob/master/index.js
+ */
 
-const keyMap: {[key: number]: string | string[]} = {
+const keyMap: {[key: number]: string | [string, string]} = {
   3: "Cancel",
   6: "Help",
   8: "Backspace",
@@ -76,25 +80,30 @@ const keyMap: {[key: number]: string | string[]} = {
 };
 
 // Function keys (F1-24).
+
 let i: number;
 for (i = 1; i < 25; i += 1) {
   keyMap[111 + i] = "F" + i;
 }
 
 // Printable ASCII characters.
-let letter = "";
+
 for (i = 65; i < 91; i += 1) {
-  letter = String.fromCharCode(i);
+  const letter = String.fromCharCode(i);
   keyMap[i] = [letter.toLowerCase(), letter.toUpperCase()];
 }
 
 // Numbers on numeric keyboard.
+
 for (i = 96; i < 106; i += 1) {
-  letter = String.fromCharCode(i - 48);
-  keyMap[i] = letter;
+  keyMap[i] = String.fromCharCode(i - 48);
 }
 
-export function getKeyFromKeyboardEvent(evt: KeyboardEvent) {
+/**
+ * Find the key associated to a keyboard event.
+ * Default to "Unidentified".
+ */
+export function getKeyFromKeyboardEvent(evt: KeyboardEvent): string {
   if (evt.key && evt.key !== "Unidentified") {
     return evt.key;
   }
@@ -107,3 +116,7 @@ export function getKeyFromKeyboardEvent(evt: KeyboardEvent) {
 
   return key;
 }
+
+export default {
+  getKey: getKeyFromKeyboardEvent,
+};

@@ -1,7 +1,7 @@
 import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react";
 
 import {useMVU} from "../mvu";
-import {getKeyFromKeyboardEvent} from "../kb-event";
+import keyboardEventPolyfill from "../polyfills/keyboard-evt";
 import {noop, range, omit, debug} from "../utils";
 
 import {
@@ -268,7 +268,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
 
   function handleKeyDown(idx: number) {
     return function (evt: React.KeyboardEvent<HTMLInputElement>) {
-      const key = getKeyFromKeyboardEvent(evt.nativeEvent);
+      const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
 
       if (
         !IGNORED_META_KEYS.includes(key) &&
