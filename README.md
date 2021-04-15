@@ -51,13 +51,13 @@ const defaultProps: ReactPinFieldProps = {
 You can access the PIN field web component via the ref:
 
 ```typescript
-<PinField ref={ref} />
+<ReactPinField ref={ref} />
 
 // Reset all inputs
-ref.current.forEach(input => (input.value = ""))
+ref.current.inputs.forEach(input => (input.value = ""))
 
 // Focus one particular input
-ref.current[2].focus()
+ref.current.inputs[2].focus()
 ```
 
 ### Style
