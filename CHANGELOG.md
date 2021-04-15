@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-beta.0] - 2021-04-15
+
+React PIN Field is now a React wrapper for [PIN
+Field](https://github.com/soywod/pin-field), a native web component for
+entering PIN codes.
+
+### Changed
+
+- `@soywod/pin-field` needs to be installed, since it became a peer dependency
+  of React PIN Field.
+- The ref contains now an instance of the class
+  [`PinField`](https://github.com/soywod/pin-field/blob/master/lib/pin-field.ts).
+  Inputs are accessible via the `inputs` prop.
+
 ## [1.1.0] - 2021-03-14
 
 ### Fixed
@@ -72,7 +86,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...HEAD
+[2.0.0-beta.0]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...v2.0.0-beta.0
 [1.1.0]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/unfog-io/unfog-cli/compare/v1.0.4...v1.0.5

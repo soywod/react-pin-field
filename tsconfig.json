@@ -16,7 +16,6 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es5",
-    "types": ["@types/jest", "cypress"]
+    "target": "es5"
   }
 }
