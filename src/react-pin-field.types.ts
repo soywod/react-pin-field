@@ -1,7 +1,9 @@
-export type PinFieldInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">;
+import {PinField} from "."
 
-export type PinFieldDefaultProps = {
-  ref: React.Ref<HTMLInputElement[] | null>;
+export type ReactPinFieldInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">;
+
+export type ReactPinFieldDefaultProps = {
+  ref: React.Ref<PinField>;
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
@@ -11,26 +13,26 @@ export type PinFieldDefaultProps = {
   onComplete: (code: string) => void;
 };
 
-export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;
+export type ReactPinFieldProps = Partial<ReactPinFieldDefaultProps> & ReactPinFieldInputProps;
 
-export type PinFieldNotifierProps = {
+export type ReactPinFieldNotifierProps = {
   refs: React.MutableRefObject<HTMLInputElement[]>;
-} & PinFieldDefaultProps;
+} & ReactPinFieldDefaultProps;
 
-export type PinFieldState = {
+export type ReactPinFieldState = {
   focusIdx: number;
-  codeLength: PinFieldDefaultProps["length"];
+  codeLength: ReactPinFieldDefaultProps["length"];
   isKeyAllowed: (key: string) => boolean;
   fallback: {idx: number; val: string} | null;
 };
 
-export type PinFieldAction =
+export type ReactPinFieldAction =
   | {type: "handle-key-down"; key: string; idx: number; val: string}
   | {type: "handle-key-up"; idx: number; val: string}
   | {type: "handle-paste"; idx: number; val: string}
   | {type: "focus-input"; idx: number};
 
-export type PinFieldEffect =
+export type ReactPinFieldEffect =
   | {type: "focus-input"; idx: number}
   | {type: "set-input-val"; idx: number; val: string}
   | {type: "resolve-key"; idx: number; key: string}

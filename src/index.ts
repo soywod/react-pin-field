@@ -1,2 +1,5 @@
-export * from "./pin-field";
-export {PinField as default} from "./pin-field";
+export * from "@soywod/pin-field"
+
+export * from "./react-pin-field";
+export * from "./react-pin-field.types";
+export {ReactPinField as default} from "./react-pin-field";

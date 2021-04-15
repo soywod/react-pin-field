@@ -1520,6 +1520,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@soywod/pin-field@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.1.6.tgz#7eabb4f2c112b45d1ef6dc1f265128e3864113c9"
+  integrity sha512-LRtBURHZ9LotlepeLhiKienCOIbZap8SWCxy9KXpB6g8pbOBDK2Rnz270+Wkolxv2W7a0HwAZyajtSeJr99nWw==
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.12.tgz#4d8e9e51eb265552a7e4f1ff2219ab6133bdfb2d"

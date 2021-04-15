@@ -2,13 +2,13 @@ import React, {FC, useRef, useState} from "react";
 import ReactDOM from "react-dom";
 import cn from "classnames";
 
-import PinField from "..";
+import ReactPinField, {PinField} from "..";
 
 const App: FC = () => {
   const [demoCompleted, setDemoCompleted] = useState(false);
   const [code, setCode] = useState("");
   const [completed, setCompleted] = useState(false);
-  const ref = useRef<HTMLInputElement[]>([]);
+  const ref = useRef<PinField | null>(null);
 
   return (
     <>
@@ -48,7 +48,7 @@ const App: FC = () => {
             <kbd>$ yarn add react-pin-field</kbd>
           </div>
           <div className="pin-field-container">
-            <PinField
+            <ReactPinField
               className={cn("pin-field", {complete: demoCompleted})}
               onComplete={() => setDemoCompleted(true)}
               format={k => k.toUpperCase()}
@@ -62,17 +62,17 @@ const App: FC = () => {
       <div className="container mb-5">
         <h2 className="display-5 mb-4">Default</h2>
         <div>
-          <PinField data-cy="pin-field" />
+          <ReactPinField data-cy="pin-field" />
         </div>
 
         <h2 className="display-5 mt-4">With ref</h2>
         <p className="mb-4 text-muted">You can control each input with the pin field ref:</p>
         <div>
-          <PinField ref={ref} />
+          <ReactPinField ref={ref} />
         </div>
         <div>
-          <button onClick={() => ref && ref.current && ref.current[1].focus()}>Focus 2nd input</button>
-          <button onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}>
+          <button onClick={() => ref && ref.current && ref.current.inputs[1].focus()}>Focus 2nd input</button>
+          <button onClick={() => ref && ref.current && ref.current.inputs.forEach(input => (input.value = ""))}>
             Reset values
           </button>
         </div>
@@ -84,13 +84,13 @@ const App: FC = () => {
           <code>:valid</code>, <code>:invalid</code>, <code>:focus</code>, <code>:hover</code>…
         </p>
         <div>
-          <PinField className="pin-field" />
+          <ReactPinField className="pin-field" />
         </div>
 
         <h2 className="display-5 mt-5">With custom length</h2>
         <p className="mb-4 text-muted">You can set the number of chars with the length attribute.</p>
         <div>
-          <PinField className="pin-field" length={3} />
+          <ReactPinField className="pin-field" length={3} />
         </div>
 
         <h2 className="display-5 mt-5">With custom validation</h2>
@@ -99,7 +99,7 @@ const App: FC = () => {
         </p>
         <p>Only numbers:</p>
         <div>
-          <PinField className="pin-field" validate="0123456789" inputMode="numeric" />
+          <ReactPinField className="pin-field" validate="0123456789" inputMode="numeric" />
         </div>
 
         <h2 className="display-5 mt-5">With custom events</h2>
@@ -110,7 +110,7 @@ const App: FC = () => {
           <li>onRejectKey: when receiving a bad key</li>
         </ul>
         <div>
-          <PinField
+          <ReactPinField
             className="pin-field"
             onChange={setCode}
             onComplete={() => setCompleted(true)}
@@ -123,7 +123,7 @@ const App: FC = () => {
         <h2 className="display-5 mt-5">With custom InputHTMLAttributes</h2>
         <p className="mb-4 text-muted">Props inherit from InputHTMLAttributes. For eg. with a password type prop:</p>
         <div>
-          <PinField className="pin-field" type="password" />
+          <ReactPinField className="pin-field" type="password" />
         </div>
       </div>
     </>
