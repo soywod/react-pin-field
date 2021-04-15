@@ -1,42 +1,52 @@
-# 📟 React PIN Field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
 
-React component for entering PIN codes.
+React PIN Field is a React wrapper for [PIN
+Field](https://github.com/soywod/pin-field), a native web component for
+entering PIN codes.
 
-![gif](https://user-images.githubusercontent.com/10437171/111085791-36808100-8519-11eb-92e7-35eb293df5ab.gif)
+![gif](https://user-images.githubusercontent.com/10437171/112440937-2e131c00-8d4b-11eb-902c-9aa6b37973be.gif)
 
-*Live demo at https://react-pin-field.soywod.me.*
-
+*Live demo at https://soywod.github.io/pin-field/demo/.*
 
 ## Installation
 
-```bash
-yarn add react-pin-field
-# or
+```sh
 npm install react-pin-field
+# or
+yarn add react-pin-field
+```
+
+You also need to install the PIN Field web component (see
+https://github.com/soywod/pin-field#installation):
+
+```sh
+npm install @soywod/pin-field
+# or
+yarn add @soywod/pin-field
+# or
+<script type="module" src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"></script>
 ```
 
 ## Usage
 
 ```typescript
-import PinField from "react-pin-field"
+import ReactPinField from "react-pin-field"
 ```
 
 ## Props
 
 ```typescript
-type PinFieldProps = {
-  ref?: React.Ref<HTMLInputElement[]>
-  length?: number
-  validate?: string | string[] | RegExp | ((key: string) => boolean)
-  format?: (char: string) => string
-  onResolveKey?: (key: string, ref?: HTMLInputElement) => any
-  onRejectKey?: (key: string, ref?: HTMLInputElement) => any
-  onChange?: (code: string) => void
-  onComplete?: (code: string) => void
+type ReactPinFieldProps = {
+  length?: number;
+  validate?: string | string[] | RegExp | ((key: string) => boolean);
+  format?: (char: string) => string;
+  onResolveKey?: (key: string, ref?: HTMLInputElement) => any;
+  onRejectKey?: (key: string, ref?: HTMLInputElement) => any;
+  onChange?: (code: string) => void;
+  onComplete?: (code: string) => void;
 } & React.InputHTMLAttributes<HTMLInputElement>
 
-const defaultProps = {
-  ref: {current: []},
+const defaultProps: ReactPinFieldProps = {
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
@@ -49,7 +59,7 @@ const defaultProps = {
 
 ### Ref
 
-You can control each inputs with the PIN field ref:
+You can access the PIN field web component via the ref:
 
 ```typescript
 <PinField ref={ref} />
@@ -64,10 +74,6 @@ ref.current[2].focus()
 ### Style
 
 React PIN Field can be styled either with `className` or `style`. You can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`, `:valid`, `:invalid`…
-
-*The classes `-{index}`, `-focus`, `-success` and `-error` have been deprecated
-(and are not used anymore) since the
-[`v1.1.0`](https://github.com/soywod/react-pin-field/blob/master/CHANGELOG.md#110---2021-03-14).*
 
 ### Length
 
@@ -84,19 +90,15 @@ The validator prop can be:
 
 ### Format
 
-Function called just before adding a new char to the code. For example, to set
-the code to upper case: `(char: string) => char.toUpperCase()`
+The formatter allows you to format the code. For example, to set the code to
+upper case: `(char: string) => char.toUpperCase()`
 
 ### Events
 
-- onResolveKey: called when a char passes successfully the `validate` function
-- onRejectKey: the opposite of `onResolveKey`
-- onChange: called when the code changes
-- onComplete: called when the code has been fully filled
-
-## Examples
-
-See the [live demo](https://react-pin-field.soywod.me).
+- `onResolveKey`: triggered when a char passes successfully the validator
+- `onRejectKey`: the opposite of `onResolveKey`
+- `onChange`: triggered when the code changes
+- `onComplete`: triggered when the code has been completed
 
 ## Development
 
@@ -116,31 +118,4 @@ To build the lib:
 
 ```bash
 yarn build
-```
-
-To build the demo:
-
-```bash
-yarn build:demo
-```
-
-## Tests
-
-### Unit tests
-
-Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files) and
-[Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
-
-```bash
-yarn test:unit
-```
-
-### End-to-end tests
-
-End-to-end tests are handled by [Cypress](https://www.cypress.io) (`.e2e`
-files).
-
-```bash
-yarn start
-yarn test:e2e
 ```
