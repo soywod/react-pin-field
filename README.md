@@ -11,20 +11,9 @@ entering PIN codes.
 ## Installation
 
 ```sh
-npm install react-pin-field
+npm install react react-dom @soywod/pin-field react-pin-field
 # or
-yarn add react-pin-field
-```
-
-You also need to install the PIN Field web component (see
-https://github.com/soywod/pin-field#installation):
-
-```sh
-npm install @soywod/pin-field
-# or
-yarn add @soywod/pin-field
-# or
-<script type="module" src="https://cdn.jsdelivr.net/gh/soywod/pin-field/lib/pin-field.min.js"></script>
+yarn add react react-dom @soywod/pin-field react-pin-field
 ```
 
 ## Usage
