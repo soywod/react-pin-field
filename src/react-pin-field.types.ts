@@ -1,4 +1,4 @@
-import {PinField} from "."
+import {PinField} from ".";
 
 export type ReactPinFieldInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">;
 

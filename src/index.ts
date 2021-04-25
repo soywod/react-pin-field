@@ -1,4 +1,4 @@
-export * from "@soywod/pin-field"
+export * from "@soywod/pin-field";
 
 export * from "./react-pin-field";
 export * from "./react-pin-field.types";

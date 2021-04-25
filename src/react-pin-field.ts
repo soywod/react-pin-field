@@ -1,11 +1,11 @@
 import {FC, createElement, forwardRef, useEffect, useImperativeHandle, useRef} from "react";
 
+import {PinField} from "@soywod/pin-field";
 import {
-  PinField,
   ReactPinFieldProps as Props,
   ReactPinFieldDefaultProps as DefaultProps,
   ReactPinFieldInputProps as InputProps,
-} from ".";
+} from "./react-pin-field.types";
 
 function noop() {
   //
@@ -68,10 +68,10 @@ export const ReactPinField: FC<Props> = forwardRef((customProps, fwdRef) => {
     if (ref.current) {
       ref.current.validate = validate;
       ref.current.format = format;
-      ref.current.addEventListener("change", handleChange)
-      ref.current.addEventListener("resolve-key", handleResolveKey)
-      ref.current.addEventListener("reject-key", handleRejectKey)
-      ref.current.addEventListener("complete", handleComplete)
+      ref.current.addEventListener("change", handleChange);
+      ref.current.addEventListener("resolve-key", handleResolveKey);
+      ref.current.addEventListener("reject-key", handleRejectKey);
+      ref.current.addEventListener("complete", handleComplete);
 
       return () => {
         ref.current.removeEventListener("change", handleChange);
@@ -80,6 +80,7 @@ export const ReactPinField: FC<Props> = forwardRef((customProps, fwdRef) => {
         ref.current.removeEventListener("complete", handleComplete);
       };
     }
+    return;
   }, []);
 
   return createElement("swd-pin-field", {ref, class: className, length, ...inputProps});

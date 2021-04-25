@@ -21,15 +21,15 @@
   "bugs": {
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "files": [
-    "lib/react-pin-field.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
-    "lib/index.{js|js.map|d.ts}"
+    "dist",
+    "src"
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "tsdx lint"
     }
   },
   "devDependencies": {
@@ -38,23 +38,17 @@
     "@types/classnames": "^2.2.9",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.15.0",
-    "@typescript-eslint/parser": "^4.15.0",
-    "babel-eslint": "^10.0.3",
     "classnames": "^2.2.6",
-    "eslint": "^6.7.2",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-react-hooks": "^1.7.0",
     "husky": "^3.1.0",
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "sass": "^1.23.7",
     "ts-jest": "^26.5.1",
     "ts-loader": "^6.2.1",
-    "typescript": "^4.1.5",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4",
     "webpack": "^4.41.3"
   },
   "peerDependencies": {
@@ -63,10 +57,15 @@
     "react-dom": "^16.8 || ^17"
   },
   "scripts": {
-    "start": "parcel serve -d lib -p 3000 src/demo/index.html",
-    "build": "tsc",
-    "build:demo": "parcel build -d lib src/demo/index.html",
-    "lint": "eslint src/**/*.ts{,x}",
-    "prepublish": "yarn build"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "start:demo": "parcel serve -d lib -p 3000 src/demo/index.html",
+    "build:demo": "parcel build -d lib src/demo/index.html"
+  },
+  "dependencies": {
+    "eslint-plugin-prettier": "^3.4.0"
   }
 }
