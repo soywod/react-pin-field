@@ -64,8 +64,5 @@
     "test": "tsdx test --passWithNoTests",
     "start:demo": "parcel serve -d lib -p 3000 src/demo/index.html",
     "build:demo": "parcel build -d lib src/demo/index.html"
-  },
-  "dependencies": {
-    "eslint-plugin-prettier": "^3.4.0"
   }
 }
