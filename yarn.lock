@@ -2016,10 +2016,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@soywod/pin-field@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.1.6.tgz#7eabb4f2c112b45d1ef6dc1f265128e3864113c9"
-  integrity sha512-LRtBURHZ9LotlepeLhiKienCOIbZap8SWCxy9KXpB6g8pbOBDK2Rnz270+Wkolxv2W7a0HwAZyajtSeJr99nWw==
+"@soywod/pin-field@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.2.1.tgz#9accc7bd0a0dbbf68da549088cf12276cb12d743"
+  integrity sha512-WgdLL+o/4POFfwyYlJPz9Tan7fVWk0bxW0AiNYY08lMm0GTFfprMJcRiG3gcPFuSHXCLt5VAsmRHPgj7jZh8TA==
 
 "@types/babel__core@^7.1.7":
   version "7.1.14"

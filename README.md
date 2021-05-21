@@ -1,4 +1,5 @@
-# 📟 React PIN Field [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field
+[![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
 
 React PIN Field is a React wrapper for [PIN
 Field](https://github.com/soywod/pin-field), a native web component for

@@ -5,10 +5,10 @@ import {
   ReactPinFieldProps as Props,
   ReactPinFieldDefaultProps as DefaultProps,
   ReactPinFieldInputProps as InputProps,
-} from "./react-pin-field.types";
+} from "./index.types";
 
 export * from "@soywod/pin-field";
-export * from "./react-pin-field.types";
+export * from "./index.types";
 
 function noop() {
   //
