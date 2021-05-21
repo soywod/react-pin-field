@@ -1,8 +1,8 @@
 {
   "name": "react-pin-field",
-  "description": "React component for entering PIN codes.",
+  "description": "📟 React component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
-  "license": "BSD-3-CLAUSE",
+  "license": "BSD-3-Clause",
   "version": "2.0.0-beta.0",
   "private": false,
   "keywords": [
@@ -24,12 +24,11 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "yarn lint"
     }
   },
   "devDependencies": {
@@ -59,8 +58,8 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "lint": "tsdx lint src",
+    "prepare": "yarn build",
     "test": "tsdx test --passWithNoTests",
     "start:demo": "parcel serve -d lib -p 3000 src/demo/index.html",
     "build:demo": "parcel build -d lib src/demo/index.html"
