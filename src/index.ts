@@ -77,10 +77,12 @@ export const ReactPinField: FC<Props> = forwardRef((customProps, fwdRef) => {
       ref.current.addEventListener("complete", handleComplete);
 
       return () => {
-        ref.current.removeEventListener("change", handleChange);
-        ref.current.removeEventListener("resolve-key", handleResolveKey);
-        ref.current.removeEventListener("reject-key", handleRejectKey);
-        ref.current.removeEventListener("complete", handleComplete);
+        if (ref.current) {
+          ref.current.removeEventListener("change", handleChange);
+          ref.current.removeEventListener("resolve-key", handleResolveKey);
+          ref.current.removeEventListener("reject-key", handleRejectKey);
+          ref.current.removeEventListener("complete", handleComplete);
+        }
       };
     }
     return;
