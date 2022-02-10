@@ -1300,10 +1300,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@soywod/pin-field@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.2.1.tgz#9accc7bd0a0dbbf68da549088cf12276cb12d743"
-  integrity sha512-WgdLL+o/4POFfwyYlJPz9Tan7fVWk0bxW0AiNYY08lMm0GTFfprMJcRiG3gcPFuSHXCLt5VAsmRHPgj7jZh8TA==
+"@soywod/pin-field@^0.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@soywod/pin-field/-/pin-field-0.2.2.tgz#60f1e6be27db41d73e0406c20bce8f96c1a6a160"
+  integrity sha512-R0kpLXHn+Nbi3D4Eb0dHNQbx+yYWuvMWxy5hPEoVok+RfpUIpAMrhJQC4Qmg3FkkFrROPejO9VWyPGMID+Dv+Q==
 
 "@types/babel__core@^7.1.7":
   version "7.1.18"

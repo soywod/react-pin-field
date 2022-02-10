@@ -19,6 +19,7 @@ const defaultProps: DefaultProps = {
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
+  debug: false,
   onResolveKey: noop,
   onRejectKey: noop,
   onChange: noop,
@@ -34,6 +35,7 @@ export const ReactPinField: FC<Props> = forwardRef((customProps, fwdRef) => {
     length,
     validate,
     format,
+    debug,
     onResolveKey,
     onRejectKey,
     onChange,
@@ -88,7 +90,7 @@ export const ReactPinField: FC<Props> = forwardRef((customProps, fwdRef) => {
     return;
   }, []);
 
-  return createElement("swd-pin-field", {ref, class: className, length, ...inputProps});
+  return createElement("swd-pin-field", {ref, class: className, length, debug: debug ? "" : undefined, ...inputProps});
 });
 
 export default ReactPinField;

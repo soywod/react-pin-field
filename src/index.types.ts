@@ -7,6 +7,7 @@ export type ReactPinFieldDefaultProps = {
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
+  debug: boolean;
   onResolveKey: (key: string, ref?: HTMLInputElement) => any;
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
   onChange: (code: string) => void;

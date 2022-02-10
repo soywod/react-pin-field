@@ -12,6 +12,12 @@ cypress/screenshots
 
 # production
 dist/
+lib/
+
+# Direnv
+.envrc
+.direnv/
+.log/
 
 # misc
 .DS_Store
