@@ -70,8 +70,8 @@
     "yarn-run-all": "^3.1.1"
   },
   "peerDependencies": {
-    "react": "^16.8 || ^17",
-    "react-dom": "^16.8 || ^17"
+    "react": ">=16.8",
+    "react-dom": ">=16.8"
   },
   "dependencies": {
     "classnames": "^2.2.6"
