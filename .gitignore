@@ -2,6 +2,7 @@
 
 # cache
 .cache/
+.direnv/
 
 # dependencies
 node_modules/
@@ -19,6 +20,7 @@ lib/
 .env.development.local
 .env.test.local
 .env.production.local
+.envrc
 
 npm-debug.log*
 yarn-debug.log*
