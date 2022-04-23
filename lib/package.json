@@ -1,0 +1,81 @@
+{
+  "name": "react-pin-field",
+  "description": "React component for entering PIN codes.",
+  "author": "soywod <clement.douin@posteo.net>",
+  "license": "MIT",
+  "version": "3.0.0",
+  "private": false,
+  "keywords": [
+    "react",
+    "component",
+    "pin",
+    "code",
+    "input",
+    "field"
+  ],
+  "homepage": "https://github.com/soywod/react-pin-field",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soywod/react-pin-field.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soywod/react-pin-field/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/react-pin-field.esm.js",
+  "files": [
+    "dist"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint",
+      "pre-push": "run-p lint test:unit"
+    }
+  },
+  "devDependencies": {
+    "@cypress/webpack-preprocessor": "^4.1.1",
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/enzyme": "^3.10.4",
+    "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.149",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
+    "classnames": "^2.3.1",
+    "cypress": "^5.0.0",
+    "enzyme": "^3.11.0",
+    "husky": "^7.0.4",
+    "jest": "^26.6.3",
+    "jest-environment-enzyme": "^7.1.2",
+    "lodash": "^4.17.15",
+    "parcel-bundler": "^1.12.4",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "sass": "^1.23.7",
+    "size-limit": "^7.0.8",
+    "ts-jest": "^26.5.1",
+    "ts-loader": "^6.2.1",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.3",
+    "typescript-language-server": "^0.9.7",
+    "webpack": "^4.41.3",
+    "yarn-run-all": "^3.1.1"
+  },
+  "peerDependencies": {
+    "react": ">=16.8",
+    "react-dom": ">=16.8"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "watch": "tsdx watch",
+    "build": "tsdx build",
+    "start:demo": "parcel serve -p 3000 src/_demo/index.html",
+    "build:demo": "parcel build src/_demo/index.html",
+    "lint": "tsdx lint",
+    "test:unit": "jest",
+    "test:e2e": "cypress run",
+    "test": "run-p test:unit test:e2e"
+  }
+}

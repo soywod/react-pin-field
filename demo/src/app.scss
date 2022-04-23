@@ -1,0 +1,84 @@
+$black: #333333;
+$blue: #686de0;
+$gray: #d3d3d3;
+$green: #6ab04c;
+$red: #dc3545;
+$white: #ffffff;
+
+code {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+}
+
+.pin-field-container {
+  display: grid;
+  grid-auto-columns: max-content;
+  grid-auto-flow: column;
+  justify-content: center;
+  margin: 4rem 0;
+}
+
+.pin-field {
+  border: 1px solid $gray;
+  border-right: none;
+  font-size: 2rem;
+  height: 4rem;
+  outline: none;
+  text-align: center;
+  transition-duration: 250ms;
+  transition-property: color, border, box-shadow, transform;
+  width: 4rem;
+
+  &:first-of-type {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+
+  &:last-of-type {
+    border-radius: 0 0.5rem 0.5rem 0;
+    border-right: 1px solid $gray;
+  }
+
+  &:focus {
+    border-color: $blue;
+    box-shadow: 0 0 0.25rem rgba($blue, 0.5);
+    outline: none;
+
+    & + .pin-field {
+      border-left-color: $blue;
+    }
+  }
+
+  &:invalid {
+    animation: shake 5 linear 75ms;
+    border-color: $red;
+    box-shadow: 0 0 0.25rem rgba($red, 0.5);
+
+    & + .pin-field {
+      border-left-color: $red;
+    }
+  }
+
+  &.complete {
+    border-color: $green;
+    color: $green;
+
+    &[disabled] {
+      background: rgba($green, 0.1);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    & + .pin-field {
+      border-left-color: $green;
+    }
+  }
+}
+
+@keyframes shake {
+  from {
+    transform: translateY(-5%);
+  }
+  to {
+    transform: translateY(5%);
+  }
+}

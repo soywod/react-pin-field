@@ -1,0 +1,8 @@
+[build]
+base = "demo"
+publish = "build"
+command = "yarn build"
+
+[build.environment]
+NODE_VERSION = "14"
+NETLIFY_USE_YARN = "true"
