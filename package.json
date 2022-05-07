@@ -5,14 +5,7 @@
   "license": "BSD-3-Clause",
   "version": "2.0.0-beta.3",
   "private": false,
-  "keywords": [
-    "react",
-    "component",
-    "pin",
-    "code",
-    "input",
-    "field"
-  ],
+  "keywords": ["react", "component", "pin", "code", "input", "field"],
   "homepage": "https://github.com/soywod/react-pin-field",
   "repository": {
     "type": "git",
@@ -23,9 +16,7 @@
   },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint"
@@ -52,8 +43,8 @@
   },
   "peerDependencies": {
     "@soywod/pin-field": "^0.2",
-    "react": "^16.8 || ^17",
-    "react-dom": "^16.8 || ^17"
+    "react": "^16.8 || ^17 || ^18",
+    "react-dom": "^16.8 || ^17 || ^18"
   },
   "scripts": {
     "start": "tsdx watch",
