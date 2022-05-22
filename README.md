@@ -52,54 +52,52 @@ const defaultProps = {
 
 ### Ref
 
-You can control each inputs with the PIN field ref:
+Every input can be controlled thanks to the React ref:
 
 ```typescript
 <PinField ref={ref} />
 
-// To reset the PIN field
+// reset all inputs
 ref.current.forEach(input => (input.value = ""))
 
-// To focus one particular input
+// focus the third input
 ref.current[2].focus()
 ```
 
 ### Style
 
-React PIN field follows the [ABEM
-convention](https://css-tricks.com/abem-useful-adaptation-bem/). Each input has a class named `a-reactPinField__input`, plus:
-
-  - `-{index}` where index is the position of the input. Eg: `-0` for the first input, `-2` for the third etc.
-  - `-focus` when the current input is focused.
-  - `-success` when a key is resolved.
-  - `-error` when a key is rejected.
-
-You can also pass a custom `className` or a custom `style`.
+The pin field can be styled either with `className` or `style`. You
+can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`,
+`:valid`, `:invalid`…
 
 ### Length
 
-Length of the code (number of characters to type). Default: `5`.
+Length of the code (number of characters to type).
 
 ### Validate
 
-Hook called to validate a char. It can be:
+Key validator. It can be a:
 
-- A string of allowed characters: `abcABC123`
-- A list of allowed chars: `["a", "b", "c", "1", "2", "3"]`
-- A RegExp: `/^[a-zA-Z0-9]$/`
-- A function: `(char: string) => boolean`
+- String of allowed characters: `abcABC123`
+- Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
+- RegExp: `/^[a-zA-Z0-9]$/`
+- Predicate: `(char: string) => boolean`
+
+Default: `/^[a-zA-Z0-9]$/`.
 
 ### Format
 
-Hook called before adding a new char to the code. For example, to set the code
-to upper case: `(char: string) => char.toUpperCase()`
+Key formatter. It is called every type a key is typed. For example, to
+set the code to upper case: `(char: string) => char.toUpperCase()`.
+
+Default: `(char: string) => char`.
 
 ### Events
 
-- onResolveKey: called when a char passes successfully the `validate` function
-- onRejectKey: the opposite of `onResolveKey`
-- onChange: called when the code changes
-- onComplete: called when the code has been filled
+- `onResolveKey`: when a key passes successfully the validator
+- `onRejectKey`: when a key is rejected by the validator
+- `onChange`: when the code changes
+- `onComplete`: when the code has been fully filled
 
 ## Examples
 
@@ -135,8 +133,8 @@ yarn build:demo
 
 ### Unit tests
 
-Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files) and
-[Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
+Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files)
+and [Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
 
 ```bash
 yarn test:unit
@@ -144,8 +142,8 @@ yarn test:unit
 
 ### End-to-end tests
 
-End-to-end tests are handled by [Cypress](https://www.cypress.io) (`.e2e`
-files).
+End-to-end tests are handled by [Cypress](https://www.cypress.io)
+(`.e2e` files).
 
 ```bash
 yarn start

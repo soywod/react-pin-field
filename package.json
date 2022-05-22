@@ -40,16 +40,17 @@
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.1",
     "@size-limit/preset-small-lib": "^7.0.8",
-    "@types/classnames": "^2.2.9",
     "@types/enzyme": "^3.10.4",
     "@types/jest": "^24.0.24",
     "@types/lodash": "^4.14.149",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
+    "classnames": "^2.3.1",
     "cypress": "^5.0.0",
     "enzyme": "^3.11.0",
     "husky": "^7.0.4",
+    "jest": "^26.6.3",
     "jest-environment-enzyme": "^7.1.2",
     "lodash": "^4.17.15",
     "parcel-bundler": "^1.12.4",
@@ -70,6 +71,7 @@
     "react": ">=16.8",
     "react-dom": ">=16.8"
   },
+  "dependencies": {},
   "scripts": {
     "start": "tsdx watch",
     "watch": "tsdx watch",
@@ -80,8 +82,5 @@
     "test:unit": "jest",
     "test:e2e": "cypress run",
     "test": "run-p test:unit test:e2e"
-  },
-  "dependencies": {
-    "classnames": "^2.2.6"
   }
 }
