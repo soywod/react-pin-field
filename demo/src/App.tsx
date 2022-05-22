@@ -1,10 +1,11 @@
 import React, {FC, useRef, useState} from "react";
 import ReactDOM from "react-dom";
+import PinField from "react-pin-field"
 import cn from "classnames";
 
-import PinField from "..";
+import './App.scss';
 
-const App: FC = () => {
+function App() {
   const [demoCompleted, setDemoCompleted] = useState(false);
   const [code, setCode] = useState("");
   const [completed, setCompleted] = useState(false);
@@ -79,24 +80,8 @@ const App: FC = () => {
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-          React PIN Field follows the <a href="https://css-tricks.com/abem-useful-adaptation-bem/">ABEM</a> convention.
-          Each input has a class named <code>a-reactPinField__input</code>, plus:
+          The field can be customized with the <code>class</code> and <code>style</code> attributes. Standard validation pseudo-classes <code>:valid</code> and <code>:invalid</code> can also be used. Since there is no <code>:complete</code> pseudo-classe, the field exposes a custom attribute <code>completed</code> to match with <code>disabled</code>.
         </p>
-        <ul>
-          <li>
-            <code>-{"{index}"}</code> where index is the position of the input. Eg: <code>-0</code> for the first input,{" "}
-            <code>-2</code> for the third etc.
-          </li>
-          <li>
-            <code>-focus</code> when the current input is focused
-          </li>
-          <li>
-            <code>-success</code> when a key is resolved
-          </li>
-          <li>
-            <code>-error</code> when a key is rejected
-          </li>
-        </ul>
         <div>
           <PinField className="pin-field" />
         </div>
@@ -144,4 +129,4 @@ const App: FC = () => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById("root"));
+export default App;
