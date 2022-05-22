@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import PinField from "react-pin-field"
 import cn from "classnames";
 
-import './App.scss';
+import './app.scss';
 
 function App() {
   const [demoCompleted, setDemoCompleted] = useState(false);
