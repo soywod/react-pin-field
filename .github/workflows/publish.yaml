@@ -31,7 +31,7 @@ jobs:
       working-directory: demo
       run: yarn build
       env:
-        PUBLIC_URL: react-pin-field
+        PUBLIC_URL: /react-pin-field
     - name: Deploy demo
       uses: JamesIves/github-pages-deploy-action@v4.3.3
       with:

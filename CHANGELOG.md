@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.10] - 2022-05-22
+## [3.0.11] - 2022-05-22
 
 Revert the lib state from `v1.0.6`. The native web component used in
 the `v2.0.0` was too hard to maintain. It led to many issues.
