@@ -1,6 +1,6 @@
 {
   "name": "react-pin-field-demo",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
