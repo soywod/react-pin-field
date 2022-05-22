@@ -10530,11 +10530,6 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-lib@=3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/lib/-/lib-3.0.0.tgz#6b6fe8173db54a97aedc2555335eb7267600d278"
-  integrity sha1-a2/oFz21Speu3CVVM163JnYA0ng=
-
 lilconfig@^2.0.3, lilconfig@^2.0.4, lilconfig@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.5.tgz#19e57fd06ccc3848fd1891655b5a447092225b25"
