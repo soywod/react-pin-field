@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2022-05-22
+
+Fix CI issues.
+
 ## [3.0.1] - 2022-05-22
 
 Fix merge issues.
@@ -95,7 +99,8 @@ entering PIN codes.
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.1...HEAD
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/unfog-io/unfog-cli/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/unfog-io/unfog-cli/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.0
 [2.0.0-beta.0]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...v2.0.0-beta.0
