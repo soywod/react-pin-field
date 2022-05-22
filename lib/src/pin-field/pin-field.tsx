@@ -2,7 +2,10 @@ import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "r
 
 import {useMVU} from "../mvu";
 import keyboardEventPolyfill from "../polyfills/keyboard-evt";
-import {noop, range, omit, debug} from "../utils";
+import {noop, range, omit, consoleDebug} from "../utils";
+
+// current debug function
+let debug: typeof consoleDebug = noop;
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -28,6 +31,7 @@ export const defaultProps: DefaultProps = {
   onRejectKey: noop,
   onChange: noop,
   onComplete: noop,
+  debug: false,
 };
 
 export function defaultState(props: Pick<DefaultProps, "validate" | "length">): State {
@@ -149,12 +153,7 @@ export function apply(state: State, action: Action): [State, Effect[]] {
     }
 
     case "handle-paste": {
-      if (
-        !action.val
-          .split("")
-          .slice(0, state.codeLength)
-          .every(state.isKeyAllowed)
-      ) {
+      if (!action.val.split("").slice(0, state.codeLength).every(state.isKeyAllowed)) {
         debug("reducer", "handle-paste", `rejected,val=${action.val}`);
         return [state, [{type: "reject-key", idx: action.idx, key: action.val}]];
       }
@@ -262,17 +261,21 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   const notify = useNotifier({refs, ...props});
   const dispatch = useMVU(model, apply, notify);
 
+  if (props.debug) {
+    debug = consoleDebug;
+  }
+
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
   function handleFocus(idx: number) {
-    return function() {
+    return function () {
       debug("main", "event", `focus,idx=${idx}`);
       dispatch({type: "focus-input", idx});
     };
   }
 
   function handleKeyDown(idx: number) {
-    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
 
       if (
@@ -292,7 +295,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function handleKeyUp(idx: number) {
-    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       if (evt.nativeEvent.target instanceof HTMLInputElement) {
         debug("main", "event", `key-up,idx=${idx}`);
         dispatch({type: "handle-key-up", idx, val: evt.nativeEvent.target.value});
@@ -301,7 +304,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function handlePaste(idx: number) {
-    return function(evt: React.ClipboardEvent<HTMLInputElement>) {
+    return function (evt: React.ClipboardEvent<HTMLInputElement>) {
       evt.preventDefault();
       const val = evt.clipboardData.getData("Text");
       debug("main", "event", `paste,idx=${idx},val=${val}`);
@@ -310,7 +313,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function setRefAtIndex(idx: number) {
-    return function(ref: HTMLInputElement) {
+    return function (ref: HTMLInputElement) {
       if (ref) {
         refs.current[idx] = ref;
       }

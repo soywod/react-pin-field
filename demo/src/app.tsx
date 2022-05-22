@@ -1,21 +1,14 @@
-import React, {FC, useRef, useState} from "react";
-import ReactDOM from "react-dom";
-<<<<<<< HEAD:lib/src/demo/index.tsx
+import React, {useRef, useState} from "react";
+import PinField from "react-pin-field";
 import cn from "classnames";
 
-import ReactPinField, {PinField} from "..";
-=======
-import PinField from "react-pin-field"
-import cn from "classnames";
-
-import './app.scss';
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
+import "./app.scss";
 
 function App() {
   const [demoCompleted, setDemoCompleted] = useState(false);
   const [code, setCode] = useState("");
   const [completed, setCompleted] = useState(false);
-  const ref = useRef<PinField | null>(null);
+  const ref = useRef<HTMLInputElement[]>([]);
 
   return (
     <>
@@ -55,11 +48,7 @@ function App() {
             <kbd>$ yarn add react-pin-field</kbd>
           </div>
           <div className="pin-field-container">
-<<<<<<< HEAD:lib/src/demo/index.tsx
-            <ReactPinField
-=======
             <PinField
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
               className={cn("pin-field", {complete: demoCompleted})}
               onComplete={() => setDemoCompleted(true)}
               format={k => k.toUpperCase()}
@@ -73,13 +62,6 @@ function App() {
       <div className="container mb-5">
         <h2 className="display-5 mb-4">Default</h2>
         <div>
-<<<<<<< HEAD:lib/src/demo/index.tsx
-          <ReactPinField data-cy="pin-field" />
-        </div>
-
-        <h2 className="display-5 mt-4">With ref</h2>
-        <p className="mb-4 text-muted">You can control each input with the pin field ref:</p>
-=======
           <PinField data-cy="pin-field" />
         </div>
 
@@ -88,34 +70,19 @@ function App() {
         <div>
           <PinField ref={ref} />
         </div>
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
         <div>
-          <ReactPinField ref={ref} />
-        </div>
-        <div>
-          <button onClick={() => ref && ref.current && ref.current.inputs[1].focus()}>Focus 2nd input</button>
-          <button onClick={() => ref && ref.current && ref.current.inputs.forEach(input => (input.value = ""))}>
+          <button onClick={() => ref && ref.current && ref.current[1].focus()}>Focus 2nd input</button>
+          <button onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}>
             Reset values
           </button>
         </div>
 
         <h2 className="display-5 mt-5">With custom style</h2>
         <p className="mb-4 text-muted">
-<<<<<<< HEAD:lib/src/demo/index.tsx
-          The attributes <code>className</code> and <code>style</code> are transmitted to all inputs. You can also use
-          pseudo-classes
-          <code>:valid</code>, <code>:invalid</code>, <code>:focus</code>, <code>:hover</code>…
-        </p>
-        <div>
-          <ReactPinField className="pin-field" />
-        </div>
-
-        <h2 className="display-5 mt-5">With custom length</h2>
-        <p className="mb-4 text-muted">You can set the number of chars with the length attribute.</p>
-        <div>
-          <ReactPinField className="pin-field" length={3} />
-=======
-          The field can be customized with the <code>class</code> and <code>style</code> attributes. Standard validation pseudo-classes <code>:valid</code> and <code>:invalid</code> can also be used. Since there is no <code>:complete</code> pseudo-classe, the field exposes a custom attribute <code>completed</code> to match with <code>disabled</code>.
+          The field can be customized with the <code>class</code> and <code>style</code> attributes. Standard validation
+          pseudo-classes <code>:valid</code> and <code>:invalid</code> can also be used. Since there is no{" "}
+          <code>:complete</code> pseudo-classe, the field exposes a custom attribute <code>completed</code> to match
+          with <code>disabled</code>.
         </p>
         <div>
           <PinField className="pin-field" />
@@ -125,35 +92,26 @@ function App() {
         <p className="mb-4 text-muted">You can set the number of chars with the length prop. Default set to 5 chars.</p>
         <div>
           <PinField className="pin-field" length={3} />
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
         </div>
 
         <h2 className="display-5 mt-5">With custom validation</h2>
         <p className="mb-4 text-muted">
-          You can restrict input with a string of allowed chars, a regex, or a function.
+          You can restrict input with a string of allowed chars, or a regex, or a function.
         </p>
         <p>Only numbers:</p>
         <div>
-<<<<<<< HEAD:lib/src/demo/index.tsx
-          <ReactPinField className="pin-field" validate="0123456789" inputMode="numeric" />
-=======
           <PinField className="pin-field" validate="0123456789" inputMode="numeric" />
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
         </div>
 
         <h2 className="display-5 mt-5">With custom events</h2>
         <ul className="mb-4 text-muted">
           <li>onChange: when the code changes</li>
-          <li>onComplete: when the code has been fully filled</li>
-          <li>onResolveKey: when receiving a good key</li>
-          <li>onRejectKey: when receiving a bad key</li>
+          <li>onComplete: when the code has been filled</li>
+          <li>onResolveKey: when receive a good key</li>
+          <li>onRejectKey: when receive a bad key</li>
         </ul>
         <div>
-<<<<<<< HEAD:lib/src/demo/index.tsx
-          <ReactPinField
-=======
           <PinField
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
             className="pin-field"
             onChange={setCode}
             onComplete={() => setCompleted(true)}
@@ -166,15 +124,11 @@ function App() {
         <h2 className="display-5 mt-5">With custom InputHTMLAttributes</h2>
         <p className="mb-4 text-muted">Props inherit from InputHTMLAttributes. For eg. with a password type prop:</p>
         <div>
-<<<<<<< HEAD:lib/src/demo/index.tsx
-          <ReactPinField className="pin-field" type="password" />
-=======
           <PinField className="pin-field" type="password" />
->>>>>>> 5ac272f (revert lib to v1 state):demo/src/app.tsx
         </div>
       </div>
     </>
   );
-};
+}
 
 export default App;

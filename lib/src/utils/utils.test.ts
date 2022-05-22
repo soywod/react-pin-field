@@ -1,4 +1,4 @@
-import {noop, range, omit, debug} from "./utils";
+import {noop, range, omit, consoleDebug} from "./utils";
 
 test("noop", () => {
   expect(noop()).toEqual(undefined);
@@ -21,9 +21,9 @@ test("omit", () => {
 test("debug", () => {
   jest.spyOn(global.console, "debug").mockImplementation(noop);
 
-  debug("scope", "fn");
+  consoleDebug("scope", "fn");
   expect(console.debug).toHaveBeenCalledWith(`[React PIN Field] (scope) fn`);
 
-  debug("scope", "fn", "msg");
+  consoleDebug("scope", "fn", "msg");
   expect(console.debug).toHaveBeenCalledWith(`[React PIN Field] (scope) fn: msg`);
 });

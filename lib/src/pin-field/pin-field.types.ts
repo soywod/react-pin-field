@@ -9,6 +9,7 @@ export type PinFieldDefaultProps = {
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
   onChange: (code: string) => void;
   onComplete: (code: string) => void;
+  debug: boolean;
 };
 
 export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;

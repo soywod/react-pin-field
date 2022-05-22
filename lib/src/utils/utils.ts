@@ -18,6 +18,6 @@ export function omit<T = Record<string, unknown>>(keys: string[], input: T): T {
   return output;
 }
 
-export function debug(scope: string, fn: string, msg?: string): void {
+export function consoleDebug(scope: string, fn: string, msg?: string): void {
   console.debug(`[React PIN Field] (${scope}) ${fn}${msg ? `: ${msg}` : ""}`);
 }
