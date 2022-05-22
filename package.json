@@ -1,4 +1,10 @@
 {
   "private": true,
-  "workspaces": ["lib", "demo"]
+  "workspaces": [
+    "lib",
+    "demo"
+  ],
+  "scripts": {
+    "prepare": "yarn workspaces run prepare"
+  }
 }

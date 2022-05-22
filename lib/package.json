@@ -68,6 +68,7 @@
     "react-dom": ">=16.8"
   },
   "scripts": {
+    "prepare": "yarn build",
     "start": "tsdx watch",
     "watch": "tsdx watch",
     "build": "tsdx build",
