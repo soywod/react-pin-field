@@ -23,13 +23,9 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "module": "dist/react-pin-field.esm.js",
   "files": [
-    "dist/pin-field/pin-field.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
-    "dist/mvu/mvu.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
-    "dist/kb-event/kb-event.{types.js|types.js.map|types.d.ts|js|js.map|d.ts}",
-    "dist/utils/utils.{js|js.map|d.ts}",
-    "dist/**/index.{js|js.map|d.ts}",
-    "dist/index.{js|js.map|d.ts}"
+    "dist"
   ],
   "husky": {
     "hooks": {
@@ -71,7 +67,6 @@
     "react": ">=16.8",
     "react-dom": ">=16.8"
   },
-  "dependencies": {},
   "scripts": {
     "start": "tsdx watch",
     "watch": "tsdx watch",
