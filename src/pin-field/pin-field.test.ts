@@ -1,4 +1,4 @@
-import "react";
+import React from "react";
 
 import * as pinField from "./pin-field";
 import {noop} from "../utils";
@@ -136,14 +136,24 @@ describe("apply", () => {
 
   describe("handle-key-down", () => {
     test("unidentified", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Unidentified", idx: 0, val: ""});
+      const [state, eff] = apply(currState, {
+        type: "handle-key-down",
+        key: "Unidentified",
+        idx: 0,
+        val: "",
+      });
 
       expect(state).toMatchObject(state);
       expect(eff).toEqual([]);
     });
 
     test("dead", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Dead", idx: 0, val: ""});
+      const [state, eff] = apply(currState, {
+        type: "handle-key-down",
+        key: "Dead",
+        idx: 0,
+        val: "",
+      });
 
       expect(state).toMatchObject(state);
       expect(eff).toEqual([
@@ -155,7 +165,12 @@ describe("apply", () => {
 
     describe("left arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowLeft", idx: 0, val: ""});
+        const [state, eff] = apply(currState, {
+          type: "handle-key-down",
+          key: "ArrowLeft",
+          idx: 0,
+          val: "",
+        });
 
         expect(state).toMatchObject({...state, focusIdx: 0});
         expect(eff).toEqual([{type: "focus-input", idx: 0}]);
@@ -174,7 +189,12 @@ describe("apply", () => {
 
     describe("right arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "ArrowRight", idx: 0, val: ""});
+        const [state, eff] = apply(currState, {
+          type: "handle-key-down",
+          key: "ArrowRight",
+          idx: 0,
+          val: "",
+        });
 
         expect(state).toMatchObject({...state, focusIdx: 1});
         expect(eff).toEqual([{type: "focus-input", idx: 1}]);
@@ -192,14 +212,24 @@ describe("apply", () => {
     });
 
     test("backspace", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Backspace", idx: 0, val: ""});
+      const [state, eff] = apply(currState, {
+        type: "handle-key-down",
+        key: "Backspace",
+        idx: 0,
+        val: "",
+      });
 
       expect(state).toMatchObject({...state, focusIdx: 0});
       expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
     });
 
     test("delete", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-down", key: "Delete", idx: 0, val: ""});
+      const [state, eff] = apply(currState, {
+        type: "handle-key-down",
+        key: "Delete",
+        idx: 0,
+        val: "",
+      });
 
       expect(state).toMatchObject({...state, focusIdx: 0});
       expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
@@ -207,7 +237,12 @@ describe("apply", () => {
 
     describe("default", () => {
       test("resolve", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "a", idx: 0, val: ""});
+        const [state, eff] = apply(currState, {
+          type: "handle-key-down",
+          key: "a",
+          idx: 0,
+          val: "",
+        });
 
         expect(state).toMatchObject({...state, focusIdx: 1});
         expect(eff).toEqual([
@@ -219,7 +254,12 @@ describe("apply", () => {
       });
 
       test("reject", () => {
-        const [state, eff] = apply(currState, {type: "handle-key-down", key: "@", idx: 0, val: ""});
+        const [state, eff] = apply(currState, {
+          type: "handle-key-down",
+          key: "@",
+          idx: 0,
+          val: "",
+        });
 
         expect(state).toMatchObject(state);
         expect(eff).toEqual([{type: "reject-key", idx: 0, key: "@"}]);
@@ -229,7 +269,11 @@ describe("apply", () => {
 
   describe("handle-key-up", () => {
     test("no fallback", () => {
-      const [state, eff] = apply(currState, {type: "handle-key-up", idx: 0, val: ""});
+      const [state, eff] = apply(currState, {
+        type: "handle-key-up",
+        idx: 0,
+        val: "",
+      });
 
       expect(state).toMatchObject(state);
       expect(eff).toEqual([]);
@@ -284,7 +328,11 @@ describe("apply", () => {
 
   describe("handle-paste", () => {
     test("paste smaller text than code length", () => {
-      const [state, eff] = apply(currState, {type: "handle-paste", idx: 0, val: "abc"});
+      const [state, eff] = apply(currState, {
+        type: "handle-paste",
+        idx: 0,
+        val: "abc",
+      });
 
       expect(state).toMatchObject({...state, focusIdx: 3});
       expect(eff).toEqual([
@@ -297,7 +345,11 @@ describe("apply", () => {
     });
 
     test("paste bigger text than code length", () => {
-      const [state, eff] = apply(currState, {type: "handle-paste", idx: 0, val: "abcdefgh"});
+      const [state, eff] = apply(currState, {
+        type: "handle-paste",
+        idx: 0,
+        val: "abcdefgh",
+      });
 
       expect(state).toMatchObject({...state, focusIdx: 4});
       expect(eff).toEqual([
@@ -319,7 +371,11 @@ describe("apply", () => {
     });
 
     test("paste with denied key", () => {
-      const [state, eff] = apply(currState, {type: "handle-paste", idx: 1, val: "ab@"});
+      const [state, eff] = apply(currState, {
+        type: "handle-paste",
+        idx: 1,
+        val: "ab@",
+      });
 
       expect(state).toMatchObject(state);
       expect(eff).toEqual([{type: "reject-key", idx: 1, key: "ab@"}]);
@@ -353,7 +409,9 @@ describe("notify", () => {
     onComplete: jest.fn(),
   };
 
-  const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]};
+  const refs: React.RefObject<any> = {
+    current: [inputA.ref, inputB.ref, inputC.ref],
+  };
   const notify = useNotifier({...propsMock, refs});
 
   beforeEach(() => {
@@ -451,7 +509,9 @@ describe("notify", () => {
       const inputA = mockInput("a");
       const inputB = mockInput("b");
       const inputC = mockInput("c");
-      const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]};
+      const refs: React.RefObject<any> = {
+        current: [inputA.ref, inputB.ref, inputC.ref],
+      };
       const notify = useNotifier({...propsMock, refs});
 
       notify({type: "handle-code-change"});
@@ -468,7 +528,9 @@ describe("notify", () => {
       const inputA = mockInput("a");
       const inputB = mockInput("b");
       const inputC = mockInput("c");
-      const refs: React.RefObject<any> = {current: [inputA.ref, inputB.ref, inputC.ref]};
+      const refs: React.RefObject<any> = {
+        current: [inputA.ref, inputB.ref, inputC.ref],
+      };
       const notify = useNotifier({...propsMock, refs});
 
       notify({type: "handle-code-change"});

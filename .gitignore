@@ -12,7 +12,7 @@ coverage/
 cypress/screenshots
 
 # production
-lib/
+dist/
 
 # misc
 .DS_Store

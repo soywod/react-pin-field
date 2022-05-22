@@ -74,9 +74,18 @@ test("events", () => {
   const input = wrapper.find("input").first();
 
   input.simulate("focus");
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Alt", target: document.createElement("input")}});
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "a", target: document.createElement("input")}});
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {which: 66, target: document.createElement("input")}});
+  input.simulate("keydown", {
+    preventDefault: noop,
+    nativeEvent: {key: "Alt", target: document.createElement("input")},
+  });
+  input.simulate("keydown", {
+    preventDefault: noop,
+    nativeEvent: {key: "a", target: document.createElement("input")},
+  });
+  input.simulate("keydown", {
+    preventDefault: noop,
+    nativeEvent: {which: 66, target: document.createElement("input")},
+  });
   input.simulate("paste", {clipboardData: {getData: () => "cde"}});
 
   expect(handleChangeMock).toHaveBeenCalledTimes(3);
@@ -96,10 +105,22 @@ test("fallback events", () => {
   keyUpInputMock.value = "a";
 
   input.simulate("focus");
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Unidentified", target: keyDownInputMock}});
-  input.simulate("keyup", {preventDefault: noop, nativeEvent: {target: keyUpInputMock}});
-  input.simulate("keydown", {preventDefault: noop, nativeEvent: {key: "Unidentified", target: keyDownInputMock}});
-  input.simulate("keyup", {preventDefault: noop, nativeEvent: {target: {value: "b"}}});
+  input.simulate("keydown", {
+    preventDefault: noop,
+    nativeEvent: {key: "Unidentified", target: keyDownInputMock},
+  });
+  input.simulate("keyup", {
+    preventDefault: noop,
+    nativeEvent: {target: keyUpInputMock},
+  });
+  input.simulate("keydown", {
+    preventDefault: noop,
+    nativeEvent: {key: "Unidentified", target: keyDownInputMock},
+  });
+  input.simulate("keyup", {
+    preventDefault: noop,
+    nativeEvent: {target: {value: "b"}},
+  });
   expect(handleChangeMock).toHaveBeenCalledTimes(1);
   expect(handleChangeMock).toHaveBeenCalledWith("a");
 });

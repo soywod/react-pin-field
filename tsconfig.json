@@ -1,22 +1,23 @@
 {
-  "include": ["src"],
-  "exclude": ["node_modules"],
+  "include": ["src", "types"],
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "CommonJS",
+    "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "lib",
-    "resolveJsonModule": true,
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "rootDir": "./src",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es5",
-    "types": ["@types/jest", "cypress"]
+    "target": "es5"
   }
 }
