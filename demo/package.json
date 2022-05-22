@@ -19,7 +19,6 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "prepare": "yarn build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
