@@ -1,42 +1,44 @@
-# 📟 React PIN Field
-[![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field [![Build Status](https://travis-ci.org/soywod/react-pin-field.svg?branch=master)](https://travis-ci.org/soywod/react-pin-field) [![codecov](https://codecov.io/gh/soywod/react-pin-field/branch/master/graph/badge.svg)](https://codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?label=npm)](https://www.npmjs.com/package/react-pin-field)
 
-React PIN Field is a React wrapper for [PIN
-Field](https://github.com/soywod/pin-field), a native web component for
-entering PIN codes.
+React component for entering PIN codes.
 
-![gif](https://user-images.githubusercontent.com/10437171/112440937-2e131c00-8d4b-11eb-902c-9aa6b37973be.gif)
+![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
 
-*Live demo at https://soywod.github.io/pin-field/demo/.*
+*Live demo at https://react-pin-field.soywod.me.*
 
 ## Installation
 
-```sh
-npm install react react-dom @soywod/pin-field react-pin-field
+```bash
+yarn add react-pin-field
 # or
-yarn add react react-dom @soywod/pin-field react-pin-field
+npm install react-pin-field
 ```
 
 ## Usage
 
 ```typescript
-import ReactPinField from "react-pin-field"
+import PinField from "react-pin-field"
 ```
 
 ## Props
 
 ```typescript
-type ReactPinFieldProps = {
-  length?: number;
-  validate?: string | string[] | RegExp | ((key: string) => boolean);
-  format?: (char: string) => string;
-  onResolveKey?: (key: string, ref?: HTMLInputElement) => any;
-  onRejectKey?: (key: string, ref?: HTMLInputElement) => any;
-  onChange?: (code: string) => void;
-  onComplete?: (code: string) => void;
+type PinFieldProps = {
+  ref?: React.Ref<HTMLInputElement[]>
+  className?: string
+  length?: number
+  validate?: string | string[] | RegExp | ((key: string) => boolean)
+  format?: (char: string) => string
+  onResolveKey?: (key: string, ref?: HTMLInputElement) => any
+  onRejectKey?: (key: string, ref?: HTMLInputElement) => any
+  onChange?: (code: string) => void
+  onComplete?: (code: string) => void
+  style?: React.CSSProperties
 } & React.InputHTMLAttributes<HTMLInputElement>
 
-const defaultProps: ReactPinFieldProps = {
+const defaultProps = {
+  ref: {current: []},
+  className: "",
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
@@ -44,51 +46,62 @@ const defaultProps: ReactPinFieldProps = {
   onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
+  style: {},
 }
 ```
 
 ### Ref
 
-You can access the PIN field web component via the ref:
+Every input can be controlled thanks to the React ref:
 
 ```typescript
-<ReactPinField ref={ref} />
+<PinField ref={ref} />
 
-// Reset all inputs
-ref.current.inputs.forEach(input => (input.value = ""))
+// reset all inputs
+ref.current.forEach(input => (input.value = ""))
 
-// Focus one particular input
-ref.current.inputs[2].focus()
+// focus the third input
+ref.current[2].focus()
 ```
 
 ### Style
 
-React PIN Field can be styled either with `className` or `style`. You can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`, `:valid`, `:invalid`…
+The pin field can be styled either with `className` or `style`. You
+can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`,
+`:valid`, `:invalid`…
 
 ### Length
 
-Length of the code (number of characters to type). Default: `5`.
+Length of the code (number of characters to type).
 
 ### Validate
 
-The validator prop can be:
+Key validator. It can be a:
 
-- A string of allowed characters: `abcABC123`
-- A list of allowed chars: `["a", "b", "c", "1", "2", "3"]`
-- A RegExp: `/^[a-zA-Z0-9]$/`
-- A function: `(char: string) => boolean`
+- String of allowed characters: `abcABC123`
+- Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
+- RegExp: `/^[a-zA-Z0-9]$/`
+- Predicate: `(char: string) => boolean`
+
+Default: `/^[a-zA-Z0-9]$/`.
 
 ### Format
 
-The formatter allows you to format the code. For example, to set the code to
-upper case: `(char: string) => char.toUpperCase()`
+Key formatter. It is called every type a key is typed. For example, to
+set the code to upper case: `(char: string) => char.toUpperCase()`.
+
+Default: `(char: string) => char`.
 
 ### Events
 
-- `onResolveKey`: triggered when a char passes successfully the validator
-- `onRejectKey`: the opposite of `onResolveKey`
-- `onChange`: triggered when the code changes
-- `onComplete`: triggered when the code has been completed
+- `onResolveKey`: when a key passes successfully the validator
+- `onRejectKey`: when a key is rejected by the validator
+- `onChange`: when the code changes
+- `onComplete`: when the code has been fully filled
+
+## Examples
+
+See the [live demo](https://react-pin-field.soywod.me).
 
 ## Development
 
@@ -110,10 +123,29 @@ To build the lib:
 yarn build
 ```
 
-## Sponsoring
+To build the demo:
 
-[![github](https://img.shields.io/badge/-GitHub%20Sponsors-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/soywod)
-[![paypal](https://img.shields.io/badge/-PayPal-0079c1?logo=PayPal&logoColor=ffffff)](https://www.paypal.com/paypalme/soywod)
-[![ko-fi](https://img.shields.io/badge/-Ko--fi-ff5e5a?logo=Ko-fi&logoColor=ffffff)](https://ko-fi.com/soywod)
-[![buy-me-a-coffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?logo=Buy%20Me%20A%20Coffee&logoColor=000000)](https://www.buymeacoffee.com/soywod)
-[![liberapay](https://img.shields.io/badge/-Liberapay-f6c915?logo=Liberapay&logoColor=222222)](https://liberapay.com/soywod)
+```bash
+yarn build:demo
+```
+
+## Tests
+
+### Unit tests
+
+Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files)
+and [Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
+
+```bash
+yarn test:unit
+```
+
+### End-to-end tests
+
+End-to-end tests are handled by [Cypress](https://www.cypress.io)
+(`.e2e` files).
+
+```bash
+yarn start
+yarn test:e2e
+```
