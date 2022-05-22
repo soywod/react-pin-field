@@ -33,6 +33,7 @@ type PinFieldProps = {
   onRejectKey?: (key: string, ref?: HTMLInputElement) => any
   onChange?: (code: string) => void
   onComplete?: (code: string) => void
+  debug?: boolean;
   style?: React.CSSProperties
 } & React.InputHTMLAttributes<HTMLInputElement>
 
@@ -46,6 +47,7 @@ const defaultProps = {
   onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
+  debug: false,
   style: {},
 }
 ```
@@ -63,12 +65,6 @@ ref.current.forEach(input => (input.value = ""))
 // focus the third input
 ref.current[2].focus()
 ```
-
-### Style
-
-The pin field can be styled either with `className` or `style`. You
-can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`,
-`:valid`, `:invalid`…
 
 ### Length
 
@@ -98,6 +94,16 @@ Default: `(char: string) => char`.
 - `onRejectKey`: when a key is rejected by the validator
 - `onChange`: when the code changes
 - `onComplete`: when the code has been fully filled
+
+### Debug
+
+Activates debug logs in the console.
+
+### Style
+
+The pin field can be styled either with `className` or `style`. You
+can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`,
+`:valid`, `:invalid`…
 
 ## Examples
 

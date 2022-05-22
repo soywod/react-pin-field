@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.6] - 2022-05-22
+## [3.0.7] - 2022-05-22
 
 Revert the lib state from `v1.0.6`. The native web component used in
 the `v2.0.0` was too hard to maintain. It led to many issues.
@@ -91,8 +91,8 @@ entering PIN codes.
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.6...HEAD
-[3.0.6]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.6
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.7...HEAD
+[3.0.7]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.7
 [2.0.0-beta.0]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...v2.0.0-beta.0
 [1.1.0]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...v1.0.6
