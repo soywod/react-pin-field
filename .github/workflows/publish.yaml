@@ -20,6 +20,7 @@ jobs:
       working-directory: lib
       run: yarn build
     - name: Publish lib
+      working-directory: lib
       run: yarn publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
