@@ -14,6 +14,7 @@ jobs:
       with:
         node-version: 10.x
         registry-url: https://registry.npmjs.org
+    - run: cd lib
     - run: yarn install
     - run: npm publish --access public
       env:
