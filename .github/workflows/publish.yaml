@@ -14,9 +14,12 @@ jobs:
       with:
         node-version: 14.x
         registry-url: https://registry.npmjs.org
-    - run: yarn
-    - run: cd lib
-    - run: yarn build
-    - run: yarn publish --access public
+    - name: Run yarn
+      run: yarn
+    - name: Build lib
+      working-directory: lib
+      run: yarn build
+    - name: Publish lib
+      run: yarn publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
