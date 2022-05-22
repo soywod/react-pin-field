@@ -1,9 +1,12 @@
-name: Publish package to registries
+name: Publish package to registries and deploy demo
+
+permissions: 
+  contents: write
 
 on:
   push:
     tags:
-      - v*
+    - v*
 
 jobs:
   publish:
@@ -24,3 +27,11 @@ jobs:
       run: yarn publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: Build demo
+      working-directory: demo
+      run: yarn build
+    - name: Deploy demo
+      uses: JamesIves/github-pages-deploy-action@v4.3.3
+      with:
+        branch: gh-pages
+        folder: demo/build

@@ -3,7 +3,7 @@
   "description": "React component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "private": false,
   "keywords": [
     "react",
