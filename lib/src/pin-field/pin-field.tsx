@@ -257,7 +257,6 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   function handleKeyDown(idx: number) {
     return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
-
       if (
         !IGNORED_META_KEYS.includes(key) &&
         !evt.ctrlKey &&

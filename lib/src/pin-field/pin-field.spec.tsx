@@ -1,32 +1,29 @@
 import React from "react";
-import enzyme, {shallow, mount} from "enzyme";
-import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
+import {render, screen, fireEvent} from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 import PinField from "./pin-field";
-import {noop} from "../utils";
 
-enzyme.configure({adapter: new Adapter()});
+const TEST_ID = "test";
 
-jest.spyOn(console, "debug").mockImplementation(noop);
-
-test("structure", () => {
-  const wrapper = shallow(<PinField />);
-  const inputs = wrapper.find("input");
+test("structure", async () => {
+  render(<PinField data-testid={TEST_ID} />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
   expect(inputs).toHaveLength(5);
   inputs.forEach(input => {
-    expect(input.prop("type")).toBe("text");
-    expect(input.prop("autoFocus")).toBe(false);
-    expect(typeof input.prop("onFocus")).toBe("function");
-    expect(typeof input.prop("onKeyDown")).toBe("function");
-    expect(typeof input.prop("onPaste")).toBe("function");
-    expect(input.prop("maxLength")).toBe(1);
+    expect(input.getAttribute("type")).toBe("text");
+    expect(input.getAttribute("inputmode")).toBe("text");
+    expect(input.getAttribute("maxlength")).toBe("1");
+    expect(input.getAttribute("autocapitalize")).toBe("off");
+    expect(input.getAttribute("autocorrect")).toBe("off");
+    expect(input.getAttribute("autocomplete")).toBe("off");
   });
 });
 
 test("ref as object", () => {
   const ref: {current: HTMLInputElement[] | null} = {current: []};
-  mount(<PinField ref={ref} />);
+  render(<PinField ref={ref} />);
 
   expect(Array.isArray(ref.current)).toBe(true);
   expect(ref.current).toHaveLength(5);
@@ -34,93 +31,70 @@ test("ref as object", () => {
 
 test("ref as func", () => {
   const ref: {current: HTMLInputElement[] | null} = {current: []};
-  mount(<PinField ref={el => (ref.current = el)} />);
+  render(<PinField ref={el => (ref.current = el)} />);
 
   expect(Array.isArray(ref.current)).toBe(true);
   expect(ref.current).toHaveLength(5);
 });
 
-test("autoFocus", () => {
-  const wrapper = shallow(<PinField autoFocus />);
-  const inputs = wrapper.find("input");
+test("autoFocus", async () => {
+  render(<PinField data-testid={TEST_ID} autoFocus />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
   inputs.forEach((input, idx) => {
-    expect(input.prop("autoFocus")).toBe(idx === 0);
+    if (idx === 0) {
+      expect(input).toHaveFocus();
+    } else {
+      expect(input).not.toHaveFocus();
+    }
   });
 });
 
-test("className", () => {
-  const wrapper = shallow(<PinField className="custom-class-name" />);
-  const inputs = wrapper.find("input");
+test("className", async () => {
+  render(<PinField data-testid={TEST_ID} className="custom-class-name" />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
   inputs.forEach(input => {
-    expect(input.hasClass("custom-class-name")).toBe(true);
+    expect(input.className).toBe("custom-class-name");
   });
 });
 
-test("style", () => {
-  const wrapper = shallow(<PinField style={{position: "relative"}} />);
-  const inputs = wrapper.find("input");
+test("style", async () => {
+  render(<PinField data-testid={TEST_ID} style={{position: "absolute"}} />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
   inputs.forEach(input => {
-    expect(input.prop("style")).toEqual({position: "relative"});
+    expect(input.style.position).toBe("absolute");
   });
 });
 
-test("events", () => {
+test("events", async () => {
   const handleChangeMock = jest.fn();
   const handleCompleteMock = jest.fn();
-  const wrapper = mount(<PinField length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />);
-  const input = wrapper.find("input").first();
+  render(<PinField data-testid={TEST_ID} length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
-  input.simulate("focus");
-  input.simulate("keydown", {
-    preventDefault: noop,
-    nativeEvent: {key: "Alt", target: document.createElement("input")},
-  });
-  input.simulate("keydown", {
-    preventDefault: noop,
-    nativeEvent: {key: "a", target: document.createElement("input")},
-  });
-  input.simulate("keydown", {
-    preventDefault: noop,
-    nativeEvent: {which: 66, target: document.createElement("input")},
-  });
-  input.simulate("paste", {clipboardData: {getData: () => "cde"}});
+  fireEvent.focus(inputs[0]);
+  fireEvent.keyDown(inputs[0], {key: "Alt", target: inputs[0]});
+  fireEvent.keyDown(inputs[0], {key: "a", target: inputs[0]});
+  fireEvent.keyDown(inputs[1], {which: 66, target: inputs[1]});
+  fireEvent.paste(inputs[1], {clipboardData: {getData: () => "cde"}});
 
   expect(handleChangeMock).toHaveBeenCalledTimes(3);
   expect(handleCompleteMock).toHaveBeenCalledTimes(1);
   expect(handleCompleteMock).toHaveBeenCalledWith("abcd");
 });
 
-test("fallback events", () => {
+test("fallback events", async () => {
   const handleChangeMock = jest.fn();
   const handleCompleteMock = jest.fn();
-  const wrapper = mount(<PinField length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />);
-  const input = wrapper.find("input").first();
+  render(<PinField data-testid={TEST_ID} length={4} onChange={handleChangeMock} onComplete={handleCompleteMock} />);
+  const inputs = await screen.findAllByTestId(TEST_ID);
 
-  const keyDownInputMock = document.createElement("input");
-  keyDownInputMock.value = "";
-  const keyUpInputMock = document.createElement("input");
-  keyUpInputMock.value = "a";
+  fireEvent.focus(inputs[0]);
+  fireEvent.keyDown(inputs[0], {key: "Unidentified", target: {value: ""}});
+  fireEvent.keyUp(inputs[0], {target: {value: "a"}});
 
-  input.simulate("focus");
-  input.simulate("keydown", {
-    preventDefault: noop,
-    nativeEvent: {key: "Unidentified", target: keyDownInputMock},
-  });
-  input.simulate("keyup", {
-    preventDefault: noop,
-    nativeEvent: {target: keyUpInputMock},
-  });
-  input.simulate("keydown", {
-    preventDefault: noop,
-    nativeEvent: {key: "Unidentified", target: keyDownInputMock},
-  });
-  input.simulate("keyup", {
-    preventDefault: noop,
-    nativeEvent: {target: {value: "b"}},
-  });
   expect(handleChangeMock).toHaveBeenCalledTimes(1);
   expect(handleChangeMock).toHaveBeenCalledWith("a");
 });
