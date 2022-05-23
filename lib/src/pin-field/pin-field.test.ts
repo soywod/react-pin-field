@@ -30,7 +30,7 @@ test("constants", () => {
   const {NO_EFFECT, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField;
 
   expect(NO_EFFECT).toEqual([]);
-  expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format"]);
+  expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format", "debug"]);
   expect(HANDLER_KEYS).toEqual(["onResolveKey", "onRejectKey", "onChange", "onComplete"]);
   expect(IGNORED_META_KEYS).toEqual(["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]);
 });
