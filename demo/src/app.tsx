@@ -34,7 +34,7 @@ function App() {
       <div className="jumbotron pb-3">
         <div className="container text-center">
           <h1 className="display-3">📟 React PIN Field</h1>
-          <p className="lead">A React component for entering PIN codes.</p>
+          <p className="lead">React component for entering PIN codes.</p>
           <div className="mb-4">
             <a className="mr-2" href="https://travis-ci.org/soywod/react-pin-field">
               <img src="https://travis-ci.org/soywod/react-pin-field.svg?branch=master" alt="" />
@@ -65,8 +65,8 @@ function App() {
           <PinField data-cy="pin-field" />
         </div>
 
-        <h2 className="display-5 mt-4">With ref</h2>
-        <p className="mb-4 text-muted">You can control each inputs with the pin field ref:</p>
+        <h2 className="display-5 mt-4">Reference</h2>
+        <p className="mb-4 text-muted">Every input can be controlled thanks to the React reference:</p>
         <div>
           <PinField ref={ref} />
         </div>
@@ -77,38 +77,63 @@ function App() {
           </button>
         </div>
 
-        <h2 className="display-5 mt-5">With custom style</h2>
+        <h2 className="display-5 mt-5">Style</h2>
         <p className="mb-4 text-muted">
-          The field can be customized with the <code>class</code> and <code>style</code> attributes. Standard validation
-          pseudo-classes <code>:valid</code> and <code>:invalid</code> can also be used. Since there is no{" "}
-          <code>:complete</code> pseudo-classe, the field exposes a custom attribute <code>completed</code> to match
-          with <code>disabled</code>.
+          The pin field can be styled either with <code>style</code> or <code>className</code>. This last one allows you
+          to use pseudo-classes like <code>:nth-of-type</code>,<code>:focus</code>, <code>:hover</code>,
+          <code>:valid</code>,<code>:invalid</code>…
         </p>
         <div>
           <PinField className="pin-field" />
         </div>
 
-        <h2 className="display-5 mt-5">With custom length</h2>
-        <p className="mb-4 text-muted">You can set the number of chars with the length prop. Default set to 5 chars.</p>
+        <h2 className="display-5 mt-5">Length</h2>
+        <p className="mb-4 text-muted">
+          The length of the code (number of characters) can be customized with the <code>length</code> prop.
+        </p>
         <div>
+          <p>Length: 3</p>
           <PinField className="pin-field" length={3} />
         </div>
 
-        <h2 className="display-5 mt-5">With custom validation</h2>
+        <h2 className="display-5 mt-5">Validate</h2>
         <p className="mb-4 text-muted">
-          You can restrict input with a string of allowed chars, or a regex, or a function.
+          Characters can be validated with a validator. A validator can take the form of:
+          <ul>
+            <li>
+              a String of allowed characters: <code>abcABC123</code>
+            </li>
+            <li>
+              an Array of allowed characters: <code>["a", "b", "c", "1", "2", "3"]</code>
+            </li>
+            <li>
+              a RegExp: <code>/^[a-zA-Z0-9]$/</code>
+            </li>
+            <li>
+              a predicate: <code>(char: string) =&gt; boolean</code>
+            </li>
+          </ul>
         </p>
-        <p>Only numbers:</p>
         <div>
+          <p>Only numbers:</p>
           <PinField className="pin-field" validate="0123456789" inputMode="numeric" />
         </div>
 
-        <h2 className="display-5 mt-5">With custom events</h2>
+        <h2 className="display-5 mt-5">Format</h2>
+        <p className="mb-4 text-muted">
+          Characters can be formatted with a formatter <code>(char: string) =&gt; string</code>.
+        </p>
+        <div>
+          <p>Uppercase:</p>
+          <PinField className="pin-field" format={c => c.toUpperCase()} />
+        </div>
+
+        <h2 className="display-5 mt-5">Events</h2>
         <ul className="mb-4 text-muted">
+          <li>onResolveKey: when a key passes the validator</li>
+          <li>onRejectKey: when a key is rejected by the validator</li>
           <li>onChange: when the code changes</li>
-          <li>onComplete: when the code has been filled</li>
-          <li>onResolveKey: when receive a good key</li>
-          <li>onRejectKey: when receive a bad key</li>
+          <li>onComplete: when the code has been fully filled</li>
         </ul>
         <div>
           <PinField
@@ -121,7 +146,7 @@ function App() {
         <div>Current code: {code}</div>
         <div>Completed: {String(completed)}</div>
 
-        <h2 className="display-5 mt-5">With custom InputHTMLAttributes</h2>
+        <h2 className="display-5 mt-5">Custom InputHTMLAttributes</h2>
         <p className="mb-4 text-muted">Props inherit from InputHTMLAttributes. For eg. with a password type prop:</p>
         <div>
           <PinField className="pin-field" type="password" />

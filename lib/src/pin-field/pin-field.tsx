@@ -2,10 +2,7 @@ import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "r
 
 import {useMVU} from "../mvu";
 import keyboardEventPolyfill from "../polyfills/keyboard-evt";
-import {noop, range, omit, consoleDebug} from "../utils";
-
-// current debug function
-let debug: typeof consoleDebug = noop;
+import {noop, range, omit} from "../utils";
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -18,7 +15,7 @@ import {
 } from "./pin-field.types";
 
 export const NO_EFFECT: Effect[] = [];
-export const PROP_KEYS = ["autoFocus", "length", "validate", "format"];
+export const PROP_KEYS = ["autoFocus", "length", "validate", "format", "debug"];
 export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"];
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
@@ -66,8 +63,6 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
 export function apply(state: State, action: Action): [State, Effect[]] {
   switch (action.type) {
     case "handle-key-down": {
-      debug("reducer", "handle-key-down", `key=${action.key}`);
-
       switch (action.key) {
         case "Unidentified": {
           return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, []];
@@ -120,11 +115,9 @@ export function apply(state: State, action: Action): [State, Effect[]] {
 
     case "handle-key-up": {
       if (!state.fallback) {
-        debug("reducer", "handle-key-up", "ignored");
         return [state, NO_EFFECT];
       }
 
-      debug("reducer", "handle-key-up");
       const nextState: State = {...state, fallback: null};
       const effects: Effect[] = [];
       const {idx, val: prevVal} = state.fallback;
@@ -154,11 +147,9 @@ export function apply(state: State, action: Action): [State, Effect[]] {
 
     case "handle-paste": {
       if (!action.val.split("").slice(0, state.codeLength).every(state.isKeyAllowed)) {
-        debug("reducer", "handle-paste", `rejected,val=${action.val}`);
         return [state, [{type: "reject-key", idx: action.idx, key: action.val}]];
       }
 
-      debug("reducer", "handle-paste", `val=${action.val}`);
       const pasteLen = Math.min(action.val.length, state.codeLength - state.focusIdx);
       const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength);
       const effects: Effect[] = range(0, pasteLen).map(idx => ({
@@ -191,34 +182,29 @@ export function useNotifier({refs, ...props}: NotifierProps) {
     (eff: Effect) => {
       switch (eff.type) {
         case "focus-input": {
-          debug("notifier", "focus-input", `idx=${eff.idx}`);
           refs.current[eff.idx].focus();
           break;
         }
 
         case "set-input-val": {
-          debug("notifier", "set-input-val", `idx=${eff.idx},val=${eff.val}`);
           const val = props.format(eff.val);
           refs.current[eff.idx].value = val;
           break;
         }
 
         case "resolve-key": {
-          debug("notifier", "resolve-key", `idx=${eff.idx},key=${eff.key}`);
           refs.current[eff.idx].setCustomValidity("");
           props.onResolveKey(eff.key, refs.current[eff.idx]);
           break;
         }
 
         case "reject-key": {
-          debug("notifier", "reject-key", `idx=${eff.idx},key=${eff.key}`);
           refs.current[eff.idx].setCustomValidity("Invalid key");
           props.onRejectKey(eff.key, refs.current[eff.idx]);
           break;
         }
 
         case "handle-delete": {
-          debug("notifier", "handle-delete", `idx=${eff.idx}`);
           const prevVal = refs.current[eff.idx].value;
           refs.current[eff.idx].setCustomValidity("");
           refs.current[eff.idx].value = "";
@@ -237,7 +223,6 @@ export function useNotifier({refs, ...props}: NotifierProps) {
           const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
           const codeArr = refs.current.map(r => r.value.trim());
           const code = (dir === "rtl" ? codeArr.reverse() : codeArr).join("");
-          debug("notifier", "handle-code-change", `code={${code}}`);
           props.onChange(code);
           code.length === props.length && props.onComplete(code);
           break;
@@ -261,15 +246,10 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   const notify = useNotifier({refs, ...props});
   const dispatch = useMVU(model, apply, notify);
 
-  if (props.debug) {
-    debug = consoleDebug;
-  }
-
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
   function handleFocus(idx: number) {
     return function () {
-      debug("main", "event", `focus,idx=${idx}`);
       dispatch({type: "focus-input", idx});
     };
   }
@@ -286,10 +266,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
         evt.nativeEvent.target instanceof HTMLInputElement
       ) {
         evt.preventDefault();
-        debug("main", "event", `key-down,idx=${idx},key=${key}`);
         dispatch({type: "handle-key-down", idx, key, val: evt.nativeEvent.target.value});
-      } else {
-        debug("main", "event", `key-down,idx=${idx},ignored-key=${key}`);
       }
     };
   }
@@ -297,7 +274,6 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   function handleKeyUp(idx: number) {
     return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       if (evt.nativeEvent.target instanceof HTMLInputElement) {
-        debug("main", "event", `key-up,idx=${idx}`);
         dispatch({type: "handle-key-up", idx, val: evt.nativeEvent.target.value});
       }
     };
@@ -307,7 +283,6 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
     return function (evt: React.ClipboardEvent<HTMLInputElement>) {
       evt.preventDefault();
       const val = evt.clipboardData.getData("Text");
-      debug("main", "event", `paste,idx=${idx},val=${val}`);
       dispatch({type: "handle-paste", idx, val});
     };
   }

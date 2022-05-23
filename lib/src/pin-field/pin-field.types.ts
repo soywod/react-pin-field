@@ -9,6 +9,9 @@ export type PinFieldDefaultProps = {
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
   onChange: (code: string) => void;
   onComplete: (code: string) => void;
+  /**
+   * @deprecated The debug mode no longer exists.
+   */
   debug: boolean;
 };
 

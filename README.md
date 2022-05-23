@@ -33,7 +33,6 @@ type PinFieldProps = {
   onRejectKey?: (key: string, ref?: HTMLInputElement) => any
   onChange?: (code: string) => void
   onComplete?: (code: string) => void
-  debug?: boolean;
   style?: React.CSSProperties
 } & React.InputHTMLAttributes<HTMLInputElement>
 
@@ -47,14 +46,13 @@ const defaultProps = {
   onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
-  debug: false,
   style: {},
 }
 ```
 
-### Ref
+### Reference
 
-Every input can be controlled thanks to the React ref:
+Every input can be controlled thanks to the React reference:
 
 ```typescript
 <PinField ref={ref} />
@@ -66,48 +64,41 @@ ref.current.forEach(input => (input.value = ""))
 ref.current[2].focus()
 ```
 
+### Style
+
+The pin field can be styled either with `style` or `className`. This
+last one allows you to use pseudo-classes like `:nth-of-type`,
+`:focus`, `:hover`, `:valid`, `:invalid`…
+
 ### Length
 
-Length of the code (number of characters to type).
+Length of the code (number of characters).
 
 ### Validate
 
-Key validator. It can be a:
+Characters can be validated with a validator. A validator can take the
+form of:
 
-- String of allowed characters: `abcABC123`
-- Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
-- RegExp: `/^[a-zA-Z0-9]$/`
-- Predicate: `(char: string) => boolean`
-
-Default: `/^[a-zA-Z0-9]$/`.
+ - a String of allowed characters: `abcABC123`
+ - an Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
+ - a RegExp: `/^[a-zA-Z0-9]$/`
+ - a predicate: `(char: string) => boolean`
 
 ### Format
 
-Key formatter. It is called every type a key is typed. For example, to
-set the code to upper case: `(char: string) => char.toUpperCase()`.
-
-Default: `(char: string) => char`.
+Characters can be formatted with a formatter `(char: string) =>
+string`.
 
 ### Events
 
-- `onResolveKey`: when a key passes successfully the validator
+- `onResolveKey`: when a key passes the validator
 - `onRejectKey`: when a key is rejected by the validator
 - `onChange`: when the code changes
 - `onComplete`: when the code has been fully filled
 
-### Debug
-
-Activates debug logs in the console.
-
-### Style
-
-The pin field can be styled either with `className` or `style`. You
-can also use pseudo-classes `:nth-of-type`, `:focus`, `:hover`,
-`:valid`, `:invalid`…
-
 ## Examples
 
-See the [live demo](https://react-pin-field.soywod.me).
+See the [live demo](https://soywod.github.io/react-pin-field/).
 
 ## Development
 
