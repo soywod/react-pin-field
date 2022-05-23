@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.12] - 2022-05-23
+
+### Deprecated
+
+- The `debug` mode no longer exists
+
 ## [3.0.11] - 2022-05-22
 
 Revert the lib state from `v1.0.6`. The native web component used in
@@ -91,8 +97,9 @@ entering PIN codes.
 - Unnecessary re-renders (useMVU)
 - Paste on MacOS [#13]
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.10...HEAD
-[3.0.10]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.10
+[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.12...HEAD
+[3.0.12]: https://github.com/unfog-io/unfog-cli/compare/v3.0.11...v3.0.12
+[3.0.11]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.11
 [2.0.0-beta.0]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...v2.0.0-beta.0
 [1.1.0]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...v1.0.6
