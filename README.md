@@ -4,7 +4,7 @@ React component for entering PIN codes.
 
 ![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
 
-*Live demo at https://react-pin-field.soywod.me.*
+*Live demo at https://soywod.github.io/react-pin-field/.*
 
 ## Installation
 
