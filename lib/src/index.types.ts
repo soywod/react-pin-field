@@ -3,7 +3,7 @@ import {PinField} from ".";
 export type ReactPinFieldInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">;
 
 export type ReactPinFieldDefaultProps = {
-  ref: React.Ref<PinField>;
+  ref: React.Ref<typeof PinField>;
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
