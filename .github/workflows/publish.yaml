@@ -23,7 +23,7 @@ jobs:
       working-directory: lib
       run: yarn build
     - name: Copy readme to lib folder
-      run: cp README.md lib/
+      run: cp README.md LICENSE lib/
     - name: Publish lib
       working-directory: lib
       run: yarn publish --access public
