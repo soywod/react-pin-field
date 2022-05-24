@@ -146,7 +146,12 @@ export function apply(state: State, action: Action): [State, Effect[]] {
     }
 
     case "handle-paste": {
-      if (!action.val.split("").slice(0, state.codeLength).every(state.isKeyAllowed)) {
+      if (
+        !action.val
+          .split("")
+          .slice(0, state.codeLength)
+          .every(state.isKeyAllowed)
+      ) {
         return [state, [{type: "reject-key", idx: action.idx, key: action.val}]];
       }
 
@@ -249,15 +254,14 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
   function handleFocus(idx: number) {
-    return function () {
+    return function() {
       dispatch({type: "focus-input", idx});
     };
   }
 
   function handleKeyDown(idx: number) {
-    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
       const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
-
       if (
         !IGNORED_META_KEYS.includes(key) &&
         !evt.ctrlKey &&
@@ -272,7 +276,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function handleKeyUp(idx: number) {
-    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
       if (evt.nativeEvent.target instanceof HTMLInputElement) {
         dispatch({type: "handle-key-up", idx, val: evt.nativeEvent.target.value});
       }
@@ -280,7 +284,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function handlePaste(idx: number) {
-    return function (evt: React.ClipboardEvent<HTMLInputElement>) {
+    return function(evt: React.ClipboardEvent<HTMLInputElement>) {
       evt.preventDefault();
       const val = evt.clipboardData.getData("Text");
       dispatch({type: "handle-paste", idx, val});
@@ -288,7 +292,7 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   }
 
   function setRefAtIndex(idx: number) {
-    return function (ref: HTMLInputElement) {
+    return function(ref: HTMLInputElement) {
       if (ref) {
         refs.current[idx] = ref;
       }

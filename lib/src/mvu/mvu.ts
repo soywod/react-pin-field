@@ -11,13 +11,14 @@ export function useMVU<M, A, E>(defaultModel: M, update: Updater<M, A, E>, notif
 
   function reducer(model: M, action: A): M {
     const [nextModel, nextEffects] = update(model, action);
-    setEffects(nextEffects);
+    if (nextEffects.length > 0) setEffects(nextEffects);
     return nextModel;
   }
 
   const [model, dispatch] = useReducer(reducer, defaultModel);
 
   useEffect(() => {
+    console.log("Effects to process: ", effects.length);
     if (effects.length > 0) {
       effects.forEach(eff => notify(eff, model, dispatch));
       setEffects([]);
