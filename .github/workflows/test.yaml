@@ -11,19 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Install lib dependencies
-      working-directory: lib
+    - name: Install dependencies
       run: yarn
     - name: Build lib
       working-directory: lib
       run: yarn build
-    - name: Install demo dependencies
-      working-directory: demo
-      run: yarn
-    - name: Run demo
+    - name: Run demo in background
       working-directory: demo
       run: yarn start &
-    - name: Run tests
+    - name: Run all tests
       working-directory: lib
       run: yarn test
     - uses: codecov/codecov-action@v2

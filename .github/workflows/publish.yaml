@@ -17,11 +17,13 @@ jobs:
       with:
         node-version: 14.x
         registry-url: https://registry.npmjs.org
-    - name: Run yarn
+    - name: Install dependencies
       run: yarn
     - name: Build lib
       working-directory: lib
       run: yarn build
+    - name: Copy readme to lib folder
+      run: cp README.md lib/
     - name: Publish lib
       working-directory: lib
       run: yarn publish --access public
