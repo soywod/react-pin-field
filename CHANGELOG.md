@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced model-view-updater (as known as `mvu` in the code) by a lib
+  [react-use-bireducer](https://github.com/soywod/react-use-bireducer).
+
 ## [3.0.13] - 2022-05-24
 
 Fix some broken links in the readme, add CI for tests, update badges.

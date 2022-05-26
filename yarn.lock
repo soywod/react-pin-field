@@ -12805,6 +12805,11 @@ react-scripts@5.0.1:
   optionalDependencies:
     fsevents "^2.3.2"
 
+react-use-bireducer@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-use-bireducer/-/react-use-bireducer-1.0.5.tgz#d3f06fd222148cbb0b12281ff45588ab0534379c"
+  integrity sha512-YsN+mB8Y4ol1PWq7lDEtaQw2bRRnyDxKsMpH+uXeJ0On3MyAcagfYc++LMf/B/Q0YJC6vg5jmbaV66ZtAfpbVQ==
+
 react@^18.0.0, react@^18.1.0:
   version "18.1.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.1.0.tgz#6f8620382decb17fdc5cc223a115e2adbf104890"
