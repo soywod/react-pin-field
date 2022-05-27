@@ -1,6 +1,6 @@
 import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react";
+import {EffectReducer, StateReducer, useBireducer} from "react-use-bireducer";
 
-import {useMVU} from "../mvu";
 import keyboardEventPolyfill from "../polyfills/keyboard-evt";
 import {noop, range, omit} from "../utils";
 
@@ -60,7 +60,7 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
   };
 }
 
-export function apply(state: State, action: Action): [State, Effect[]] {
+export const stateReducer: StateReducer<State, Action, Effect> = (state, action) => {
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
@@ -180,42 +180,42 @@ export function apply(state: State, action: Action): [State, Effect[]] {
       return [state, NO_EFFECT];
     }
   }
-}
+};
 
-export function useNotifier({refs, ...props}: NotifierProps) {
+export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer<Effect, Action> {
   return useCallback(
-    (eff: Effect) => {
-      switch (eff.type) {
+    effect => {
+      switch (effect.type) {
         case "focus-input": {
-          refs.current[eff.idx].focus();
+          refs.current[effect.idx].focus();
           break;
         }
 
         case "set-input-val": {
-          const val = props.format(eff.val);
-          refs.current[eff.idx].value = val;
+          const val = props.format(effect.val);
+          refs.current[effect.idx].value = val;
           break;
         }
 
         case "resolve-key": {
-          refs.current[eff.idx].setCustomValidity("");
-          props.onResolveKey(eff.key, refs.current[eff.idx]);
+          refs.current[effect.idx].setCustomValidity("");
+          props.onResolveKey(effect.key, refs.current[effect.idx]);
           break;
         }
 
         case "reject-key": {
-          refs.current[eff.idx].setCustomValidity("Invalid key");
-          props.onRejectKey(eff.key, refs.current[eff.idx]);
+          refs.current[effect.idx].setCustomValidity("Invalid key");
+          props.onRejectKey(effect.key, refs.current[effect.idx]);
           break;
         }
 
         case "handle-delete": {
-          const prevVal = refs.current[eff.idx].value;
-          refs.current[eff.idx].setCustomValidity("");
-          refs.current[eff.idx].value = "";
+          const prevVal = refs.current[effect.idx].value;
+          refs.current[effect.idx].setCustomValidity("");
+          refs.current[effect.idx].value = "";
 
           if (!prevVal) {
-            const prevIdx = getPrevFocusIdx(eff.idx);
+            const prevIdx = getPrevFocusIdx(effect.idx);
             refs.current[prevIdx].focus();
             refs.current[prevIdx].setCustomValidity("");
             refs.current[prevIdx].value = "";
@@ -247,9 +247,8 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   const {autoFocus, length: codeLength} = props;
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props);
   const refs = useRef<HTMLInputElement[]>([]);
-  const model = defaultState(props);
-  const notify = useNotifier({refs, ...props});
-  const dispatch = useMVU(model, apply, notify);
+  const effectReducer = useEffectReducer({refs, ...props});
+  const dispatch = useBireducer(stateReducer, effectReducer, defaultState(props))[1];
 
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 

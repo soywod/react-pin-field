@@ -123,12 +123,12 @@ describe("is key allowed", () => {
 });
 
 describe("apply", () => {
-  const {NO_EFFECT, apply, defaultState, defaultProps} = pinField;
+  const {NO_EFFECT, stateReducer, defaultState, defaultProps} = pinField;
   const currState = defaultState(defaultProps);
 
   test("default action", () => {
     // @ts-expect-error bad action
-    const [state, eff] = apply(currState, {type: "bad-action"});
+    const [state, eff] = stateReducer(currState, {type: "bad-action"});
 
     expect(state).toMatchObject(state);
     expect(eff).toEqual(NO_EFFECT);
@@ -136,7 +136,7 @@ describe("apply", () => {
 
   describe("handle-key-down", () => {
     test("unidentified", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-key-down",
         key: "Unidentified",
         idx: 0,
@@ -148,7 +148,7 @@ describe("apply", () => {
     });
 
     test("dead", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-key-down",
         key: "Dead",
         idx: 0,
@@ -165,7 +165,7 @@ describe("apply", () => {
 
     describe("left arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {
+        const [state, eff] = stateReducer(currState, {
           type: "handle-key-down",
           key: "ArrowLeft",
           idx: 0,
@@ -177,7 +177,7 @@ describe("apply", () => {
       });
 
       test("from the last input", () => {
-        const [state, eff] = apply(
+        const [state, eff] = stateReducer(
           {...currState, focusIdx: 4},
           {type: "handle-key-down", key: "ArrowLeft", idx: 0, val: ""},
         );
@@ -189,7 +189,7 @@ describe("apply", () => {
 
     describe("right arrow", () => {
       test("from the first input", () => {
-        const [state, eff] = apply(currState, {
+        const [state, eff] = stateReducer(currState, {
           type: "handle-key-down",
           key: "ArrowRight",
           idx: 0,
@@ -201,7 +201,7 @@ describe("apply", () => {
       });
 
       test("from the last input", () => {
-        const [state, eff] = apply(
+        const [state, eff] = stateReducer(
           {...currState, focusIdx: 4},
           {type: "handle-key-down", key: "ArrowRight", idx: 0, val: ""},
         );
@@ -212,7 +212,7 @@ describe("apply", () => {
     });
 
     test("backspace", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-key-down",
         key: "Backspace",
         idx: 0,
@@ -224,7 +224,7 @@ describe("apply", () => {
     });
 
     test("delete", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-key-down",
         key: "Delete",
         idx: 0,
@@ -237,7 +237,7 @@ describe("apply", () => {
 
     describe("default", () => {
       test("resolve", () => {
-        const [state, eff] = apply(currState, {
+        const [state, eff] = stateReducer(currState, {
           type: "handle-key-down",
           key: "a",
           idx: 0,
@@ -254,7 +254,7 @@ describe("apply", () => {
       });
 
       test("reject", () => {
-        const [state, eff] = apply(currState, {
+        const [state, eff] = stateReducer(currState, {
           type: "handle-key-down",
           key: "@",
           idx: 0,
@@ -269,7 +269,7 @@ describe("apply", () => {
 
   describe("handle-key-up", () => {
     test("no fallback", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-key-up",
         idx: 0,
         val: "",
@@ -280,14 +280,17 @@ describe("apply", () => {
     });
 
     test("empty prevVal, empty val", () => {
-      const [state, eff] = apply({...currState, fallback: {idx: 0, val: ""}}, {type: "handle-key-up", idx: 0, val: ""});
+      const [state, eff] = stateReducer(
+        {...currState, fallback: {idx: 0, val: ""}},
+        {type: "handle-key-up", idx: 0, val: ""},
+      );
 
       expect(state).toMatchObject({fallback: null});
       expect(eff).toEqual([{type: "handle-delete", idx: 0}, {type: "handle-code-change"}]);
     });
 
     test("empty prevVal, not empty allowed val", () => {
-      const [state, eff] = apply(
+      const [state, eff] = stateReducer(
         {...currState, fallback: {idx: 0, val: ""}},
         {type: "handle-key-up", idx: 0, val: "a"},
       );
@@ -302,7 +305,7 @@ describe("apply", () => {
     });
 
     test("empty prevVal, not empty denied val", () => {
-      const [state, eff] = apply(
+      const [state, eff] = stateReducer(
         {...currState, fallback: {idx: 0, val: ""}},
         {type: "handle-key-up", idx: 0, val: "@"},
       );
@@ -316,7 +319,7 @@ describe("apply", () => {
     });
 
     test("not empty prevVal", () => {
-      const [state, eff] = apply(
+      const [state, eff] = stateReducer(
         {...currState, fallback: {idx: 0, val: "a"}},
         {type: "handle-key-up", idx: 0, val: "a"},
       );
@@ -328,7 +331,7 @@ describe("apply", () => {
 
   describe("handle-paste", () => {
     test("paste smaller text than code length", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-paste",
         idx: 0,
         val: "abc",
@@ -345,7 +348,7 @@ describe("apply", () => {
     });
 
     test("paste bigger text than code length", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-paste",
         idx: 0,
         val: "abcdefgh",
@@ -364,14 +367,14 @@ describe("apply", () => {
     });
 
     test("paste on last input", () => {
-      const [state, eff] = apply({...currState, focusIdx: 4}, {type: "handle-paste", idx: 0, val: "abc"});
+      const [state, eff] = stateReducer({...currState, focusIdx: 4}, {type: "handle-paste", idx: 0, val: "abc"});
 
       expect(state).toMatchObject({...state, focusIdx: 4});
       expect(eff).toEqual([{type: "set-input-val", idx: 4, val: "a"}, {type: "handle-code-change"}]);
     });
 
     test("paste with denied key", () => {
-      const [state, eff] = apply(currState, {
+      const [state, eff] = stateReducer(currState, {
         type: "handle-paste",
         idx: 1,
         val: "ab@",
@@ -383,7 +386,7 @@ describe("apply", () => {
   });
 
   test("focus-input", () => {
-    const [state, eff] = apply(currState, {type: "focus-input", idx: 2});
+    const [state, eff] = stateReducer(currState, {type: "focus-input", idx: 2});
 
     expect(state).toMatchObject({...state, focusIdx: 2});
     expect(eff).toEqual([{type: "focus-input", idx: 2}]);
@@ -391,7 +394,7 @@ describe("apply", () => {
 });
 
 describe("notify", () => {
-  const {defaultProps, useNotifier} = pinField;
+  const {defaultProps, useEffectReducer} = pinField;
   const inputA = mockInput("a");
   const inputB = mockInput("b");
   const inputC = mockInput("");
@@ -412,7 +415,7 @@ describe("notify", () => {
   const refs: React.RefObject<any> = {
     current: [inputA.ref, inputB.ref, inputC.ref],
   };
-  const notify = useNotifier({...propsMock, refs});
+  const notify = useEffectReducer({...propsMock, refs});
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -512,7 +515,7 @@ describe("notify", () => {
       const refs: React.RefObject<any> = {
         current: [inputA.ref, inputB.ref, inputC.ref],
       };
-      const notify = useNotifier({...propsMock, refs});
+      const notify = useEffectReducer({...propsMock, refs});
 
       notify({type: "handle-code-change"});
 
@@ -531,7 +534,7 @@ describe("notify", () => {
       const refs: React.RefObject<any> = {
         current: [inputA.ref, inputB.ref, inputC.ref],
       };
-      const notify = useNotifier({...propsMock, refs});
+      const notify = useEffectReducer({...propsMock, refs});
 
       notify({type: "handle-code-change"});
 

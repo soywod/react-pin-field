@@ -3,7 +3,7 @@
   "description": "React component for entering PIN codes.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "3.0.13",
+  "version": "3.0.14",
   "private": false,
   "keywords": [
     "react",
@@ -77,5 +77,8 @@
     "test:unit": "jest",
     "test:e2e": "cypress run",
     "test": "run-p test:unit test:e2e"
+  },
+  "dependencies": {
+    "react-use-bireducer": "^1.0.5"
   }
 }
