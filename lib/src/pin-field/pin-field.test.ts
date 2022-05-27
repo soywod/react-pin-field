@@ -393,7 +393,7 @@ describe("apply", () => {
   });
 });
 
-describe("notify", () => {
+describe("stateReducer", () => {
   const {defaultProps, useEffectReducer} = pinField;
   const inputA = mockInput("a");
   const inputB = mockInput("b");
@@ -415,7 +415,7 @@ describe("notify", () => {
   const refs: React.RefObject<any> = {
     current: [inputA.ref, inputB.ref, inputC.ref],
   };
-  const notify = useEffectReducer({...propsMock, refs});
+  const stateReducer = useEffectReducer({...propsMock, refs});
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -423,17 +423,17 @@ describe("notify", () => {
 
   test("default action", () => {
     // @ts-expect-error bad action
-    notify({type: "bad-action"});
+    stateReducer({type: "bad-action"});
   });
 
   test("focus input", () => {
-    notify({type: "focus-input", idx: 0});
+    stateReducer({type: "focus-input", idx: 0}, noop);
     expect(inputA.ref.focus).toHaveBeenCalledTimes(1);
   });
 
   describe("set input val", () => {
     test("empty char", () => {
-      notify({type: "set-input-val", idx: 0, val: ""});
+      stateReducer({type: "set-input-val", idx: 0, val: ""}, noop);
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
@@ -441,7 +441,7 @@ describe("notify", () => {
     });
 
     test("non empty char", () => {
-      notify({type: "set-input-val", idx: 0, val: "a"});
+      stateReducer({type: "set-input-val", idx: 0, val: "a"}, noop);
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
@@ -450,7 +450,7 @@ describe("notify", () => {
   });
 
   test("resolve key", () => {
-    notify({type: "resolve-key", idx: 0, key: "a"});
+    stateReducer({type: "resolve-key", idx: 0, key: "a"}, noop);
 
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -459,7 +459,7 @@ describe("notify", () => {
   });
 
   test("reject key", () => {
-    notify({type: "reject-key", idx: 0, key: "a"});
+    stateReducer({type: "reject-key", idx: 0, key: "a"}, noop);
 
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("Invalid key");
@@ -469,7 +469,7 @@ describe("notify", () => {
 
   describe("handle backspace", () => {
     test("from input A, not empty val", () => {
-      notify({type: "handle-delete", idx: 0});
+      stateReducer({type: "handle-delete", idx: 0}, noop);
 
       expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -478,7 +478,7 @@ describe("notify", () => {
     });
 
     test("from input B, not empty val", () => {
-      notify({type: "handle-delete", idx: 1});
+      stateReducer({type: "handle-delete", idx: 1}, noop);
 
       expect(inputB.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputB.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -487,7 +487,7 @@ describe("notify", () => {
     });
 
     test("from input C, empty val", () => {
-      notify({type: "handle-delete", idx: 2});
+      stateReducer({type: "handle-delete", idx: 2}, noop);
 
       expect(inputC.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputC.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -502,7 +502,7 @@ describe("notify", () => {
 
   describe("handle-code-change", () => {
     test("code not complete", () => {
-      notify({type: "handle-code-change"});
+      stateReducer({type: "handle-code-change"}, noop);
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1);
       expect(propsMock.onChange).toHaveBeenCalledWith("ab");
@@ -517,7 +517,7 @@ describe("notify", () => {
       };
       const notify = useEffectReducer({...propsMock, refs});
 
-      notify({type: "handle-code-change"});
+      notify({type: "handle-code-change"}, noop);
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1);
       expect(propsMock.onChange).toHaveBeenCalledWith("abc");
@@ -536,7 +536,7 @@ describe("notify", () => {
       };
       const notify = useEffectReducer({...propsMock, refs});
 
-      notify({type: "handle-code-change"});
+      notify({type: "handle-code-change"}, noop);
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1);
       expect(propsMock.onChange).toHaveBeenCalledWith("cba");
