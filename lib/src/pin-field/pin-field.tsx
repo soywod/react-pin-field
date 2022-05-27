@@ -182,7 +182,7 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
   }
 };
 
-export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer<Effect> {
+export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer<Effect, Action> {
   return useCallback(
     effect => {
       switch (effect.type) {
