@@ -8,13 +8,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [3.0.15] - 2022-06-12
+
+### Changed
+
+- `react-use-bireducer` latest version.
+
+### Fixed
+
+- Readme tests section.
+- Changelog links.
+
 ## [3.0.14] - 2022-05-27
 
 ### Changed
 
-- Replaced model-view-updater (as known as `mvu` in the code) by the
-  lib [react-use-bireducer](https://github.com/soywod/react-use-bireducer).
-- Upgrade packages version.
+- Model-view-updater (as known as `mvu` in the code) is now handled by
+  the lib [react-use-bireducer](https://github.com/soywod/react-use-bireducer).
+- All packages to the latest version.
 
 ## [3.0.13] - 2022-05-24
 
@@ -123,31 +134,32 @@ for entering PIN codes.
 - Unnecessary re-renders (useMVU).
 - Paste on MacOS [#13].
 
-[unreleased]: https://github.com/unfog-io/unfog-cli/compare/v3.0.14...HEAD
-[3.0.14]: https://github.com/unfog-io/unfog-cli/compare/v3.0.13...v3.0.14
-[3.0.13]: https://github.com/unfog-io/unfog-cli/compare/v3.0.12...v3.0.13
-[3.0.12]: https://github.com/unfog-io/unfog-cli/compare/v3.0.11...v3.0.12
-[3.0.11]: https://github.com/unfog-io/unfog-cli/compare/v2.0.0-beta.0...v3.0.11
-[2.0.0-beta.0]: https://github.com/unfog-io/unfog-cli/compare/v1.1.0...v2.0.0-beta.0
-[1.1.0]: https://github.com/unfog-io/unfog-cli/compare/v1.0.6...v1.1.0
-[1.0.6]: https://github.com/unfog-io/unfog-cli/compare/v1.0.5...v1.0.6
-[1.0.5]: https://github.com/unfog-io/unfog-cli/compare/v1.0.4...v1.0.5
-[1.0.4]: https://github.com/unfog-io/unfog-cli/compare/v1.0.3...v1.0.4
-[1.0.3]: https://github.com/unfog-io/unfog-cli/compare/v1.0.2...v1.0.3
-[1.0.2]: https://github.com/unfog-io/unfog-cli/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/unfog-io/unfog-cli/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/unfog-io/unfog-cli/releases/tag/v1.0.0
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.0.15...HEAD
+[3.0.15]: https://github.com/soywod/react-pin-field/compare/v3.0.14...v3.0.15
+[3.0.14]: https://github.com/soywod/react-pin-field/compare/v3.0.13...v3.0.14
+[3.0.13]: https://github.com/soywod/react-pin-field/compare/v3.0.12...v3.0.13
+[3.0.12]: https://github.com/soywod/react-pin-field/compare/v3.0.11...v3.0.12
+[3.0.11]: https://github.com/soywod/react-pin-field/compare/v2.0.0-beta.0...v3.0.11
+[2.0.0-beta.0]: https://github.com/soywod/react-pin-field/compare/v1.1.0...v2.0.0-beta.0
+[1.1.0]: https://github.com/soywod/react-pin-field/compare/v1.0.6...v1.1.0
+[1.0.6]: https://github.com/soywod/react-pin-field/compare/v1.0.5...v1.0.6
+[1.0.5]: https://github.com/soywod/react-pin-field/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/soywod/react-pin-field/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/soywod/react-pin-field/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/soywod/react-pin-field/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/soywod/react-pin-field/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/soywod/react-pin-field/releases/tag/v1.0.0
 
-[#1]: https://github.com/unfog-io/unfog-cli/issues/1
-[#2]: https://github.com/unfog-io/unfog-cli/issues/2
-[#3]: https://github.com/unfog-io/unfog-cli/issues/3
-[#9]: https://github.com/unfog-io/unfog-cli/issues/9
-[#11]: https://github.com/unfog-io/unfog-cli/issues/11
-[#13]: https://github.com/unfog-io/unfog-cli/issues/13
-[#14]: https://github.com/unfog-io/unfog-cli/issues/14
-[#15]: https://github.com/unfog-io/unfog-cli/issues/15
-[#16]: https://github.com/unfog-io/unfog-cli/issues/16
-[#19]: https://github.com/unfog-io/unfog-cli/issues/19
-[#20]: https://github.com/unfog-io/unfog-cli/issues/20
-[#23]: https://github.com/unfog-io/unfog-cli/issues/23
-[#26]: https://github.com/unfog-io/unfog-cli/issues/26
+[#1]: https://github.com/soywod/react-pin-field/issues/1
+[#2]: https://github.com/soywod/react-pin-field/issues/2
+[#3]: https://github.com/soywod/react-pin-field/issues/3
+[#9]: https://github.com/soywod/react-pin-field/issues/9
+[#11]: https://github.com/soywod/react-pin-field/issues/11
+[#13]: https://github.com/soywod/react-pin-field/issues/13
+[#14]: https://github.com/soywod/react-pin-field/issues/14
+[#15]: https://github.com/soywod/react-pin-field/issues/15
+[#16]: https://github.com/soywod/react-pin-field/issues/16
+[#19]: https://github.com/soywod/react-pin-field/issues/19
+[#20]: https://github.com/soywod/react-pin-field/issues/20
+[#23]: https://github.com/soywod/react-pin-field/issues/23
+[#26]: https://github.com/soywod/react-pin-field/issues/26
