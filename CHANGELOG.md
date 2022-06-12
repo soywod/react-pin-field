@@ -8,6 +8,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Swipe style keyboard entry [#62]
+
 ## [3.0.15] - 2022-06-12
 
 ### Changed
@@ -163,3 +167,4 @@ for entering PIN codes.
 [#20]: https://github.com/soywod/react-pin-field/issues/20
 [#23]: https://github.com/soywod/react-pin-field/issues/23
 [#26]: https://github.com/soywod/react-pin-field/issues/26
+[#62]: https://github.com/soywod/react-pin-field/issues/62
