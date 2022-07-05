@@ -8,8 +8,6 @@ jest.mock("react", () => ({
   forwardRef: (f: any) => f,
 }));
 
-jest.spyOn(console, "debug").mockImplementation(noop);
-
 function mockInput(value: string) {
   const setValMock = jest.fn();
   const ref = {
@@ -27,9 +25,9 @@ function mockInput(value: string) {
 }
 
 test("constants", () => {
-  const {NO_EFFECT, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField;
+  const {NO_EFFECTS, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField;
 
-  expect(NO_EFFECT).toEqual([]);
+  expect(NO_EFFECTS).toEqual([]);
   expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format", "debug"]);
   expect(HANDLER_KEYS).toEqual(["onResolveKey", "onRejectKey", "onChange", "onComplete"]);
   expect(IGNORED_META_KEYS).toEqual(["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]);
@@ -122,8 +120,8 @@ describe("is key allowed", () => {
   });
 });
 
-describe("apply", () => {
-  const {NO_EFFECT, stateReducer, defaultState, defaultProps} = pinField;
+describe("state reducer", () => {
+  const {NO_EFFECTS, stateReducer, defaultState, defaultProps} = pinField;
   const currState = defaultState(defaultProps);
 
   test("default action", () => {
@@ -131,7 +129,7 @@ describe("apply", () => {
     const [state, eff] = stateReducer(currState, {type: "bad-action"});
 
     expect(state).toMatchObject(state);
-    expect(eff).toEqual(NO_EFFECT);
+    expect(eff).toEqual(NO_EFFECTS);
   });
 
   describe("handle-key-down", () => {
@@ -340,8 +338,11 @@ describe("apply", () => {
       expect(state).toMatchObject({...state, focusIdx: 3});
       expect(eff).toEqual([
         {type: "set-input-val", idx: 0, val: "a"},
+        {type: "resolve-key", idx: 0, key: "a"},
         {type: "set-input-val", idx: 1, val: "b"},
+        {type: "resolve-key", idx: 1, key: "b"},
         {type: "set-input-val", idx: 2, val: "c"},
+        {type: "resolve-key", idx: 2, key: "c"},
         {type: "focus-input", idx: 3},
         {type: "handle-code-change"},
       ]);
@@ -357,10 +358,15 @@ describe("apply", () => {
       expect(state).toMatchObject({...state, focusIdx: 4});
       expect(eff).toEqual([
         {type: "set-input-val", idx: 0, val: "a"},
+        {type: "resolve-key", idx: 0, key: "a"},
         {type: "set-input-val", idx: 1, val: "b"},
+        {type: "resolve-key", idx: 1, key: "b"},
         {type: "set-input-val", idx: 2, val: "c"},
+        {type: "resolve-key", idx: 2, key: "c"},
         {type: "set-input-val", idx: 3, val: "d"},
+        {type: "resolve-key", idx: 3, key: "d"},
         {type: "set-input-val", idx: 4, val: "e"},
+        {type: "resolve-key", idx: 4, key: "e"},
         {type: "focus-input", idx: 4},
         {type: "handle-code-change"},
       ]);
@@ -370,7 +376,11 @@ describe("apply", () => {
       const [state, eff] = stateReducer({...currState, focusIdx: 4}, {type: "handle-paste", idx: 0, val: "abc"});
 
       expect(state).toMatchObject({...state, focusIdx: 4});
-      expect(eff).toEqual([{type: "set-input-val", idx: 4, val: "a"}, {type: "handle-code-change"}]);
+      expect(eff).toEqual([
+        {type: "set-input-val", idx: 4, val: "a"},
+        {type: "resolve-key", idx: 4, key: "a"},
+        {type: "handle-code-change"},
+      ]);
     });
 
     test("paste with denied key", () => {
@@ -381,7 +391,11 @@ describe("apply", () => {
       });
 
       expect(state).toMatchObject(state);
-      expect(eff).toEqual([{type: "reject-key", idx: 1, key: "ab@"}]);
+      expect(eff).toEqual([
+        {type: "set-input-val", idx: 0, val: ""},
+        {type: "reject-key", idx: 1, key: "ab@"},
+        {type: "handle-code-change"},
+      ]);
     });
   });
 
@@ -393,7 +407,7 @@ describe("apply", () => {
   });
 });
 
-describe("stateReducer", () => {
+describe("effect reducer", () => {
   const {defaultProps, useEffectReducer} = pinField;
   const inputA = mockInput("a");
   const inputB = mockInput("b");
@@ -415,7 +429,7 @@ describe("stateReducer", () => {
   const refs: React.RefObject<any> = {
     current: [inputA.ref, inputB.ref, inputC.ref],
   };
-  const stateReducer = useEffectReducer({...propsMock, refs});
+  const effectReducer = useEffectReducer({...propsMock, refs});
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -423,17 +437,17 @@ describe("stateReducer", () => {
 
   test("default action", () => {
     // @ts-expect-error bad action
-    stateReducer({type: "bad-action"});
+    effectReducer({type: "bad-action"});
   });
 
   test("focus input", () => {
-    stateReducer({type: "focus-input", idx: 0}, noop);
+    effectReducer({type: "focus-input", idx: 0}, noop);
     expect(inputA.ref.focus).toHaveBeenCalledTimes(1);
   });
 
   describe("set input val", () => {
     test("empty char", () => {
-      stateReducer({type: "set-input-val", idx: 0, val: ""}, noop);
+      effectReducer({type: "set-input-val", idx: 0, val: ""}, noop);
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
@@ -441,7 +455,7 @@ describe("stateReducer", () => {
     });
 
     test("non empty char", () => {
-      stateReducer({type: "set-input-val", idx: 0, val: "a"}, noop);
+      effectReducer({type: "set-input-val", idx: 0, val: "a"}, noop);
 
       expect(propsFormatMock).toHaveBeenCalledTimes(1);
       expect(inputA.setValMock).toHaveBeenCalledTimes(1);
@@ -450,7 +464,7 @@ describe("stateReducer", () => {
   });
 
   test("resolve key", () => {
-    stateReducer({type: "resolve-key", idx: 0, key: "a"}, noop);
+    effectReducer({type: "resolve-key", idx: 0, key: "a"}, noop);
 
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -459,7 +473,7 @@ describe("stateReducer", () => {
   });
 
   test("reject key", () => {
-    stateReducer({type: "reject-key", idx: 0, key: "a"}, noop);
+    effectReducer({type: "reject-key", idx: 0, key: "a"}, noop);
 
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
     expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("Invalid key");
@@ -469,7 +483,7 @@ describe("stateReducer", () => {
 
   describe("handle backspace", () => {
     test("from input A, not empty val", () => {
-      stateReducer({type: "handle-delete", idx: 0}, noop);
+      effectReducer({type: "handle-delete", idx: 0}, noop);
 
       expect(inputA.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputA.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -478,7 +492,7 @@ describe("stateReducer", () => {
     });
 
     test("from input B, not empty val", () => {
-      stateReducer({type: "handle-delete", idx: 1}, noop);
+      effectReducer({type: "handle-delete", idx: 1}, noop);
 
       expect(inputB.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputB.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -487,7 +501,7 @@ describe("stateReducer", () => {
     });
 
     test("from input C, empty val", () => {
-      stateReducer({type: "handle-delete", idx: 2}, noop);
+      effectReducer({type: "handle-delete", idx: 2}, noop);
 
       expect(inputC.ref.setCustomValidity).toHaveBeenCalledTimes(1);
       expect(inputC.ref.setCustomValidity).toHaveBeenCalledWith("");
@@ -502,7 +516,7 @@ describe("stateReducer", () => {
 
   describe("handle-code-change", () => {
     test("code not complete", () => {
-      stateReducer({type: "handle-code-change"}, noop);
+      effectReducer({type: "handle-code-change"}, noop);
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1);
       expect(propsMock.onChange).toHaveBeenCalledWith("ab");

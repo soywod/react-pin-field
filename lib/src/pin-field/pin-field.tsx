@@ -14,7 +14,7 @@ import {
   PinFieldEffect as Effect,
 } from "./pin-field.types";
 
-export const NO_EFFECT: Effect[] = [];
+export const NO_EFFECTS: Effect[] = [];
 export const PROP_KEYS = ["autoFocus", "length", "validate", "format", "debug"];
 export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"];
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
@@ -60,12 +60,53 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
   };
 }
 
+export function pasteReducer(state: State, idx: number, val: string): [State, Effect[]] {
+  const areAllKeysAllowed = val
+    .split("")
+    .slice(0, state.codeLength)
+    .every(state.isKeyAllowed);
+
+  if (!areAllKeysAllowed) {
+    return [
+      state,
+      [
+        {type: "set-input-val", idx: state.focusIdx, val: ""},
+        {type: "reject-key", idx, key: val},
+        {type: "handle-code-change"},
+      ],
+    ];
+  }
+
+  const pasteLen = Math.min(val.length, state.codeLength - state.focusIdx);
+  const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength);
+  const effects: Effect[] = range(0, pasteLen).flatMap(idx => [
+    {
+      type: "set-input-val",
+      idx: idx + state.focusIdx,
+      val: val[idx],
+    },
+    {
+      type: "resolve-key",
+      idx: idx + state.focusIdx,
+      key: val[idx],
+    },
+  ]);
+
+  if (state.focusIdx !== nextFocusIdx) {
+    effects.push({type: "focus-input", idx: nextFocusIdx});
+  }
+
+  effects.push({type: "handle-code-change"});
+
+  return [{...state, focusIdx: nextFocusIdx}, effects];
+}
+
 export const stateReducer: StateReducer<State, Action, Effect> = (state, action) => {
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
         case "Unidentified": {
-          return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, []];
+          return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, NO_EFFECTS];
         }
 
         case "Dead": {
@@ -95,27 +136,27 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
         }
 
         default: {
-          if (state.isKeyAllowed(action.key)) {
-            const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-            return [
-              {...state, focusIdx: nextFocusIdx},
-              [
-                {type: "set-input-val", idx: state.focusIdx, val: action.key},
-                {type: "resolve-key", idx: state.focusIdx, key: action.key},
-                {type: "focus-input", idx: nextFocusIdx},
-                {type: "handle-code-change"},
-              ],
-            ];
+          if (!state.isKeyAllowed(action.key)) {
+            return [state, [{type: "reject-key", idx: state.focusIdx, key: action.key}]];
           }
 
-          return [state, [{type: "reject-key", idx: state.focusIdx, key: action.key}]];
+          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
+          return [
+            {...state, focusIdx: nextFocusIdx},
+            [
+              {type: "set-input-val", idx: state.focusIdx, val: action.key},
+              {type: "resolve-key", idx: state.focusIdx, key: action.key},
+              {type: "focus-input", idx: nextFocusIdx},
+              {type: "handle-code-change"},
+            ],
+          ];
         }
       }
     }
 
     case "handle-key-up": {
       if (!state.fallback) {
-        return [state, NO_EFFECT];
+        return [state, NO_EFFECTS];
       }
 
       const nextState: State = {...state, fallback: null};
@@ -126,50 +167,14 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
       if (prevVal === "" && val === "") {
         effects.push({type: "handle-delete", idx}, {type: "handle-code-change"});
       } else if (prevVal === "" && val !== "") {
-        if (state.isKeyAllowed(val)) {
-          effects.push(
-            {type: "set-input-val", idx, val},
-            {type: "resolve-key", idx, key: val},
-            {type: "focus-input", idx: getNextFocusIdx(idx, state.codeLength)},
-            {type: "handle-code-change"},
-          );
-        } else {
-          effects.push(
-            {type: "set-input-val", idx: state.focusIdx, val: ""},
-            {type: "reject-key", idx, key: val},
-            {type: "handle-code-change"},
-          );
-        }
+        return pasteReducer(nextState, idx, val);
       }
 
       return [nextState, effects];
     }
 
     case "handle-paste": {
-      if (
-        !action.val
-          .split("")
-          .slice(0, state.codeLength)
-          .every(state.isKeyAllowed)
-      ) {
-        return [state, [{type: "reject-key", idx: action.idx, key: action.val}]];
-      }
-
-      const pasteLen = Math.min(action.val.length, state.codeLength - state.focusIdx);
-      const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength);
-      const effects: Effect[] = range(0, pasteLen).map(idx => ({
-        type: "set-input-val",
-        idx: idx + state.focusIdx,
-        val: action.val[idx],
-      }));
-
-      if (state.focusIdx !== nextFocusIdx) {
-        effects.push({type: "focus-input", idx: nextFocusIdx});
-      }
-
-      effects.push({type: "handle-code-change"});
-
-      return [{...state, focusIdx: nextFocusIdx}, effects];
+      return pasteReducer(state, action.idx, action.val);
     }
 
     case "focus-input": {
@@ -177,7 +182,7 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
     }
 
     default: {
-      return [state, NO_EFFECT];
+      return [state, NO_EFFECTS];
     }
   }
 };
@@ -315,7 +320,6 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
           key={idx}
           ref={setRefAtIndex(idx)}
           autoFocus={hasAutoFocus(idx)}
-          maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown(idx)}
           onKeyUp={handleKeyUp(idx)}

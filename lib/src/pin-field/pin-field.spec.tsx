@@ -14,7 +14,6 @@ test("structure", async () => {
   inputs.forEach(input => {
     expect(input.getAttribute("type")).toBe("text");
     expect(input.getAttribute("inputmode")).toBe("text");
-    expect(input.getAttribute("maxlength")).toBe("1");
     expect(input.getAttribute("autocapitalize")).toBe("off");
     expect(input.getAttribute("autocorrect")).toBe("off");
     expect(input.getAttribute("autocomplete")).toBe("off");
