@@ -320,7 +320,6 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
           key={idx}
           ref={setRefAtIndex(idx)}
           autoFocus={hasAutoFocus(idx)}
-          maxLength={1}
           onFocus={handleFocus(idx)}
           onKeyDown={handleKeyDown(idx)}
           onKeyUp={handleKeyUp(idx)}
