@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/react-pin-field/static/css/main.b413ee36.css",
-    "main.js": "/react-pin-field/static/js/main.8e1e03b8.js",
+    "main.js": "/react-pin-field/static/js/main.66371c91.js",
     "index.html": "/react-pin-field/index.html",
     "main.b413ee36.css.map": "/react-pin-field/static/css/main.b413ee36.css.map",
-    "main.8e1e03b8.js.map": "/react-pin-field/static/js/main.8e1e03b8.js.map"
+    "main.66371c91.js.map": "/react-pin-field/static/js/main.66371c91.js.map"
   },
   "entrypoints": [
     "static/css/main.b413ee36.css",
-    "static/js/main.8e1e03b8.js"
+    "static/js/main.66371c91.js"
   ]
 }
