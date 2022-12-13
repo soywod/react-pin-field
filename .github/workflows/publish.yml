@@ -15,7 +15,13 @@ jobs:
     steps:
       - name: Checkouts code
         uses: actions/checkout@v2
-
+        
+      - name: Sets up Node for registry only
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.12'
+          registry-url: 'https://registry.npmjs.org'
+          
       - name: Caches Nix store
         uses: actions/cache@v3
         id: nix-cache
@@ -33,7 +39,7 @@ jobs:
         uses: cachix/install-nix-action@v18
         with:
           extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }} registry.npmjs.org=${{ secrets.NPM_TOKEN }}
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Imports Nix store cache
         if: ${{ steps.nix-cache.outputs.cache-hit == 'true' }}
