@@ -2,7 +2,7 @@
   description = "React component for entering PIN codes.";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -15,22 +15,20 @@
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
+          nodejs = pkgs.nodejs-18_x;
+          yarn = pkgs.yarn.override { inherit nodejs; };
         in
         {
           devShell = pkgs.mkShell {
             buildInputs = with pkgs; [
-              # Common tools
-              coreutils
-              ripgrep
-
-              # Nix LSP + formatter
+              # Nix env
               rnix-lsp
               nixpkgs-fmt
 
               # Node.js env
-              nodejs-16_x
-              cypress
+              nodejs
               yarn
+              cypress
             ];
             shellHook = ''
               # configure cypress
