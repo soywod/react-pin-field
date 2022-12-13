@@ -8,7 +8,7 @@ describe("PIN Field", () => {
 
   it("should override chars", () => {
     cy.get(nthInput(1))
-      .type("a{leftArrow}b{leftArrow}c")
+      .type("a{leftArrow}b{leftArrow}c", {delay: 200})
       .should("have.value", "c");
   });
 
