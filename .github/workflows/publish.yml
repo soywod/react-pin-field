@@ -1,10 +1,12 @@
-name: tests
+name: publish
+
+permissions:
+  contents: write
 
 on:
-  pull_request:
   push:
-    branches:
-      - master
+    tags:
+      - v*
 
 jobs:
   install:
@@ -45,12 +47,23 @@ jobs:
         working-directory: lib
         run: nix develop -c yarn build
         
-      - name: Runs demo in background
-        working-directory: demo
-        run: nix develop -c yarn start &
-
-      - name: Runs all tests
+      - name: Copies README to the lib folder
+        run: cp README.md LICENSE lib/
+        
+      - name: Publishes the lib
         working-directory: lib
-        run: nix develop -c yarn test
-      
-      - uses: codecov/codecov-action@v2
+        run: nix develop -c yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Builds the demo
+        working-directory: demo
+        run: nix develop -c yarn build
+        env:
+          PUBLIC_URL: /react-pin-field
+          
+      - name: Deploys the demo
+        uses: jamesives/github-pages-deploy-action@v4.4.1
+        with:
+          branch: gh-pages
+          folder: demo/build
