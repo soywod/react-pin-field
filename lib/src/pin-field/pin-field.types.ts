@@ -19,7 +19,7 @@ export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;
 
 export type PinFieldNotifierProps = {
   refs: React.MutableRefObject<HTMLInputElement[]>;
-} & PinFieldDefaultProps;
+} & PinFieldDefaultProps & PinFieldInputProps;
 
 export type PinFieldState = {
   focusIdx: number;
