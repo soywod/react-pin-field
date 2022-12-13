@@ -1,0 +1,56 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  install:
+    name: Installs and configures nix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkouts code
+        uses: actions/checkout@v2
+
+      - name: Caches Nix store
+        uses: actions/cache@v3
+        id: nix-cache
+        with:
+          path: /tmp/nix-cache
+          key: nix-${{ hashFiles('**/flake.*') }}
+
+      - name: Caches Node modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Installs Nix
+        uses: cachix/install-nix-action@v18
+
+      - name: Imports Nix store cache
+        if: ${{ steps.nix-cache.outputs.cache-hit == 'true' }}
+        run: nix-store --import < /tmp/nix-cache
+
+      - name: Installs deps
+        run: nix develop -c yarn install --frozen-lockfile --immutable
+
+      - name: Exports Nix store cache
+        if: ${{ steps.nix-cache.outputs.cache-hit != 'true' }}
+        run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
+        
+      - name: Builds lib
+        working-directory: lib
+        run: nix develop -c yarn build
+        
+      - name: Runs demo in background
+        working-directory: demo
+        run: nix develop -c yarn start &
+
+      - name: Runs all tests
+        working-directory: lib
+        run: nix develop -c yarn test
+      
+      - uses: codecov/codecov-action@v2
