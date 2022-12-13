@@ -31,6 +31,9 @@ jobs:
 
       - name: Installs Nix
         uses: cachix/install-nix-action@v18
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }} registry.npmjs.org=${{ secrets.NPM_TOKEN }}
 
       - name: Imports Nix store cache
         if: ${{ steps.nix-cache.outputs.cache-hit == 'true' }}

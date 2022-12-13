@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [3.1.1] - 2022-12-03
+
+### Fixed
+
+* Fixed local `dir` prop override [#71].
+
 ## [3.1.0] - 2022-12-03
 
 ### Changed
@@ -149,7 +155,8 @@ for entering PIN codes.
 * Fixed unnecessary re-renders (useMVU).
 * Fixed paste on MacOS [#13].
 
-[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.0...HEAD
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.1...HEAD
+[3.1.1]: https://github.com/soywod/react-pin-field/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/soywod/react-pin-field/compare/v3.0.16...v3.1.0
 [3.0.16]: https://github.com/soywod/react-pin-field/compare/v3.0.15...v3.0.16
 [3.0.15]: https://github.com/soywod/react-pin-field/compare/v3.0.14...v3.0.15
@@ -182,3 +189,4 @@ for entering PIN codes.
 [#26]: https://github.com/soywod/react-pin-field/issues/26
 [#62]: https://github.com/soywod/react-pin-field/issues/62
 [#63]: https://github.com/soywod/react-pin-field/issues/63
+[#71]: https://github.com/soywod/react-pin-field/issues/71

@@ -230,7 +230,7 @@ export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer
         }
 
         case "handle-code-change": {
-          const dir = (document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
+          const dir = (props.dir || document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
           const codeArr = refs.current.map(r => r.value.trim());
           const code = (dir === "rtl" ? codeArr.reverse() : codeArr).join("");
           props.onChange(code);

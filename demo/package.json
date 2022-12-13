@@ -3,7 +3,7 @@
   "description": "Demo for react-pin-field.",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "private": false,
   "browserslist": {
     "production": [

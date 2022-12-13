@@ -557,5 +557,25 @@ describe("effect reducer", () => {
       expect(propsMock.onComplete).toHaveBeenCalledTimes(1);
       expect(propsMock.onComplete).toHaveBeenCalledWith("cba");
     });
+
+    test("rtl with override in props", () => {
+      jest.spyOn(document.documentElement, "getAttribute").mockImplementation(() => "rtl");
+
+      const inputA = mockInput("a");
+      const inputB = mockInput("b");
+      const inputC = mockInput("c");
+      const refs: React.RefObject<any> = {
+        current: [inputA.ref, inputB.ref, inputC.ref],
+      };
+      const propsWithDir = {...propsMock, dir: "ltr"};
+      const notify = useEffectReducer({ ...propsWithDir, refs });
+
+      notify({ type: "handle-code-change" }, noop);
+
+      expect(propsMock.onChange).toHaveBeenCalledTimes(1);
+      expect(propsMock.onChange).toHaveBeenCalledWith("abc");
+      expect(propsMock.onComplete).toHaveBeenCalledTimes(1);
+      expect(propsMock.onComplete).toHaveBeenCalledWith("abc");
+    });
   });
 });
