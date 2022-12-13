@@ -1,4 +1,4 @@
-name: Publish package to registries and deploy demo
+name: Publishes package to registries and deploys the demo
 
 permissions: 
   contents: write
@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: 14.x
+        node-version: 18.12
         registry-url: https://registry.npmjs.org
     - name: Install dependencies
       run: yarn
@@ -35,7 +35,7 @@ jobs:
       env:
         PUBLIC_URL: /react-pin-field
     - name: Deploy demo
-      uses: JamesIves/github-pages-deploy-action@v4.3.3
+      uses: JamesIves/github-pages-deploy-action@v4.4.1
       with:
         branch: gh-pages
         folder: demo/build
