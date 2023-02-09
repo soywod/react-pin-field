@@ -36,9 +36,9 @@ function App() {
           <h1 className="display-3">📟 React PIN Field</h1>
           <p className="lead">React component for entering PIN codes.</p>
           <div className="mb-4">
-            <a className="mr-2" href="https://github.com/soywod/react-pin-field/actions/workflows/test.yaml">
+            <a className="mr-2" href="https://github.com/soywod/react-pin-field/actions/workflows/test.yml">
               <img
-                src="https://img.shields.io/github/workflow/status/soywod/react-pin-field/tests?label=tests&logo=github&style=flat-square"
+                src="https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github&style=flat-square"
                 alt=""
               />
             </a>
@@ -63,6 +63,7 @@ function App() {
               format={k => k.toUpperCase()}
               autoFocus
               disabled={demoCompleted}
+              autoComplete="one-time-password"
             />
           </div>
         </div>

@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [3.1.3] - 2023-02-09
+
+### Changed
+
+* Upgraded all packages and license year.
+
 ## [3.1.2] - 2022-12-13
 
 ### Fixed
@@ -161,7 +167,8 @@ for entering PIN codes.
 * Fixed unnecessary re-renders (useMVU).
 * Fixed paste on MacOS [#13].
 
-[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.2...HEAD
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.3...HEAD
+[3.1.3]: https://github.com/soywod/react-pin-field/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/soywod/react-pin-field/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/soywod/react-pin-field/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/soywod/react-pin-field/compare/v3.0.16...v3.1.0
