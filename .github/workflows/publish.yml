@@ -61,7 +61,7 @@ jobs:
         
       - name: Publishes the lib
         working-directory: lib
-        run: nix develop -c yarn publish --access public
+        run: nix develop -k NODE_AUTH_TOKEN -c yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
