@@ -105,7 +105,8 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
   switch (action.type) {
     case "handle-key-down": {
       switch (action.key) {
-        case "Unidentified": {
+        case "Unidentified":
+        case "Process": {
           return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, NO_EFFECTS];
         }
 
@@ -166,7 +167,7 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
 
       if (prevVal === "" && val === "") {
         effects.push({type: "handle-delete", idx}, {type: "handle-code-change"});
-      } else if (prevVal === "" && val !== "") {
+      } else if (val !== "") {
         return pasteReducer(nextState, idx, val);
       }
 

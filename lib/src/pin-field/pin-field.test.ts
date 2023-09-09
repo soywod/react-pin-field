@@ -323,7 +323,12 @@ describe("state reducer", () => {
       );
 
       expect(state).toMatchObject({fallback: null});
-      expect(eff).toEqual([]);
+      expect(eff).toEqual([
+        {type: "set-input-val", idx: 0, val: "a"},
+        {type: "resolve-key", idx: 0, key: "a"},
+        {type: "focus-input", idx: 1},
+        {type: "handle-code-change"},
+      ]);
     });
   });
 
@@ -568,9 +573,9 @@ describe("effect reducer", () => {
         current: [inputA.ref, inputB.ref, inputC.ref],
       };
       const propsWithDir = {...propsMock, dir: "ltr"};
-      const notify = useEffectReducer({ ...propsWithDir, refs });
+      const notify = useEffectReducer({...propsWithDir, refs});
 
-      notify({ type: "handle-code-change" }, noop);
+      notify({type: "handle-code-change"}, noop);
 
       expect(propsMock.onChange).toHaveBeenCalledTimes(1);
       expect(propsMock.onChange).toHaveBeenCalledWith("abc");
