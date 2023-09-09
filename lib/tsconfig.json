@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "rootDir": "./src",
     "skipLibCheck": true,
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "strict": true,
     "target": "es5",
     "types": ["cypress", "@testing-library/cypress"]
