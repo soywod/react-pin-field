@@ -36,9 +36,11 @@ jobs:
           key: yarn-${{ hashFiles('**/yarn.lock') }}
 
       - name: Installs Nix
-        uses: cachix/install-nix-action@v18
+        uses: cachix/install-nix-action@v22
         with:
+          nix_path: nixpkgs=channel:nixos-23.05
           extra_nix_config: |
+            experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Imports Nix store cache
