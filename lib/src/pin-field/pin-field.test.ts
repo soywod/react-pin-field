@@ -28,7 +28,7 @@ test("constants", () => {
   const {NO_EFFECTS, PROP_KEYS, HANDLER_KEYS, IGNORED_META_KEYS} = pinField;
 
   expect(NO_EFFECTS).toEqual([]);
-  expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format", "debug"]);
+  expect(PROP_KEYS).toEqual(["autoFocus", "length", "validate", "format", "formatAriaLabel", "debug"]);
   expect(HANDLER_KEYS).toEqual(["onResolveKey", "onRejectKey", "onChange", "onComplete"]);
   expect(IGNORED_META_KEYS).toEqual(["Alt", "Control", "Enter", "Meta", "Shift", "Tab"]);
 });
@@ -39,6 +39,7 @@ test("default props", () => {
   expect(defaultProps).toHaveProperty("length", 5);
   expect(defaultProps).toHaveProperty("validate", /^[a-zA-Z0-9]$/);
   expect(defaultProps).toHaveProperty("format");
+  expect(defaultProps).toHaveProperty("formatAriaLabel", expect.any(Function));
   expect(defaultProps.format("abcABC123@-_[]")).toStrictEqual("abcABC123@-_[]");
   expect(defaultProps.onResolveKey("a")).toStrictEqual(undefined);
   expect(defaultProps).toHaveProperty("onRejectKey");

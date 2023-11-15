@@ -97,3 +97,23 @@ test("fallback events", async () => {
   expect(handleChangeMock).toHaveBeenCalledTimes(1);
   expect(handleChangeMock).toHaveBeenCalledWith("a");
 });
+
+describe("a11y", () => {
+  test("should have aria-label per input field", () => {
+    render(<PinField data-testid={TEST_ID} length={3} />);
+
+    expect(screen.getByRole("textbox", {name: /pin code 1 of 3/i})).toBeVisible();
+    expect(screen.getByRole("textbox", {name: /pin code 2 of 3/i})).toBeVisible();
+    expect(screen.getByRole("textbox", {name: /pin code 3 of 3/i})).toBeVisible();
+  });
+
+  test("should support custom aria-label format", () => {
+    render(<PinField data-testid={TEST_ID} length={3} formatAriaLabel={(i, c) => `${i}/${c}`} />);
+
+    screen.debug();
+
+    expect(screen.getByRole("textbox", {name: "1/3"})).toBeVisible();
+    expect(screen.getByRole("textbox", {name: "2/3"})).toBeVisible();
+    expect(screen.getByRole("textbox", {name: "3/3"})).toBeVisible();
+  });
+});
