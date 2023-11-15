@@ -100,7 +100,7 @@ test("fallback events", async () => {
 
 describe("a11y", () => {
   test("should have aria-label per input field", () => {
-    render(<PinField data-testid={TEST_ID} length={3} />);
+    render(<PinField length={3} />);
 
     expect(screen.getByRole("textbox", {name: /pin code 1 of 3/i})).toBeVisible();
     expect(screen.getByRole("textbox", {name: /pin code 2 of 3/i})).toBeVisible();
@@ -108,12 +108,34 @@ describe("a11y", () => {
   });
 
   test("should support custom aria-label format", () => {
-    render(<PinField data-testid={TEST_ID} length={3} formatAriaLabel={(i, c) => `${i}/${c}`} />);
-
-    screen.debug();
+    render(<PinField length={3} formatAriaLabel={(i, c) => `${i}/${c}`} />);
 
     expect(screen.getByRole("textbox", {name: "1/3"})).toBeVisible();
     expect(screen.getByRole("textbox", {name: "2/3"})).toBeVisible();
     expect(screen.getByRole("textbox", {name: "3/3"})).toBeVisible();
+  });
+
+  test("every input has aria-required", () => {
+    render(<PinField length={3} />);
+
+    expect(screen.getByRole("textbox", {name: /pin code 1 of 3/i})).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 2 of 3/i})).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 3 of 3/i})).toHaveAttribute("aria-required", "true");
+  });
+
+  test("every input should have aria-disabled when PinField is disabled", () => {
+    render(<PinField length={3} disabled />);
+
+    expect(screen.getByRole("textbox", {name: /pin code 1 of 3/i})).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 2 of 3/i})).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 3 of 3/i})).toHaveAttribute("aria-disabled", "true");
+  });
+
+  test("every input should have aria-readonly when PinField is readOnly", () => {
+    render(<PinField length={3} readOnly />);
+
+    expect(screen.getByRole("textbox", {name: /pin code 1 of 3/i})).toHaveAttribute("aria-readonly", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 2 of 3/i})).toHaveAttribute("aria-readonly", "true");
+    expect(screen.getByRole("textbox", {name: /pin code 3 of 3/i})).toHaveAttribute("aria-readonly", "true");
   });
 });

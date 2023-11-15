@@ -319,7 +319,10 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
           autoComplete="off"
           inputMode="text"
           {...inputProps}
+          aria-disabled={inputProps.disabled ? "true" : undefined}
           aria-label={formatAriaLabel(idx + 1, codeLength)}
+          aria-readonly={inputProps.readOnly ? "true" : undefined}
+          aria-required="true"
           key={idx}
           ref={setRefAtIndex(idx)}
           autoFocus={hasAutoFocus(idx)}
