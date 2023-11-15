@@ -97,8 +97,8 @@ This function is used to generate accessible labels for each input within the
 and the total length of the pin field.
 
 You can customize the aria-label string by passing your own function. This can
-be useful for site internationalisation (i18n) or simply if you want to describe
-each input with differently.
+be useful for: i) site internationalisation (i18n); ii) simply describing
+each input with different semantics than the ones provided by `react-pin-field`.
 
 ### Events
 
