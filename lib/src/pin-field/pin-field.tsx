@@ -15,7 +15,7 @@ import {
 } from "./pin-field.types";
 
 export const NO_EFFECTS: Effect[] = [];
-export const PROP_KEYS = ["autoFocus", "length", "validate", "format", "debug"];
+export const PROP_KEYS = ["autoFocus", "length", "validate", "format", "formatAriaLabel", "debug"];
 export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"];
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
@@ -24,6 +24,7 @@ export const defaultProps: DefaultProps = {
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
+  formatAriaLabel: (idx: number, codeLength: number) => `pin code ${idx} of ${codeLength}`,
   onResolveKey: noop,
   onRejectKey: noop,
   onChange: noop,
@@ -250,7 +251,7 @@ export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer
 
 export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
   const props: DefaultProps & InputProps = {...defaultProps, ...customProps};
-  const {autoFocus, length: codeLength} = props;
+  const {autoFocus, formatAriaLabel, length: codeLength} = props;
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props);
   const refs = useRef<HTMLInputElement[]>([]);
   const effectReducer = useEffectReducer({refs, ...props});
@@ -318,6 +319,10 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
           autoComplete="off"
           inputMode="text"
           {...inputProps}
+          aria-disabled={inputProps.disabled ? "true" : undefined}
+          aria-label={formatAriaLabel(idx + 1, codeLength)}
+          aria-readonly={inputProps.readOnly ? "true" : undefined}
+          aria-required="true"
           key={idx}
           ref={setRefAtIndex(idx)}
           autoFocus={hasAutoFocus(idx)}

@@ -4,7 +4,7 @@ React component for entering PIN codes.
 
 ![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
 
-*Live demo at https://soywod.github.io/react-pin-field/.*
+_Live demo at https://soywod.github.io/react-pin-field/._
 
 ## Installation
 
@@ -17,24 +17,24 @@ npm install react-pin-field
 ## Usage
 
 ```typescript
-import PinField from "react-pin-field"
+import PinField from "react-pin-field";
 ```
 
 ## Props
 
 ```typescript
 type PinFieldProps = {
-  ref?: React.Ref<HTMLInputElement[]>
-  className?: string
-  length?: number
-  validate?: string | string[] | RegExp | ((key: string) => boolean)
-  format?: (char: string) => string
-  onResolveKey?: (key: string, ref?: HTMLInputElement) => any
-  onRejectKey?: (key: string, ref?: HTMLInputElement) => any
-  onChange?: (code: string) => void
-  onComplete?: (code: string) => void
-  style?: React.CSSProperties
-} & React.InputHTMLAttributes<HTMLInputElement>
+  ref?: React.Ref<HTMLInputElement[]>;
+  className?: string;
+  length?: number;
+  validate?: string | string[] | RegExp | ((key: string) => boolean);
+  format?: (char: string) => string;
+  onResolveKey?: (key: string, ref?: HTMLInputElement) => any;
+  onRejectKey?: (key: string, ref?: HTMLInputElement) => any;
+  onChange?: (code: string) => void;
+  onComplete?: (code: string) => void;
+  style?: React.CSSProperties;
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 const defaultProps = {
   ref: {current: []},
@@ -42,12 +42,13 @@ const defaultProps = {
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
+  formatAriaLabel: (idx, length) => `pin code ${idx} of ${length}`,
   onResolveKey: () => {},
   onRejectKey: () => {},
   onChange: () => {},
   onComplete: () => {},
   style: {},
-}
+};
 ```
 
 ### Reference
@@ -55,13 +56,13 @@ const defaultProps = {
 Every input can be controlled thanks to the React reference:
 
 ```typescript
-<PinField ref={ref} />
+<PinField ref={ref} />;
 
 // reset all inputs
-ref.current.forEach(input => (input.value = ""))
+ref.current.forEach(input => (input.value = ""));
 
 // focus the third input
-ref.current[2].focus()
+ref.current[2].focus();
 ```
 
 ### Style
@@ -79,15 +80,25 @@ Length of the code (number of characters).
 Characters can be validated with a validator. A validator can take the
 form of:
 
- - a String of allowed characters: `abcABC123`
- - an Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
- - a RegExp: `/^[a-zA-Z0-9]$/`
- - a predicate: `(char: string) => boolean`
+- a String of allowed characters: `abcABC123`
+- an Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
+- a RegExp: `/^[a-zA-Z0-9]$/`
+- a predicate: `(char: string) => boolean`
 
 ### Format
 
-Characters can be formatted with a formatter `(char: string) =>
-string`.
+Characters can be formatted with a formatter `(char: string) => string`.
+
+### Format Aria Label(s)
+
+This function is used to generate accessible labels for each input within the
+`<PinField />`. By default it renders the string `pin code 1 of 6`,
+`pin code 2 of 6`, etc., depending on the actual index of the input field
+and the total length of the pin field.
+
+You can customize the aria-label string by passing your own function. This can
+be useful for: i) site internationalisation (i18n); ii) simply describing
+each input with different semantics than the ones provided by `react-pin-field`.
 
 ### Events
 

@@ -5,6 +5,7 @@ export type PinFieldDefaultProps = {
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
+  formatAriaLabel: (idx: number, codeLength: number) => string;
   onResolveKey: (key: string, ref?: HTMLInputElement) => any;
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
   onChange: (code: string) => void;
@@ -19,7 +20,8 @@ export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;
 
 export type PinFieldNotifierProps = {
   refs: React.MutableRefObject<HTMLInputElement[]>;
-} & PinFieldDefaultProps & PinFieldInputProps;
+} & PinFieldDefaultProps &
+  PinFieldInputProps;
 
 export type PinFieldState = {
   focusIdx: number;
