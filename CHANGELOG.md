@@ -8,9 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [3.1.5] - 2024-01-05
+
 ### Changed
 
 - Upgraded all packages.
+- Improved accessibility [#84].
 
 ## [3.1.4] - 2023-09-09
 
@@ -203,3 +206,4 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 [#62]: https://github.com/soywod/react-pin-field/issues/62
 [#63]: https://github.com/soywod/react-pin-field/issues/63
 [#71]: https://github.com/soywod/react-pin-field/issues/71
+[#84]: https://github.com/soywod/react-pin-field/pull/84

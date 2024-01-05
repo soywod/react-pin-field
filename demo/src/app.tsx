@@ -138,7 +138,6 @@ function App() {
           <PinField className="pin-field" format={c => c.toUpperCase()} />
         </div>
 
-        {/* TODO: uncomment this code snippet for docs
         <h2 className="display-5 mt-5">Custom input aria-label</h2>
         <p className="mb-4 text-muted">
           You can customize inputs' aria-labels with your own sentence using{" "}
@@ -147,7 +146,6 @@ function App() {
         <div>
           <PinField className="pin-field" formatAriaLabel={(i: number, c: number) => `custom pin code ${i} of ${c}`} />
         </div>
-        */}
 
         <h2 className="display-5 mt-5">Events</h2>
         <ul className="mb-4 text-muted">
