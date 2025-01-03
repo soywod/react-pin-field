@@ -88,9 +88,6 @@
   "peerDependencies": {
     "react": "^16.8 || ^17 || ^18 || ^19"
   },
-  "dependencies": {
-    "react-use-bireducer": "^1.1.1"
-  },
   "scripts": {
     "start": "storybook dev",
     "test:unit": "jest",

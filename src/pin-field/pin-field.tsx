@@ -1,8 +1,8 @@
 import React, { FC, forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { EffectReducer, StateReducer, useBireducer } from "react-use-bireducer";
 
 import keyboardEventPolyfill from "../polyfills/keyboard-evt";
 import { noop, range, omit } from "../utils";
+import { EffectReducer, StateReducer, useBireducer } from "./use-bireducer";
 
 import {
   PinFieldDefaultProps as DefaultProps,
