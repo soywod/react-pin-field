@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useRef, useState, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import cn from "classnames";
@@ -32,6 +32,15 @@ const meta: Meta<typeof PinField> = {
 
 export const Default: StoryObj<typeof PinField> = {
   render: props => <PinField {...props} data-cy="pin-field" />,
+  args: defaultArgs,
+};
+
+export const StrictMode: StoryObj<typeof PinField> = {
+  render: props => (
+    <ReactStrictMode>
+      <PinField {...props} />
+    </ReactStrictMode>
+  ),
   args: defaultArgs,
 };
 

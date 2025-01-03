@@ -19,7 +19,7 @@ export type PinFieldDefaultProps = {
 export type PinFieldProps = Partial<PinFieldDefaultProps> & PinFieldInputProps;
 
 export type PinFieldNotifierProps = {
-  refs: React.MutableRefObject<HTMLInputElement[]>;
+  refs: React.RefObject<HTMLInputElement[]>;
 } & PinFieldDefaultProps &
   PinFieldInputProps;
 
