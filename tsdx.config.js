@@ -1,3 +1,5 @@
+// https://github.com/jaredpalmer/tsdx/issues/981
+
 const replace = require("@rollup/plugin-replace");
 
 module.exports = {

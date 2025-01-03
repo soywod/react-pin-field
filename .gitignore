@@ -2,5 +2,8 @@
 .direnv/
 .cache/
 node_modules/
+dist/
+coverage/
+cypress/screenshots/
 yarn-debug.log*
 yarn-error.log*
