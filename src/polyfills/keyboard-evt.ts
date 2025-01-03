@@ -4,7 +4,7 @@
  * @see https://github.com/soywod/keyboardevent-key-polyfill/blob/master/index.js
  */
 
-const keyMap: {[key: number]: string | [string, string]} = {
+const keyMap: { [key: number]: string | [string, string] } = {
   3: "Cancel",
   6: "Help",
   8: "Backspace",

@@ -14,47 +14,26 @@ jobs:
       - name: Checkouts code
         uses: actions/checkout@v2
 
-      - name: Caches Nix store
-        uses: actions/cache@v3
-        id: nix-cache
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        id: node-modules
         with:
-          path: /tmp/nix-cache
-          key: nix-${{ hashFiles('**/flake.*') }}
-
-      - name: Caches Node modules
-        uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          path: node_modules
+          key: yarn-${{ hashFiles('yarn.lock') }}
 
       - name: Install Nix
-        uses: cachix/install-nix-action@v22
+        uses: cachix/install-nix-action@v27
         with:
-          nix_path: nixpkgs=channel:nixos-23.05
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-
-      - name: Imports Nix store cache
-        if: ${{ steps.nix-cache.outputs.cache-hit == 'true' }}
-        run: nix-store --import < /tmp/nix-cache
+          nix_path: nixpkgs=channel:nixos-24.11
+          enable_kvm: true
 
       - name: Installs deps
-        run: nix develop -c yarn install --frozen-lockfile --immutable
+        run: nix-shell --run 'yarn install --frozen-lockfile --immutable'
 
-      - name: Exports Nix store cache
-        if: ${{ steps.nix-cache.outputs.cache-hit != 'true' }}
-        run: nix-store --export $(find /nix/store -maxdepth 1 -name '*-*') > /tmp/nix-cache
-        
-      - name: Builds lib
-        working-directory: lib
-        run: nix develop -c yarn build
-        
       - name: Runs demo in background
-        working-directory: demo
-        run: nix develop -c yarn start &
+        run: nix-shell --run 'yarn start -p 3000 &'
 
       - name: Runs all tests
-        working-directory: lib
-        run: nix develop -c yarn test
-      
+        run: nix-shell --run 'yarn test'
+
       - uses: codecov/codecov-action@v2

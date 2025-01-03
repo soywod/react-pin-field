@@ -1,4 +1,4 @@
-import {noop, range, omit} from "./utils";
+import { noop, range, omit } from "./utils";
 
 test("noop", () => {
   expect(noop()).toEqual(undefined);
@@ -12,8 +12,8 @@ test("range", () => {
 });
 
 test("omit", () => {
-  expect(omit([], {a: 0, b: 1})).toEqual({a: 0, b: 1});
-  expect(omit(["a"], {a: 0, b: 1})).toEqual({b: 1});
-  expect(omit(["b"], {a: 0, b: 1})).toEqual({a: 0});
-  expect(omit(["a", "b"], {a: 0, b: 1})).toEqual({});
+  expect(omit([], { a: 0, b: 1 })).toEqual({ a: 0, b: 1 });
+  expect(omit(["a"], { a: 0, b: 1 })).toEqual({ b: 1 });
+  expect(omit(["b"], { a: 0, b: 1 })).toEqual({ a: 0 });
+  expect(omit(["a", "b"], { a: 0, b: 1 })).toEqual({});
 });

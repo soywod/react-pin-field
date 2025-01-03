@@ -1,24 +1,28 @@
 {
   "include": ["src"],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "jsx": "react",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
+    "inlineSourceMap": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "resolveJsonModule": true,
     "rootDir": "./src",
     "skipLibCheck": true,
-    "inlineSourceMap": true,
     "strict": true,
-    "target": "es5",
-    "types": ["cypress", "@testing-library/cypress"]
+    "target": "ES2020",
+    "types": ["cypress", "@testing-library/cypress"],
+    "useDefineForClassFields": true
   }
 }

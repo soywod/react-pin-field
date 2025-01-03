@@ -1,6 +1,6 @@
 {
   "name": "react-pin-field",
-  "description": "React component for entering PIN codes.",
+  "description": "React component for entering PIN codes",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
   "version": "3.1.5",
@@ -21,12 +21,19 @@
   "bugs": {
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "dist/react-pin-field.esm.js",
+  "main": "./dist/react-pin-field.umd.cjs",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/react-pin-field.js",
+  "type": "module",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/react-pin-field.js",
+      "require": "./dist/react-pin-field.umd.cjs"
+    }
+  },
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint",
@@ -36,46 +43,54 @@
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^6.0.2",
     "@size-limit/preset-small-lib": "^11.1.6",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/blocks": "^8.4.7",
+    "@storybook/react": "^8.4.7",
+    "@storybook/react-vite": "^8.4.7",
+    "@storybook/test": "^8.4.7",
     "@testing-library/cypress": "^10.0.2",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.13",
+    "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
     "classnames": "^2.5.1",
-    "cypress": "^13.17.0",
+    "cypress": "=13.13.2",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "lodash": "^4.17.21",
+    "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.83.0",
     "size-limit": "^11.1.6",
+    "storybook": "^8.4.7",
     "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.1",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.8.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "typescript-language-server": "^4.3.3",
-    "webpack": "^5.97.1",
+    "vite": "^6.0.7",
+    "vite-plugin-dts": "^4.4.0",
+    "yarn-run-all": "^3.1.1",
     "yarn-upgrade-all": "^0.7.4"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^16.8 || ^17 || ^18 || ^19"
   },
   "dependencies": {
     "react-use-bireducer": "^1.1.1"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "watch": "tsdx watch",
-    "build": "tsdx build",
-    "lint": "tsdx lint",
+    "start": "storybook dev",
     "test:unit": "jest",
     "test:e2e": "cypress run",
-    "test": "run-p test:unit test:e2e"
+    "test": "run-p test:unit test:e2e",
+    "build": "vite build",
+    "storybook:build": "storybook build"
   }
 }

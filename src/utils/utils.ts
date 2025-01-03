@@ -3,7 +3,7 @@ export function noop(): void {
 }
 
 export function range(start: number, length: number): number[] {
-  return Array.from({length}, (_, i) => i + start);
+  return Array.from({ length }, (_, i) => i + start);
 }
 
 export function omit<T extends Record<string, unknown>>(keys: string[], input: T): T {
@@ -11,7 +11,7 @@ export function omit<T extends Record<string, unknown>>(keys: string[], input: T
 
   for (let key in input) {
     if (!keys.includes(key)) {
-      Object.assign(output, {[key]: input[key]});
+      Object.assign(output, { [key]: input[key] });
     }
   }
 

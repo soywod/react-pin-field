@@ -27,19 +27,19 @@ export type PinFieldState = {
   focusIdx: number;
   codeLength: PinFieldDefaultProps["length"];
   isKeyAllowed: (key: string) => boolean;
-  fallback: {idx: number; val: string} | null;
+  fallback: { idx: number; val: string } | null;
 };
 
 export type PinFieldAction =
-  | {type: "handle-key-down"; key: string; idx: number; val: string}
-  | {type: "handle-key-up"; idx: number; val: string}
-  | {type: "handle-paste"; idx: number; val: string}
-  | {type: "focus-input"; idx: number};
+  | { type: "handle-key-down"; key: string; idx: number; val: string }
+  | { type: "handle-key-up"; idx: number; val: string }
+  | { type: "handle-paste"; idx: number; val: string }
+  | { type: "focus-input"; idx: number };
 
 export type PinFieldEffect =
-  | {type: "focus-input"; idx: number}
-  | {type: "set-input-val"; idx: number; val: string}
-  | {type: "resolve-key"; idx: number; key: string}
-  | {type: "reject-key"; idx: number; key: string}
-  | {type: "handle-delete"; idx: number}
-  | {type: "handle-code-change"};
+  | { type: "focus-input"; idx: number }
+  | { type: "set-input-val"; idx: number; val: string }
+  | { type: "resolve-key"; idx: number; key: string }
+  | { type: "reject-key"; idx: number; key: string }
+  | { type: "handle-delete"; idx: number }
+  | { type: "handle-code-change" };

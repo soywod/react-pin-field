@@ -1,6 +1,6 @@
- module.exports = {
+export default {
   arrowParens: "avoid",
-  bracketSpacing: false,
+  bracketSpacing: true,
   printWidth: 120,
   semi: true,
   singleQuote: false,

@@ -7,3 +7,6 @@ coverage/
 cypress/screenshots/
 yarn-debug.log*
 yarn-error.log*
+
+*storybook.log
+storybook-static/

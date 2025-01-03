@@ -1,8 +1,8 @@
-import React, {FC, forwardRef, useCallback, useImperativeHandle, useRef} from "react";
-import {EffectReducer, StateReducer, useBireducer} from "react-use-bireducer";
+import React, { FC, forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { EffectReducer, StateReducer, useBireducer } from "react-use-bireducer";
 
 import keyboardEventPolyfill from "../polyfills/keyboard-evt";
-import {noop, range, omit} from "../utils";
+import { noop, range, omit } from "../utils";
 
 import {
   PinFieldDefaultProps as DefaultProps,
@@ -20,7 +20,7 @@ export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onCompl
 export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
 
 export const defaultProps: DefaultProps = {
-  ref: {current: []},
+  ref: { current: [] },
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
@@ -62,18 +62,15 @@ export function isKeyAllowed(predicate: DefaultProps["validate"]) {
 }
 
 export function pasteReducer(state: State, idx: number, val: string): [State, Effect[]] {
-  const areAllKeysAllowed = val
-    .split("")
-    .slice(0, state.codeLength)
-    .every(state.isKeyAllowed);
+  const areAllKeysAllowed = val.split("").slice(0, state.codeLength).every(state.isKeyAllowed);
 
   if (!areAllKeysAllowed) {
     return [
       state,
       [
-        {type: "set-input-val", idx: state.focusIdx, val: ""},
-        {type: "reject-key", idx, key: val},
-        {type: "handle-code-change"},
+        { type: "set-input-val", idx: state.focusIdx, val: "" },
+        { type: "reject-key", idx, key: val },
+        { type: "handle-code-change" },
       ],
     ];
   }
@@ -94,12 +91,12 @@ export function pasteReducer(state: State, idx: number, val: string): [State, Ef
   ]);
 
   if (state.focusIdx !== nextFocusIdx) {
-    effects.push({type: "focus-input", idx: nextFocusIdx});
+    effects.push({ type: "focus-input", idx: nextFocusIdx });
   }
 
-  effects.push({type: "handle-code-change"});
+  effects.push({ type: "handle-code-change" });
 
-  return [{...state, focusIdx: nextFocusIdx}, effects];
+  return [{ ...state, focusIdx: nextFocusIdx }, effects];
 }
 
 export const stateReducer: StateReducer<State, Action, Effect> = (state, action) => {
@@ -108,48 +105,48 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
       switch (action.key) {
         case "Unidentified":
         case "Process": {
-          return [{...state, fallback: {idx: state.focusIdx, val: action.val}}, NO_EFFECTS];
+          return [{ ...state, fallback: { idx: state.focusIdx, val: action.val } }, NO_EFFECTS];
         }
 
         case "Dead": {
           return [
             state,
             [
-              {type: "set-input-val", idx: state.focusIdx, val: ""},
-              {type: "reject-key", idx: state.focusIdx, key: action.key},
-              {type: "handle-code-change"},
+              { type: "set-input-val", idx: state.focusIdx, val: "" },
+              { type: "reject-key", idx: state.focusIdx, key: action.key },
+              { type: "handle-code-change" },
             ],
           ];
         }
 
         case "ArrowLeft": {
           const prevFocusIdx = getPrevFocusIdx(state.focusIdx);
-          return [{...state, focusIdx: prevFocusIdx}, [{type: "focus-input", idx: prevFocusIdx}]];
+          return [{ ...state, focusIdx: prevFocusIdx }, [{ type: "focus-input", idx: prevFocusIdx }]];
         }
 
         case "ArrowRight": {
           const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-          return [{...state, focusIdx: nextFocusIdx}, [{type: "focus-input", idx: nextFocusIdx}]];
+          return [{ ...state, focusIdx: nextFocusIdx }, [{ type: "focus-input", idx: nextFocusIdx }]];
         }
 
         case "Delete":
         case "Backspace": {
-          return [state, [{type: "handle-delete", idx: state.focusIdx}, {type: "handle-code-change"}]];
+          return [state, [{ type: "handle-delete", idx: state.focusIdx }, { type: "handle-code-change" }]];
         }
 
         default: {
           if (!state.isKeyAllowed(action.key)) {
-            return [state, [{type: "reject-key", idx: state.focusIdx, key: action.key}]];
+            return [state, [{ type: "reject-key", idx: state.focusIdx, key: action.key }]];
           }
 
           const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
           return [
-            {...state, focusIdx: nextFocusIdx},
+            { ...state, focusIdx: nextFocusIdx },
             [
-              {type: "set-input-val", idx: state.focusIdx, val: action.key},
-              {type: "resolve-key", idx: state.focusIdx, key: action.key},
-              {type: "focus-input", idx: nextFocusIdx},
-              {type: "handle-code-change"},
+              { type: "set-input-val", idx: state.focusIdx, val: action.key },
+              { type: "resolve-key", idx: state.focusIdx, key: action.key },
+              { type: "focus-input", idx: nextFocusIdx },
+              { type: "handle-code-change" },
             ],
           ];
         }
@@ -161,13 +158,13 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
         return [state, NO_EFFECTS];
       }
 
-      const nextState: State = {...state, fallback: null};
+      const nextState: State = { ...state, fallback: null };
       const effects: Effect[] = [];
-      const {idx, val: prevVal} = state.fallback;
+      const { idx, val: prevVal } = state.fallback;
       const val = action.val;
 
       if (prevVal === "" && val === "") {
-        effects.push({type: "handle-delete", idx}, {type: "handle-code-change"});
+        effects.push({ type: "handle-delete", idx }, { type: "handle-code-change" });
       } else if (val !== "") {
         return pasteReducer(nextState, idx, val);
       }
@@ -180,7 +177,7 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
     }
 
     case "focus-input": {
-      return [{...state, focusIdx: action.idx}, [{type: "focus-input", idx: action.idx}]];
+      return [{ ...state, focusIdx: action.idx }, [{ type: "focus-input", idx: action.idx }]];
     }
 
     default: {
@@ -189,7 +186,7 @@ export const stateReducer: StateReducer<State, Action, Effect> = (state, action)
   }
 };
 
-export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer<Effect, Action> {
+export function useEffectReducer({ refs, ...props }: NotifierProps): EffectReducer<Effect, Action> {
   return useCallback(
     effect => {
       switch (effect.type) {
@@ -250,23 +247,23 @@ export function useEffectReducer({refs, ...props}: NotifierProps): EffectReducer
 }
 
 export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
-  const props: DefaultProps & InputProps = {...defaultProps, ...customProps};
-  const {autoFocus, formatAriaLabel, length: codeLength} = props;
+  const props: DefaultProps & InputProps = { ...defaultProps, ...customProps };
+  const { autoFocus, formatAriaLabel, length: codeLength } = props;
   const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props);
   const refs = useRef<HTMLInputElement[]>([]);
-  const effectReducer = useEffectReducer({refs, ...props});
+  const effectReducer = useEffectReducer({ refs, ...props });
   const dispatch = useBireducer(stateReducer, effectReducer, defaultState(props))[1];
 
   useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
   function handleFocus(idx: number) {
-    return function() {
-      dispatch({type: "focus-input", idx});
+    return function () {
+      dispatch({ type: "focus-input", idx });
     };
   }
 
   function handleKeyDown(idx: number) {
-    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
       if (
         !IGNORED_META_KEYS.includes(key) &&
@@ -276,29 +273,29 @@ export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
         evt.nativeEvent.target instanceof HTMLInputElement
       ) {
         evt.preventDefault();
-        dispatch({type: "handle-key-down", idx, key, val: evt.nativeEvent.target.value});
+        dispatch({ type: "handle-key-down", idx, key, val: evt.nativeEvent.target.value });
       }
     };
   }
 
   function handleKeyUp(idx: number) {
-    return function(evt: React.KeyboardEvent<HTMLInputElement>) {
+    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
       if (evt.nativeEvent.target instanceof HTMLInputElement) {
-        dispatch({type: "handle-key-up", idx, val: evt.nativeEvent.target.value});
+        dispatch({ type: "handle-key-up", idx, val: evt.nativeEvent.target.value });
       }
     };
   }
 
   function handlePaste(idx: number) {
-    return function(evt: React.ClipboardEvent<HTMLInputElement>) {
+    return function (evt: React.ClipboardEvent<HTMLInputElement>) {
       evt.preventDefault();
       const val = evt.clipboardData.getData("Text");
-      dispatch({type: "handle-paste", idx, val});
+      dispatch({ type: "handle-paste", idx, val });
     };
   }
 
   function setRefAtIndex(idx: number) {
-    return function(ref: HTMLInputElement) {
+    return function (ref: HTMLInputElement) {
       if (ref) {
         refs.current[idx] = ref;
       }
