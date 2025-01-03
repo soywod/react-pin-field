@@ -41,6 +41,10 @@
     }
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
     "@cypress/webpack-preprocessor": "^6.0.2",
     "@size-limit/preset-small-lib": "^11.1.6",
     "@storybook/addon-essentials": "^8.4.7",
@@ -59,6 +63,8 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "babel-jest": "^29.7.0",
+    "babel-loader": "^9.2.1",
     "classnames": "^2.5.1",
     "cypress": "=13.13.2",
     "husky": "^9.1.7",
@@ -71,11 +77,11 @@
     "sass": "^1.83.0",
     "size-limit": "^11.1.6",
     "storybook": "^8.4.7",
-    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0",
+    "webpack": "^5.97.1",
     "yarn-run-all": "^3.1.1",
     "yarn-upgrade-all": "^0.7.4"
   },

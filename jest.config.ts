@@ -1,10 +1,7 @@
 import type { Config } from "jest";
 
-const config: Config = {
+export default {
   collectCoverage: true,
-  preset: "ts-jest",
   testEnvironment: "jest-environment-jsdom",
   testRegex: ".(test|spec).tsx?$",
-};
-
-export default config;
+} satisfies Config;

@@ -1,6 +1,6 @@
-import {defineConfig} from "cypress";
+import "cypress";
 
-export default defineConfig({
+export default {
   fixturesFolder: false,
   video: false,
   e2e: {
@@ -16,4 +16,4 @@ export default defineConfig({
     specPattern: "src/**/*.e2e.ts",
     supportFile: false,
   },
-});
+} satisfies Cypress.ConfigOptions;
