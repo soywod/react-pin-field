@@ -20,51 +20,51 @@ import { noop, range } from "../utils";
 const BACKSPACE = 8;
 const DELETE = 46;
 
-export type DefaultProps = {
+export type InnerProps = {
   length: number;
   validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
   formatAriaLabel: (idx: number, codeLength: number) => string;
   onResolveKey: (key: string, ref?: HTMLInputElement) => any;
   onRejectKey: (key: string, ref?: HTMLInputElement) => any;
-  onChange: (code: string) => void;
   onComplete: (code: string) => void;
 };
 
-export const defaultProps: DefaultProps = {
+export const defaultProps: InnerProps = {
   length: 5,
   validate: /^[a-zA-Z0-9]$/,
   format: key => key,
   formatAriaLabel: (i: number, n: number) => `PIN field ${i} of ${n}`,
   onResolveKey: noop,
   onRejectKey: noop,
-  onChange: noop,
   onComplete: noop,
 };
 
-export type Props = Partial<DefaultProps> & {
+export type Props = Partial<InnerProps> & {
   handler?: Handler;
 };
 
 export type State = {
+  props: InnerProps;
   cursor: number;
   values: string[];
-  length: number;
   backspace: boolean;
   composition: boolean;
+  ready: boolean;
 };
 
-export function defaultState(length: number): State {
-  return {
-    cursor: 0,
-    values: Array(length),
-    length,
-    backspace: false,
-    composition: false,
-  };
-}
+export const defaultState: State = {
+  props: defaultProps,
+  cursor: 0,
+  values: Array(defaultProps.length),
+  backspace: false,
+  composition: false,
+  ready: false,
+};
 
 export type Action =
+  | { type: "init"; props: Props }
+  | { type: "update-length"; length: number }
   | { type: "handle-change"; index: number; value: string | null; reset?: boolean }
   | { type: "handle-key-down"; index: number; event: KeyboardEvent<HTMLInputElement> }
   | { type: "start-composition"; index: number }
@@ -74,6 +74,21 @@ export function reducer(state: State, action: Action): State {
   console.log("action", action);
 
   switch (action.type) {
+    case "init": {
+      state.props = { ...defaultProps, ...action.props };
+      state.values.splice(state.cursor, state.props.length);
+      state.ready = true;
+      state.cursor = Math.min(state.cursor, state.props.length - 1);
+      return { ...state };
+    }
+
+    case "update-length": {
+      state.values.splice(state.cursor, action.length);
+      state.props.length = action.length;
+      state.cursor = Math.min(state.cursor, action.length - 1);
+      return { ...state };
+    }
+
     case "start-composition": {
       return { ...state, composition: true };
     }
@@ -88,7 +103,7 @@ export function reducer(state: State, action: Action): State {
       }
 
       const dir = state.values[action.index] ? 1 : 0;
-      state.cursor = Math.min(action.index + dir, state.length - 1);
+      state.cursor = Math.min(action.index + dir, state.props.length - 1);
 
       return { ...state };
     }
@@ -99,14 +114,14 @@ export function reducer(state: State, action: Action): State {
       }
 
       if (action.reset) {
-        state.values = Array(state.length);
+        state.values = Array(state.props.length);
       }
 
       if (action.value) {
-        const values = action.value.split("");
-        const length = Math.min(state.length - action.index, values.length);
+        const values = action.value.split("").map(state.props.format);
+        const length = Math.min(state.props.length - action.index, values.length);
         state.values.splice(action.index, length, ...values.slice(0, length));
-        state.cursor = Math.min(action.index + length, state.length - 1);
+        state.cursor = Math.min(action.index + length, state.props.length - 1);
       } else {
         delete state.values[action.index];
         const dir = state.backspace ? 0 : 1;
@@ -160,6 +175,7 @@ export function reducer(state: State, action: Action): State {
 }
 
 type Handler = {
+  init: (props: Props) => void;
   refs: RefObject<HTMLInputElement[]>;
   state: State;
   dispatch: ActionDispatch<[Action]>;
@@ -167,15 +183,13 @@ type Handler = {
   setValue: (value: string) => void;
 };
 
-export function usePinField(length?: number): Handler {
-  return useInternalHandler(length);
+export function usePinField(): Handler {
+  return useInternalHandler();
 }
 
-export function useInternalHandler(length: number = defaultProps.length, handler?: Handler): Handler {
-  if (handler) return handler;
-
+export function useInternalHandler(): Handler {
   const refs = useRef<HTMLInputElement[]>([]);
-  const [state, dispatch] = useReducer(reducer, defaultState(length));
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   const value = useMemo(() => {
     let value = "";
@@ -192,68 +206,77 @@ export function useInternalHandler(length: number = defaultProps.length, handler
     [dispatch, state.cursor],
   );
 
-  return { refs, state, dispatch, value, setValue };
+  const init = useCallback(
+    (props: Props) => {
+      dispatch({ type: "init", props });
+    },
+    [dispatch],
+  );
+
+  return useMemo(
+    () => ({ refs, state, dispatch, value, setValue, init }),
+    [refs, state, dispatch, value, setValue, init],
+  );
 }
 
-export const PinFieldV2: FC<Props> = forwardRef((props, fwdRef) => {
-  const handler = useInternalHandler(props.length, props.handler);
+export const PinFieldV2: FC<Props> = forwardRef(({ handler: customHandler, ...props }, fwdRef) => {
+  const internalHandler = useInternalHandler();
+  const handler = customHandler || internalHandler;
 
   useImperativeHandle(fwdRef, () => handler.refs.current, [handler.refs]);
 
   console.log("state", handler.state);
 
   function setRefAt(index: number): (ref: HTMLInputElement) => void {
-    return useCallback(
-      ref => {
-        if (ref) {
-          handler.refs.current[index] = ref;
-        }
-      },
-      [index],
-    );
+    return ref => {
+      if (ref) {
+        handler.refs.current[index] = ref;
+      }
+    };
   }
 
   function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
-    return useCallback(
-      event => {
-        handler.dispatch({ type: "handle-key-down", index, event });
-      },
-      [index, handler.dispatch],
-    );
+    return event => {
+      handler.dispatch({ type: "handle-key-down", index, event });
+    };
   }
 
   function handleChangeAt(index: number): ChangeEventHandler<HTMLInputElement> {
-    return useCallback(
-      event => {
-        // should not happen, mostly for typescript to infer properly
-        if (!(event.nativeEvent instanceof InputEvent)) return;
-        handler.dispatch({ type: "handle-change", index, value: event.nativeEvent.data });
-      },
-      [index, handler.dispatch],
-    );
+    return event => {
+      // should not happen, mostly for typescript to infer properly
+      if (!(event.nativeEvent instanceof InputEvent)) return;
+      handler.dispatch({ type: "handle-change", index, value: event.nativeEvent.data });
+    };
   }
 
   function startCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
-    return useCallback(() => {
+    return () => {
       handler.dispatch({ type: "start-composition", index });
-    }, [index, handler.dispatch]);
+    };
   }
 
   function endCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
-    return useCallback(
-      event => {
-        handler.dispatch({ type: "end-composition", index, value: event.data });
-      },
-      [index, handler.dispatch],
-    );
+    return event => {
+      handler.dispatch({ type: "end-composition", index, value: event.data });
+    };
   }
 
   useEffect(() => {
-    if (props.onChange === undefined) return;
-    props.onChange(handler.value);
-  }, [props.onChange, handler.value]);
+    if (handler.state.ready) return;
+    handler.init(props);
+  }, [props, handler.state.ready, handler.init]);
 
   useEffect(() => {
+    handler.init({ length: props.length });
+  }, [handler.init, props.length !== handler.state.props.length]);
+
+  // useEffect(() => {
+  //   if (props.length === undefined) return;
+  //   handler.dispatch({ type: "update-length", length: props.length });
+  // }, [props.length !== handler.state.props.length, handler.dispatch]);
+
+  useEffect(() => {
+    if (!handler.state.ready) return;
     if (!handler.refs.current) return;
     console.log("state changed");
 
@@ -270,9 +293,13 @@ export const PinFieldV2: FC<Props> = forwardRef((props, fwdRef) => {
     }
   }, [handler.refs, handler.state]);
 
+  if (!handler.state.ready) {
+    return null;
+  }
+
   return (
     <>
-      {range(0, handler.state.length).map(index => (
+      {range(0, handler.state.props.length).map(index => (
         <input
           type="text"
           autoCapitalize="off"

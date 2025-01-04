@@ -1,4 +1,4 @@
-import { StrictMode as ReactStrictMode } from "react";
+import { FC, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
@@ -6,10 +6,10 @@ import { PinFieldV2, defaultProps, Props, usePinField } from "./pin-field-v2";
 
 const defaultArgs = {
   length: defaultProps.length,
-  onResolveKey: fn(),
-  onRejectKey: fn(),
-  onChange: fn(),
-  onComplete: fn(),
+  // onResolveKey: fn(),
+  // onRejectKey: fn(),
+  // onChange: fn(),
+  // onComplete: fn(),
 } satisfies Props;
 
 /**
@@ -42,11 +42,13 @@ export const StrictMode: StoryObj<typeof PinFieldV2> = {
 
 export const Controlled: StoryObj<typeof PinFieldV2> = {
   render: props => {
-    const handler = usePinField(props.length);
+    const handler = usePinField();
 
     return (
       <>
-        <PinFieldV2 {...props} handler={handler} />
+        <div>
+          <PinFieldV2 {...props} handler={handler} />
+        </div>
         <button onClick={() => handler.refs.current[0]?.focus()}>focus first</button>
         <input
           type="text"
@@ -58,6 +60,31 @@ export const Controlled: StoryObj<typeof PinFieldV2> = {
     );
   },
   args: defaultArgs,
+};
+
+/**
+ * Characters can be formatted with a formatter `(char: string) => string`.
+ */
+export const Format: StoryObj<FC<Props & { formatEval: string }>> = {
+  render: ({ formatEval, ...props }) => {
+    try {
+      let format = eval(formatEval);
+      format("a");
+      return <PinFieldV2 {...props} format={format} />;
+    } catch (err: any) {
+      return <div>Invalid format function: {err.toString()}</div>;
+    }
+  },
+  argTypes: {
+    formatEval: {
+      control: "text",
+      name: "format (fn eval)",
+    },
+  },
+  args: {
+    formatEval: "char => char.toUpperCase()",
+    ...defaultArgs,
+  },
 };
 
 export default meta;
