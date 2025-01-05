@@ -1,5 +1,6 @@
 import {
   FC,
+  InputHTMLAttributes,
   useEffect,
   useReducer,
   useRef,
@@ -22,80 +23,84 @@ const DELETE = 46;
 
 export type InnerProps = {
   length: number;
-  validate: string | string[] | RegExp | ((key: string) => boolean);
   format: (char: string) => string;
-  formatAriaLabel: (idx: number, codeLength: number) => string;
-  onResolveKey: (key: string, ref?: HTMLInputElement) => any;
-  onRejectKey: (key: string, ref?: HTMLInputElement) => any;
-  onComplete: (code: string) => void;
+  formatAriaLabel: (index: number, total: number) => string;
+  onChange: (value: string) => void;
+  onComplete: (value: string) => void;
 };
 
 export const defaultProps: InnerProps = {
   length: 5,
-  validate: /^[a-zA-Z0-9]$/,
-  format: key => key,
-  formatAriaLabel: (i: number, n: number) => `PIN field ${i} of ${n}`,
-  onResolveKey: noop,
-  onRejectKey: noop,
+  format: char => char,
+  formatAriaLabel: (index: number, total: number) => `PIN field ${index} of ${total}`,
+  onChange: noop,
   onComplete: noop,
 };
 
-export type Props = Partial<InnerProps> & {
-  handler?: Handler;
+export type NativeProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "onKeyDown" | "onCompositionStart" | "onCompositionEnd"
+>;
+
+export const defaultNativeProps: NativeProps = {
+  type: "text",
+  inputMode: "text",
+  autoCapitalize: "off",
+  autoCorrect: "off",
+  autoComplete: "off",
 };
 
-export type State = {
-  props: InnerProps;
+export type Props = NativeProps &
+  Partial<InnerProps> & {
+    handler?: Handler;
+  };
+
+export type StateProps = Pick<NativeProps, "dir"> & Pick<InnerProps, "length" | "format">;
+
+export type State = StateProps & {
   cursor: number;
   values: string[];
   backspace: boolean;
   composition: boolean;
   ready: boolean;
+  dirty: boolean;
 };
 
 export const defaultState: State = {
-  props: defaultProps,
+  length: defaultProps.length,
+  format: defaultProps.format,
+  dir: "ltr",
   cursor: 0,
   values: Array(defaultProps.length),
   backspace: false,
   composition: false,
   ready: false,
+  dirty: false,
 };
 
 export type Action =
-  | { type: "init"; props: Props }
-  | { type: "update-length"; length: number }
+  | { type: "update-props"; props: Partial<StateProps> }
   | { type: "handle-change"; index: number; value: string | null; reset?: boolean }
   | { type: "handle-key-down"; index: number; event: KeyboardEvent<HTMLInputElement> }
   | { type: "start-composition"; index: number }
   | { type: "end-composition"; index: number; value: string };
 
 export function reducer(state: State, action: Action): State {
-  console.log("action", action);
-
   switch (action.type) {
-    case "init": {
-      state.props = { ...defaultProps, ...action.props };
-      state.values.splice(state.cursor, state.props.length);
-      state.ready = true;
-      state.cursor = Math.min(state.cursor, state.props.length - 1);
-      return { ...state };
-    }
+    case "update-props": {
+      state = { ...state, ...action.props, ready: true };
+      // cannot use Array.splice as it does not keep empty array length
+      state.values = state.values.slice(state.cursor, state.length);
+      state.cursor = Math.min(state.cursor, state.length - 1);
 
-    case "update-length": {
-      state.values.splice(state.cursor, action.length);
-      state.props.length = action.length;
-      state.cursor = Math.min(state.cursor, action.length - 1);
-      return { ...state };
+      return state;
     }
 
     case "start-composition": {
-      return { ...state, composition: true };
+      return { ...state, dirty: true, composition: true };
     }
 
     case "end-composition": {
-      state.composition = false;
-
       if (action.value) {
         state.values[action.index] = action.value;
       } else {
@@ -103,9 +108,9 @@ export function reducer(state: State, action: Action): State {
       }
 
       const dir = state.values[action.index] ? 1 : 0;
-      state.cursor = Math.min(action.index + dir, state.props.length - 1);
+      state.cursor = Math.min(action.index + dir, state.length - 1);
 
-      return { ...state };
+      return { ...state, dirty: true, composition: false };
     }
 
     case "handle-change": {
@@ -114,68 +119,72 @@ export function reducer(state: State, action: Action): State {
       }
 
       if (action.reset) {
-        state.values = Array(state.props.length);
+        state.values = Array(state.length);
       }
 
       if (action.value) {
-        const values = action.value.split("").map(state.props.format);
-        const length = Math.min(state.props.length - action.index, values.length);
+        const values = action.value.split("").map(state.format);
+        const length = Math.min(state.length - action.index, values.length);
         state.values.splice(action.index, length, ...values.slice(0, length));
-        state.cursor = Math.min(action.index + length, state.props.length - 1);
+        state.cursor = Math.min(action.index + length, state.length - 1);
       } else {
         delete state.values[action.index];
         const dir = state.backspace ? 0 : 1;
         state.cursor = Math.max(0, action.index - dir);
       }
 
-      return { ...state, backspace: false };
+      return { ...state, dirty: true, backspace: false };
     }
 
     case "handle-key-down": {
-      const key = action.event.key === "Backspace" || action.event.key === "Delete";
-      const which = action.event.which === BACKSPACE || action.event.which === DELETE;
-      const keyCode = action.event.keyCode === BACKSPACE || action.event.keyCode === DELETE;
-      const deletion = key || which || keyCode;
+      // determine if a deletion key is pressed
+      const fromKey = action.event.key === "Backspace" || action.event.key === "Delete";
+      const fromCode = action.event.code === "Backspace" || action.event.code === "Delete";
+      const fromKeyCode = action.event.keyCode === BACKSPACE || action.event.keyCode === DELETE;
+      const fromWhich = action.event.which === BACKSPACE || action.event.which === DELETE;
+      const deletion = fromKey || fromCode || fromKeyCode || fromWhich;
+
+      // return the same state reference if no deletion detected
+      if (!deletion) {
+        break;
+      }
 
       // Deletion is a bit tricky and requires special attention.
       //
-      // When the current field has a value, deletion works as
-      // expected AS LONG AS THE STATE IS NOT UPDATED and keeps its
-      // reference: the value deletes by itself and the `onchange`
-      // event is triggered, which updates the state.
-      //
-      // But when the current field is empty, deletion does not
-      // trigger the `onchange` event. Therefore the state needs to be
-      // updated here. Moving the cursor backwards is enough for
-      // deletion to happen on the previous field, which triggers the
-      // `onchange` event and re-update the state.
-      if (deletion) {
-        // if empty value, move the cursor backwards and update the
-        // state
-        if (!state.values[action.index]) {
-          state.cursor = Math.max(0, action.index - 1);
-
-          // let know the handle-change action that we already moved
-          // backwards and that we don't need to touch the cursor
-          // anymore
-          state.backspace = true;
-
-          return { ...state };
-        }
-
-        // otherwise just return the same state and let the onchange
-        // event do the job
+      // When the field under cusor has a value and a deletion key is
+      // pressed, we want to let the browser to do the deletion for
+      // us, like a regular deletion in a normal input via the
+      // `onchange` event. For this to happen, we need to return the
+      // same state reference in order not to trigger any change. The
+      // state will be automatically updated by the handle-change
+      // action, when the deleted value will trigger the `onchange`
+      // event.
+      if (state.values[action.index]) {
+        break;
       }
 
-      break;
+      // But when the field under cursor is empty, deletion cannot
+      // happen by itself. The trick is to manually move the cursor
+      // backwards: the browser will then delete the value under this
+      // new cursor and perform the changes via the triggered
+      // `onchange` event.
+      else {
+        state.cursor = Math.max(0, action.index - 1);
+
+        // let know the handle-change action that we already moved
+        // backwards and that we don't need to touch the cursor
+        // anymore
+        state.backspace = true;
+
+        return { ...state, dirty: true };
+      }
     }
   }
 
   return state;
 }
 
-type Handler = {
-  init: (props: Props) => void;
+export type Handler = {
   refs: RefObject<HTMLInputElement[]>;
   state: State;
   dispatch: ActionDispatch<[Action]>;
@@ -184,10 +193,6 @@ type Handler = {
 };
 
 export function usePinField(): Handler {
-  return useInternalHandler();
-}
-
-export function useInternalHandler(): Handler {
   const refs = useRef<HTMLInputElement[]>([]);
   const [state, dispatch] = useReducer(reducer, defaultState);
 
@@ -206,117 +211,152 @@ export function useInternalHandler(): Handler {
     [dispatch, state.cursor],
   );
 
-  const init = useCallback(
-    (props: Props) => {
-      dispatch({ type: "init", props });
-    },
-    [dispatch],
-  );
-
-  return useMemo(
-    () => ({ refs, state, dispatch, value, setValue, init }),
-    [refs, state, dispatch, value, setValue, init],
-  );
+  return useMemo(() => ({ refs, state, dispatch, value, setValue }), [refs, state, dispatch, value, setValue]);
 }
 
-export const PinFieldV2: FC<Props> = forwardRef(({ handler: customHandler, ...props }, fwdRef) => {
-  const internalHandler = useInternalHandler();
-  const handler = customHandler || internalHandler;
+export const PinFieldV2: FC<Props> = forwardRef(
+  (
+    {
+      length = defaultProps.length,
+      format = defaultProps.format,
+      formatAriaLabel = defaultProps.formatAriaLabel,
+      onChange: handleChange = defaultProps.onChange,
+      onComplete: handleComplete = defaultProps.onComplete,
+      handler: customHandler,
+      autoFocus,
+      ...nativeProps
+    },
+    fwdRef,
+  ) => {
+    const internalHandler = usePinField();
+    const { refs, state, dispatch } = customHandler || internalHandler;
 
-  useImperativeHandle(fwdRef, () => handler.refs.current, [handler.refs]);
+    useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
-  console.log("state", handler.state);
+    function setRefAt(index: number): (ref: HTMLInputElement) => void {
+      return ref => {
+        if (ref) {
+          refs.current[index] = ref;
+        }
+      };
+    }
 
-  function setRefAt(index: number): (ref: HTMLInputElement) => void {
-    return ref => {
-      if (ref) {
-        handler.refs.current[index] = ref;
+    function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
+      return event => {
+        dispatch({ type: "handle-key-down", index, event });
+      };
+    }
+
+    function handleChangeAt(index: number): ChangeEventHandler<HTMLInputElement> {
+      return event => {
+        // should never happen, mostly for typescript to infer properly
+        if (!(event.nativeEvent instanceof InputEvent)) return;
+        dispatch({ type: "handle-change", index, value: event.nativeEvent.data });
+      };
+    }
+
+    function startCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
+      return () => {
+        dispatch({ type: "start-composition", index });
+      };
+    }
+
+    function endCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
+      return event => {
+        dispatch({ type: "end-composition", index, value: event.data });
+      };
+    }
+
+    // initial props to state update
+    useEffect(() => {
+      if (state.ready) return;
+      const dir = nativeProps.dir?.toLowerCase() || document.documentElement.getAttribute("dir")?.toLowerCase();
+      dispatch({ type: "update-props", props: { length, format, dir } });
+    }, [state.ready, dispatch, length, format]);
+
+    // props.length to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      if (length === state.length) return;
+      dispatch({ type: "update-props", props: { length } });
+    }, [state.ready, length, state.length, dispatch]);
+
+    // props.format to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      if (format === state.format) return;
+      dispatch({ type: "update-props", props: { format } });
+    }, [state.ready, format, state.format, dispatch]);
+
+    // nativeProps.dir to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      const dir = nativeProps.dir?.toLowerCase() || document.documentElement.getAttribute("dir")?.toLowerCase();
+      if (dir === state.dir) return;
+      dispatch({ type: "update-props", props: { dir } });
+    }, [state.ready, nativeProps.dir, state.dir, dispatch]);
+
+    // state to view update
+    useEffect(() => {
+      if (!refs.current) return;
+      if (!state.ready) return;
+      if (!state.dirty) return;
+
+      let innerFocus = false;
+      let completed = state.values.length == state.length;
+      let value = "";
+
+      for (let index = 0; index < state.values.length; index++) {
+        const char = index in state.values ? state.values[index] : "";
+        refs.current[index].value = char;
+        innerFocus = innerFocus || hasFocus(refs.current[index]);
+        completed = completed && index in state.values && refs.current[index].checkValidity();
+        value += char;
       }
-    };
-  }
 
-  function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
-    return event => {
-      handler.dispatch({ type: "handle-key-down", index, event });
-    };
-  }
+      if (innerFocus) {
+        refs.current[state.cursor].focus();
+      }
 
-  function handleChangeAt(index: number): ChangeEventHandler<HTMLInputElement> {
-    return event => {
-      // should not happen, mostly for typescript to infer properly
-      if (!(event.nativeEvent instanceof InputEvent)) return;
-      handler.dispatch({ type: "handle-change", index, value: event.nativeEvent.data });
-    };
-  }
+      if (handleChange) {
+        handleChange(value);
+      }
 
-  function startCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
-    return () => {
-      handler.dispatch({ type: "start-composition", index });
-    };
-  }
+      if (handleComplete && completed) {
+        handleComplete(value);
+      }
+    }, [refs, state, handleChange, handleComplete]);
 
-  function endCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
-    return event => {
-      handler.dispatch({ type: "end-composition", index, value: event.data });
-    };
-  }
-
-  useEffect(() => {
-    if (handler.state.ready) return;
-    handler.init(props);
-  }, [props, handler.state.ready, handler.init]);
-
-  useEffect(() => {
-    handler.init({ length: props.length });
-  }, [handler.init, props.length !== handler.state.props.length]);
-
-  // useEffect(() => {
-  //   if (props.length === undefined) return;
-  //   handler.dispatch({ type: "update-length", length: props.length });
-  // }, [props.length !== handler.state.props.length, handler.dispatch]);
-
-  useEffect(() => {
-    if (!handler.state.ready) return;
-    if (!handler.refs.current) return;
-    console.log("state changed");
-
-    let innerFocus = false;
-
-    for (let index = 0; index < handler.state.values.length; index++) {
-      const value = index in handler.state.values ? handler.state.values[index] : "";
-      handler.refs.current[index].value = value;
-      innerFocus = innerFocus || hasFocus(handler.refs.current[index]);
+    // wait for props to be accessible in the state
+    if (!state.ready) {
+      return null;
     }
 
-    if (innerFocus) {
-      handler.refs.current[handler.state.cursor].focus();
+    const inputs = range(0, state.length).map(index => (
+      <input
+        {...defaultNativeProps}
+        {...nativeProps}
+        key={index}
+        ref={setRefAt(index)}
+        autoFocus={index === 0 && autoFocus}
+        onKeyDown={handleKeyDownAt(index)}
+        onChange={handleChangeAt(index)}
+        onCompositionStart={startCompositionAt(index)}
+        onCompositionEnd={endCompositionAt(index)}
+        aria-label={formatAriaLabel(index + 1, state.length)}
+        aria-required={nativeProps.required ? "true" : undefined}
+        aria-disabled={nativeProps.disabled ? "true" : undefined}
+        aria-readonly={nativeProps.readOnly ? "true" : undefined}
+      />
+    ));
+
+    if (state.dir === "rtl") {
+      inputs.reverse();
     }
-  }, [handler.refs, handler.state]);
 
-  if (!handler.state.ready) {
-    return null;
-  }
-
-  return (
-    <>
-      {range(0, handler.state.props.length).map(index => (
-        <input
-          type="text"
-          autoCapitalize="off"
-          autoCorrect="off"
-          autoComplete="off"
-          inputMode="text"
-          key={index}
-          ref={setRefAt(index)}
-          onKeyDown={handleKeyDownAt(index)}
-          onChange={handleChangeAt(index)}
-          onCompositionStart={startCompositionAt(index)}
-          onCompositionEnd={endCompositionAt(index)}
-        />
-      ))}
-    </>
-  );
-});
+    return inputs;
+  },
+);
 
 export function hasFocus(el: HTMLElement): boolean {
   try {
