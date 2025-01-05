@@ -85,22 +85,34 @@ export type Action =
   | { type: "start-composition"; index: number }
   | { type: "end-composition"; index: number; value: string };
 
-export function reducer(state: State, action: Action): State {
+export function reducer(prevState: State, action: Action): State {
   switch (action.type) {
     case "update-props": {
-      state = { ...state, ...action.props, ready: true };
-      // cannot use Array.splice as it does not keep empty array length
-      state.values = state.values.slice(state.cursor, state.length);
+      // merge previous state with action's props
+      const state = { ...prevState, ...action.props };
+
+      // adjust cursor in case the new length exceed the previous one
       state.cursor = Math.min(state.cursor, state.length - 1);
+
+      // slice values according to the new length
+      //
+      // NOTE: use slice because splice does not keep empty items and
+      // therefore messes up with values length
+      state.values = state.values.slice(0, state.cursor + 1);
+
+      // state is now ready
+      state.ready = true;
 
       return state;
     }
 
     case "start-composition": {
-      return { ...state, dirty: true, composition: true };
+      return { ...prevState, dirty: true, composition: true };
     }
 
     case "end-composition": {
+      const state: State = { ...prevState };
+
       if (action.value) {
         state.values[action.index] = action.value;
       } else {
@@ -110,13 +122,18 @@ export function reducer(state: State, action: Action): State {
       const dir = state.values[action.index] ? 1 : 0;
       state.cursor = Math.min(action.index + dir, state.length - 1);
 
-      return { ...state, dirty: true, composition: false };
+      state.composition = false;
+      state.dirty = true;
+
+      return state;
     }
 
     case "handle-change": {
-      if (state.composition) {
+      if (prevState.composition) {
         break;
       }
+
+      const state: State = { ...prevState };
 
       if (action.reset) {
         state.values = Array(state.length);
@@ -133,7 +150,10 @@ export function reducer(state: State, action: Action): State {
         state.cursor = Math.max(0, action.index - dir);
       }
 
-      return { ...state, dirty: true, backspace: false };
+      state.backspace = false;
+      state.dirty = true;
+
+      return state;
     }
 
     case "handle-key-down": {
@@ -159,7 +179,7 @@ export function reducer(state: State, action: Action): State {
       // state will be automatically updated by the handle-change
       // action, when the deleted value will trigger the `onchange`
       // event.
-      if (state.values[action.index]) {
+      if (prevState.values[action.index]) {
         break;
       }
 
@@ -169,6 +189,8 @@ export function reducer(state: State, action: Action): State {
       // new cursor and perform the changes via the triggered
       // `onchange` event.
       else {
+        const state: State = { ...prevState };
+
         state.cursor = Math.max(0, action.index - 1);
 
         // let know the handle-change action that we already moved
@@ -176,12 +198,14 @@ export function reducer(state: State, action: Action): State {
         // anymore
         state.backspace = true;
 
-        return { ...state, dirty: true };
+        state.dirty = true;
+
+        return state;
       }
     }
   }
 
-  return state;
+  return prevState;
 }
 
 export type Handler = {
@@ -198,7 +222,7 @@ export function usePinField(): Handler {
 
   const value = useMemo(() => {
     let value = "";
-    for (let index = 0; index < state.values.length; index++) {
+    for (let index = 0; index < state.length; index++) {
       value += index in state.values ? state.values[index] : "";
     }
     return value;
@@ -306,7 +330,7 @@ export const PinFieldV2: FC<Props> = forwardRef(
       let completed = state.values.length == state.length;
       let value = "";
 
-      for (let index = 0; index < state.values.length; index++) {
+      for (let index = 0; index < state.length; index++) {
         const char = index in state.values ? state.values[index] : "";
         refs.current[index].value = char;
         innerFocus = innerFocus || hasFocus(refs.current[index]);
