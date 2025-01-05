@@ -18,8 +18,8 @@ import {
 
 import { noop, range } from "../utils";
 
-const BACKSPACE = 8;
-const DELETE = 46;
+export const BACKSPACE = 8;
+export const DELETE = 46;
 
 export type InnerProps = {
   length: number;
@@ -327,7 +327,6 @@ export const PinFieldV2: FC<Props> = forwardRef(
       }
     }, [refs, state, handleChange, handleComplete]);
 
-    // wait for props to be accessible in the state
     if (!state.ready) {
       return null;
     }

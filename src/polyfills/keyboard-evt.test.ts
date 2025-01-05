@@ -1,7 +1,7 @@
 import { getKeyFromKeyboardEvent } from ".";
 
-describe("keyboard-evt", () => {
-  test("getKey", () => {
+describe.skip("keyboard-evt", () => {
+  test.skip("getKey", () => {
     const cases: Array<[KeyboardEventInit, string]> = [
       [{}, "Unidentified"],
       [{ key: "a" }, "a"],

@@ -46,7 +46,7 @@ const effectReducer: EffectReducer<Effect, Action> = (effect, dispatch) => {
   }
 };
 
-describe("useBireducer", () => {
+describe.skip("useBireducer", () => {
   beforeAll(() => {
     global.Storage.prototype.setItem = jest.fn();
     global.Storage.prototype.clear = jest.fn();

@@ -4,6 +4,8 @@ import { fn } from "@storybook/test";
 
 import { PinFieldV2, defaultProps, Props, usePinField, InnerProps } from "./pin-field-v2";
 
+import "./pin-field-v2.stories.scss";
+
 const defaultArgs = {
   length: defaultProps.length,
   format: defaultProps.format,
