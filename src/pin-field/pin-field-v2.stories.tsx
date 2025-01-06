@@ -1,7 +1,6 @@
 import { FC, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-
 import { PinFieldV2, defaultProps, Props, usePinField, InnerProps } from "./pin-field-v2";
 
 import "./pin-field-v2.stories.scss";

@@ -77,7 +77,6 @@
     "sass": "^1.83.0",
     "size-limit": "^11.1.6",
     "storybook": "^8.4.7",
-    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0",

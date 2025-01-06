@@ -1,5 +1,4 @@
 import {
-  FC,
   InputHTMLAttributes,
   useEffect,
   useReducer,
@@ -78,12 +77,45 @@ export const defaultState: State = {
   dirty: false,
 };
 
+export type NoOpAction = {
+  type: "noop";
+};
+
+export type UpdatePropsAction = {
+  type: "update-props";
+  props: Partial<StateProps>;
+};
+
+export type HandleCompositionStartAction = {
+  type: "start-composition";
+  index: number;
+};
+
+export type HandleCompositionEndAction = {
+  type: "end-composition";
+  index: number;
+  value: string;
+};
+
+export type HandleKeyChangeAction = {
+  type: "handle-change";
+  index: number;
+  value: string | null;
+  reset?: boolean;
+};
+
+export type HandleKeyDownAction = {
+  type: "handle-key-down";
+  index: number;
+} & Partial<Pick<KeyboardEvent<HTMLInputElement>, "key" | "code" | "keyCode" | "which">>;
+
 export type Action =
-  | { type: "update-props"; props: Partial<StateProps> }
-  | { type: "handle-change"; index: number; value: string | null; reset?: boolean }
-  | { type: "handle-key-down"; index: number; event: KeyboardEvent<HTMLInputElement> }
-  | { type: "start-composition"; index: number }
-  | { type: "end-composition"; index: number; value: string };
+  | NoOpAction
+  | UpdatePropsAction
+  | HandleCompositionStartAction
+  | HandleCompositionEndAction
+  | HandleKeyChangeAction
+  | HandleKeyDownAction;
 
 export function reducer(prevState: State, action: Action): State {
   switch (action.type) {
@@ -136,7 +168,7 @@ export function reducer(prevState: State, action: Action): State {
       const state: State = { ...prevState };
 
       if (action.reset) {
-        state.values = Array(state.length);
+        state.values.splice(action.index, state.length);
       }
 
       if (action.value) {
@@ -158,10 +190,10 @@ export function reducer(prevState: State, action: Action): State {
 
     case "handle-key-down": {
       // determine if a deletion key is pressed
-      const fromKey = action.event.key === "Backspace" || action.event.key === "Delete";
-      const fromCode = action.event.code === "Backspace" || action.event.code === "Delete";
-      const fromKeyCode = action.event.keyCode === BACKSPACE || action.event.keyCode === DELETE;
-      const fromWhich = action.event.which === BACKSPACE || action.event.which === DELETE;
+      const fromKey = action.key === "Backspace" || action.key === "Delete";
+      const fromCode = action.code === "Backspace" || action.code === "Delete";
+      const fromKeyCode = action.keyCode === BACKSPACE || action.keyCode === DELETE;
+      const fromWhich = action.which === BACKSPACE || action.which === DELETE;
       const deletion = fromKey || fromCode || fromKeyCode || fromWhich;
 
       // return the same state reference if no deletion detected
@@ -203,6 +235,10 @@ export function reducer(prevState: State, action: Action): State {
         return state;
       }
     }
+
+    case "noop":
+    default:
+      break;
   }
 
   return prevState;
@@ -235,10 +271,13 @@ export function usePinField(): Handler {
     [dispatch, state.cursor],
   );
 
-  return useMemo(() => ({ refs, state, dispatch, value, setValue }), [refs, state, dispatch, value, setValue]);
+  return useMemo(
+    () => ({ refs, state, dispatch, value, setValue }),
+    [refs, state, dispatch, value, setValue],
+  );
 }
 
-export const PinFieldV2: FC<Props> = forwardRef(
+export const PinFieldV2 = forwardRef<HTMLInputElement[], Props>(
   (
     {
       length = defaultProps.length,
@@ -267,15 +306,21 @@ export const PinFieldV2: FC<Props> = forwardRef(
 
     function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
       return event => {
-        dispatch({ type: "handle-key-down", index, event });
+        console.log("keyDown", index, event);
+        const { key, code, keyCode, which } = event;
+        dispatch({ type: "handle-key-down", index, key, code, keyCode, which });
       };
     }
 
     function handleChangeAt(index: number): ChangeEventHandler<HTMLInputElement> {
       return event => {
-        // should never happen, mostly for typescript to infer properly
-        if (!(event.nativeEvent instanceof InputEvent)) return;
-        dispatch({ type: "handle-change", index, value: event.nativeEvent.data });
+        if (event.nativeEvent instanceof InputEvent) {
+          const value = event.nativeEvent.data;
+          dispatch({ type: "handle-change", index, value });
+        } else {
+          const { value } = event.target;
+          dispatch({ type: "handle-change", index, value, reset: true });
+        }
       };
     }
 
@@ -294,7 +339,9 @@ export const PinFieldV2: FC<Props> = forwardRef(
     // initial props to state update
     useEffect(() => {
       if (state.ready) return;
-      const dir = nativeProps.dir?.toLowerCase() || document.documentElement.getAttribute("dir")?.toLowerCase();
+      const dir =
+        nativeProps.dir?.toLowerCase() ||
+        document.documentElement.getAttribute("dir")?.toLowerCase();
       dispatch({ type: "update-props", props: { length, format, dir } });
     }, [state.ready, dispatch, length, format]);
 
@@ -315,7 +362,9 @@ export const PinFieldV2: FC<Props> = forwardRef(
     // nativeProps.dir to state update
     useEffect(() => {
       if (!state.ready) return;
-      const dir = nativeProps.dir?.toLowerCase() || document.documentElement.getAttribute("dir")?.toLowerCase();
+      const dir =
+        nativeProps.dir?.toLowerCase() ||
+        document.documentElement.getAttribute("dir")?.toLowerCase();
       if (dir === state.dir) return;
       dispatch({ type: "update-props", props: { dir } });
     }, [state.ready, nativeProps.dir, state.dir, dispatch]);
