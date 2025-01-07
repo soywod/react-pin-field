@@ -3,7 +3,7 @@ name: demo
 on:
   push:
     branches:
-      - state-refactor
+      - master
 
 permissions:
   contents: write
