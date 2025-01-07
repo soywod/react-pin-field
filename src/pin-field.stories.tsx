@@ -2,9 +2,11 @@ import { FC, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import PinField, { defaultProps, Props, usePinField, InnerProps } from "./pin-field";
-
 import "./pin-field.stories.scss";
+
+import PinField from "./pin-field";
+import { defaultProps, InnerProps, Props } from "./props";
+import { usePinField } from "./hook";
 
 const defaultArgs = {
   length: defaultProps.length,

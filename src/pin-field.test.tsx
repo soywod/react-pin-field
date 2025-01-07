@@ -3,20 +3,16 @@ import "@testing-library/jest-dom";
 import { RefObject } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import PinField, {
-  reducer,
-  BACKSPACE,
-  DELETE,
-  defaultProps,
-  defaultState,
-  State,
-  HandleKeyDownAction,
-  defaultNativeProps,
-} from "./pin-field";
+import PinField from "./pin-field";
+import { BACKSPACE_KEY_CODE, DELETE_KEY_CODE } from "./utils";
+import { defaultNativeProps, defaultProps } from "./props";
+import { defaultState, State } from "./state";
+import { reducer } from "./reducer";
+import { HandleKeyDownAction } from "./actions";
 
 test("constants", () => {
-  expect(BACKSPACE).toEqual(8);
-  expect(DELETE).toEqual(46);
+  expect(BACKSPACE_KEY_CODE).toEqual(8);
+  expect(DELETE_KEY_CODE).toEqual(46);
 });
 
 test("default props", () => {
@@ -652,10 +648,10 @@ describe("state reducer", () => {
       { key: "Delete" },
       { code: "Backspace" },
       { code: "Delete" },
-      { keyCode: BACKSPACE },
-      { keyCode: DELETE },
-      { which: BACKSPACE },
-      { which: DELETE },
+      { keyCode: BACKSPACE_KEY_CODE },
+      { keyCode: DELETE_KEY_CODE },
+      { which: BACKSPACE_KEY_CODE },
+      { which: DELETE_KEY_CODE },
     ])("delete with %o when value exists at index", action => {
       const prevState: State = { ...defaultState, values: ["a", "b"] };
       const state = reducer(prevState, {

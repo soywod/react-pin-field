@@ -117,7 +117,7 @@ const handler = usePinField();
 return <PinField handler={handler} />
 ```
 
-*See the controlled section of the live [demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).*
+*See the controlled section of the [live demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).*
 
 ## Contributing
 
