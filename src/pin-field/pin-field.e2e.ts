@@ -5,7 +5,7 @@ describe("PIN Field", () => {
   beforeEach(() => {
     cy.visit("/iframe.html", {
       qs: {
-        id: "pinfieldv2--default",
+        id: "pinfield--default",
         viewMode: "story",
       },
     });

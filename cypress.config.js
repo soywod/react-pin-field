@@ -1,6 +1,6 @@
-import "cypress";
+import { defineConfig } from "cypress";
 
-export default {
+export default defineConfig({
   experimentalWebKitSupport: true,
   fixturesFolder: false,
   video: false,
@@ -14,7 +14,7 @@ export default {
       });
     },
     baseUrl: "http://localhost:3000",
-    specPattern: "src/**/*.e2e.tsx",
+    specPattern: "src/**/*.e2e.ts",
     supportFile: false,
   },
-} satisfies Cypress.ConfigOptions;
+});

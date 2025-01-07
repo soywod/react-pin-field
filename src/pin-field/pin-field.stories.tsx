@@ -1,9 +1,10 @@
 import { FC, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import { PinFieldV2, defaultProps, Props, usePinField, InnerProps } from "./pin-field-v2";
 
-import "./pin-field-v2.stories.scss";
+import PinField, { defaultProps, Props, usePinField, InnerProps } from "./pin-field";
+
+import "./pin-field.stories.scss";
 
 const defaultArgs = {
   length: defaultProps.length,
@@ -18,27 +19,27 @@ const defaultArgs = {
  *
  * The component exposes 4 event handlers, see stories below to learn more about the other props.
  */
-const meta: Meta<typeof PinFieldV2> = {
-  title: "PinFieldV2",
-  component: PinFieldV2,
+const meta: Meta<typeof PinField> = {
+  title: "PinField",
+  component: PinField,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
   },
 };
 
-export const Default: StoryObj<typeof PinFieldV2> = {
-  render: props => <PinFieldV2 {...props} data-cy="pin-field" />,
+export const Default: StoryObj<typeof PinField> = {
+  render: props => <PinField {...props} data-cy="pin-field" />,
   args: defaultArgs,
 };
 
 /**
  * Story to detect inconsistent behaviours in React Strict Mode.
  */
-export const StrictMode: StoryObj<typeof PinFieldV2> = {
+export const StrictMode: StoryObj<typeof PinField> = {
   render: props => (
     <ReactStrictMode>
-      <PinFieldV2 {...props} />
+      <PinField {...props} />
     </ReactStrictMode>
   ),
   args: defaultArgs,
@@ -67,7 +68,7 @@ export const Controlled: StoryObj<FC<{ controlled: boolean }>> = {
     return (
       <>
         <div>
-          <PinFieldV2 handler={controlled ? handler : undefined} />
+          <PinField handler={controlled ? handler : undefined} />
         </div>
         <button onClick={() => handler.refs.current[0]?.focus()}>focus first</button>
         <input
@@ -92,7 +93,7 @@ export const Format: StoryObj<FC<Props & { formatEval: string }>> = {
     try {
       let format = eval(formatEval);
       format("a");
-      return <PinFieldV2 {...props} format={format} />;
+      return <PinField {...props} format={format} />;
     } catch (err: any) {
       return <div>Invalid format function: {err.toString()}</div>;
     }
@@ -120,7 +121,7 @@ export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: str
       return (
         <form>
           <div>
-            <PinFieldV2 {...props} formatAriaLabel={formatAriaLabel} />
+            <PinField {...props} formatAriaLabel={formatAriaLabel} />
           </div>
           <button type="submit">submit</button>
         </form>
