@@ -86,6 +86,6 @@
     "test:e2e": "cypress run",
     "test": "run-p test:unit test:e2e",
     "build": "vite build",
-    "storybook:build": "storybook build"
+    "storybook:build": "storybook build -o dist"
   }
 }
