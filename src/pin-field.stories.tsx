@@ -145,6 +145,10 @@ export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: str
       control: "select",
       options: ["ltr", "rtl"],
     },
+    autoComplete: {
+      control: "select",
+      options: ["off", "on", "one-time-code"],
+    },
   },
   args: {
     type: "password",
@@ -154,7 +158,7 @@ export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: str
     autoFocus: false,
     disabled: false,
     autoCorrect: "off",
-    autoComplete: "off",
+    autoComplete: "one-time-code",
     dir: "ltr",
     formatAriaLabelEval: "(i, n) => `field ${i}/${n}`",
     ...defaultArgs,
