@@ -3,8 +3,7 @@
   "description": "React component for entering PIN codes",
   "author": "soywod <clement.douin@posteo.net>",
   "license": "MIT",
-  "version": "4.0.0",
-  "private": false,
+  "version": "4.0.1",
   "keywords": [
     "react",
     "component",
@@ -16,10 +15,11 @@
   "homepage": "https://github.com/soywod/react-pin-field",
   "repository": {
     "type": "git",
-    "url": "https://github.com/soywod/react-pin-field.git"
+    "url": "git+https://github.com/soywod/react-pin-field.git"
   },
   "bugs": {
-    "url": "https://github.com/soywod/react-pin-field/issues"
+    "url": "https://github.com/soywod/react-pin-field/issues",
+    "email": "clement.douin@posteo.net"
   },
   "type": "module",
   "files": [

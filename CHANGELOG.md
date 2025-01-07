@@ -8,6 +8,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [4.0.1] - 2025-01-07
+
+### Changed
+
+- Replaced `yarn` by `npm`.
+
+### Fixed
+
+- Fixed missing `exports.types` in `package.json` [#95].
+
 ## [4.0.0] - 2025-01-07
 
 ### Added
@@ -192,7 +202,8 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 - Fixed unnecessary re-renders (useMVU).
 - Fixed paste on MacOS [#13].
 
-[unreleased]: https://github.com/soywod/react-pin-field/compare/v4.0.0...HEAD
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/soywod/react-pin-field/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/soywod/react-pin-field/compare/v3.1.5...v4.0.0
 [3.1.5]: https://github.com/soywod/react-pin-field/compare/v3.1.4...v3.1.5
 [3.1.4]: https://github.com/soywod/react-pin-field/compare/v3.1.3...v3.1.4
@@ -235,3 +246,4 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 [#84]: https://github.com/soywod/react-pin-field/pull/84
 [#91]: https://github.com/soywod/react-pin-field/issues/91
 [#93]: https://github.com/soywod/react-pin-field/issues/93
+[#95]: https://github.com/soywod/react-pin-field/issues/95
