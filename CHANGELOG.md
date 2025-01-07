@@ -8,6 +8,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added React 19 support [#93].
+- Added support for [key composnition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event). Only the final, composed key is now added to the field.
+- Added `usePinField()` custom hook to use the controlled version of the PIN field. See the controlled section of the live [demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).
+
+### Changed
+
+- Changed the way validation works. It is more compliant with HTML standards: invalid characters can be entered but validation will fail (and `onComplete` will not trigger).
+- Replaced the hand-made demo with [Storybook](https://storybook.js.org/).
+- Bump all dependencies to the latest.
+
+### Fixed
+
+- Fixed wrong behaviour in React [`<StrictMode>`](https://react.dev/reference/react/StrictMode) [#91].
+
+### Removed
+
+- Removed property `validate` in favour of the standard HTML [`pattern`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern) attribute.
+- Removed `onResolveKey` and `onRejectKey` properties in favour of standard HTML validation, including `onInvalid`.
+
 ## [3.1.5] - 2024-01-05
 
 ### Changed
@@ -169,7 +190,9 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 - Fixed unnecessary re-renders (useMVU).
 - Fixed paste on MacOS [#13].
 
-[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.3...HEAD
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v3.1.5...HEAD
+[3.1.5]: https://github.com/soywod/react-pin-field/compare/v3.1.4...v3.1.5
+[3.1.4]: https://github.com/soywod/react-pin-field/compare/v3.1.3...v3.1.4
 [3.1.3]: https://github.com/soywod/react-pin-field/compare/v3.1.2...v3.1.3
 [3.1.2]: https://github.com/soywod/react-pin-field/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/soywod/react-pin-field/compare/v3.1.0...v3.1.1
@@ -207,3 +230,5 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 [#63]: https://github.com/soywod/react-pin-field/issues/63
 [#71]: https://github.com/soywod/react-pin-field/issues/71
 [#84]: https://github.com/soywod/react-pin-field/pull/84
+[#91]: https://github.com/soywod/react-pin-field/issues/91
+[#93]: https://github.com/soywod/react-pin-field/issues/93

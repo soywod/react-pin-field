@@ -11,19 +11,17 @@ React component for entering PIN codes
 - Written in TypeScript, tested with Jest and Cypress
 - Relies on `onchange` native event to improve browsers compatibility
 - Supports HTML [`dir`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) left-to-right and right-to-left
-- Supports HTML [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus) by focusing either the first or the last input, depending on [`dir`]
-- Supports [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes
-- Handles [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)
+- Supports HTML [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus) by focusing either the first or the last input, depending on `dir`
+- Supports [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes like `aria-required`, `aria-label`…
+- Works well with [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)
 
 ## Installation
-
-### Using npm
 
 ```
 npm install react-pin-field
 ```
 
-### Using yarn
+Alternatively, using [Yarn](https://yarnpkg.com/):
 
 ```
 yarn add react-pin-field
@@ -118,6 +116,12 @@ const handler = usePinField();
 // instead of its internal one.
 return <PinField handler={handler} />
 ```
+
+*See the controlled section of the live [demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).*
+
+## Contributing
+
+*See the [Contributing guide](./CONTRIBUTING.md).*
 
 ## Sponsoring
 

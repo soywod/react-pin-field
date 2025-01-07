@@ -9,9 +9,9 @@ Running `nix-shell` will spawn a shell with everything you need to get started w
 
 If you do not want to use Nix, you can just install manually the following dependencies:
 
-- [Node.js](https://nodejs.org/en) (`v20.18`)
-- [Yarn](https://yarnpkg.com/) (`v1.22`)
-- [Cypress](https://www.cypress.io/) (`v13.13.2`)
+- [Node.js](https://nodejs.org/en): `v20.18`
+- [Yarn](https://yarnpkg.com/): `v1.22`
+- [Cypress](https://www.cypress.io/): `v13.13.2`
 
 ## Installation
 
