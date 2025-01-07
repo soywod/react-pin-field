@@ -21,12 +21,6 @@ React component for entering PIN codes
 npm install react-pin-field
 ```
 
-Alternatively, using [Yarn](https://yarnpkg.com/):
-
-```
-yarn add react-pin-field
-```
-
 ## Usage
 
 ```typescript

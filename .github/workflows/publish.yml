@@ -17,13 +17,13 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
+          key: ${{ hashFiles('package-lock.json') }}
       - uses: cachix/install-nix-action@v27
         with:
           nix_path: nixpkgs=channel:nixos-24.11
           enable_kvm: true
-      - run: nix-shell --run 'yarn install --frozen-lockfile --immutable'
-      - run: nix-shell --run 'yarn build'
-      - run: nix-shell --run 'npm publish --provenance --access public'
+      - run: nix-shell --run 'npm ci'
+      - run: nix-shell --run 'npm run build'
+      - run: nix-shell --run 'npm publish --provenance'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

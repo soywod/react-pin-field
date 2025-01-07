@@ -83,7 +83,7 @@
     "start": "storybook dev",
     "test:unit": "jest",
     "test:e2e": "cypress run",
-    "test": "concurrently 'yarn test:unit' 'yarn test:e2e'",
+    "test": "concurrently 'npm run test:unit' 'npm run test:e2e'",
     "build": "vite build",
     "storybook:build": "storybook build -o dist"
   }

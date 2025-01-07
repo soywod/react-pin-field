@@ -5,12 +5,11 @@ let
   inherit (pkgs) cypress lib mkShell nodejs;
   inherit (lib) attrVals getExe optionals splitString;
 
-  yarn = pkgs.yarn.override { inherit nodejs; };
   extraBuildInputs' = optionals (extraBuildInputs != "")
     (attrVals (splitString "," extraBuildInputs) pkgs);
 
 in mkShell {
-  buildInputs = [ nodejs yarn cypress ] ++ extraBuildInputs';
+  buildInputs = [ nodejs cypress ] ++ extraBuildInputs';
 
   shellHook = ''
     # configure cypress
