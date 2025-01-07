@@ -1,4 +1,4 @@
-# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github)](https://github.com/soywod/react-pin-field/actions/workflows/tests.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&color=success)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github&logoColor=ffffff)](https://github.com/soywod/react-pin-field/actions/workflows/tests.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov&logoColor=ffffff)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&logoColor=ffffff&color=success)](https://www.npmjs.com/package/react-pin-field)
 
 React component for entering PIN codes
 
