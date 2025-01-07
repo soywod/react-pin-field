@@ -1,4 +1,4 @@
-# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github)](https://github.com/soywod/react-pin-field/actions/workflows/test.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&color=success)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github)](https://github.com/soywod/react-pin-field/actions/workflows/tests.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&color=success)](https://www.npmjs.com/package/react-pin-field)
 
 React component for entering PIN codes
 
@@ -9,11 +9,11 @@ React component for entering PIN codes
 ## Features
 
 - Written in TypeScript, tested with Jest and Cypress
-- Relies on `onchange` native event to improve browsers compatibility
+- Relies on `onchange` native event with minimum interaction for better browser compatibility
 - Supports HTML [`dir`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) left-to-right and right-to-left
 - Supports HTML [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus) by focusing either the first or the last input, depending on `dir`
 - Supports [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes like `aria-required`, `aria-label`…
-- Works well with [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)
+- Supports [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)
 
 ## Installation
 
