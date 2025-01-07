@@ -1,17 +1,32 @@
-# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github&style=flat-square)](https://github.com/soywod/react-pin-field/actions/workflows/test.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov&style=flat-square)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&color=success&style=flat-square)](https://www.npmjs.com/package/react-pin-field)
+# 📟 React PIN Field [![tests](https://img.shields.io/github/actions/workflow/status/soywod/react-pin-field/tests.yml?branch=master&label=tests&logo=github)](https://github.com/soywod/react-pin-field/actions/workflows/test.yml) [![codecov](https://img.shields.io/codecov/c/github/soywod/react-pin-field?logo=codecov)](https://app.codecov.io/gh/soywod/react-pin-field) [![npm](https://img.shields.io/npm/v/react-pin-field?logo=npm&label=npm&color=success)](https://www.npmjs.com/package/react-pin-field)
 
-React component for entering PIN codes.
+React component for entering PIN codes
 
-![gif](https://user-images.githubusercontent.com/10437171/70847884-f9d35f00-1e69-11ea-8152-1c70eda12137.gif)
+![demo](demo.gif)
 
-_Live demo at https://soywod.github.io/react-pin-field/._
+*Live demo available at <https://soywod.github.io/react-pin-field/>.*
+
+## Features
+
+- Written in TypeScript, tested with Jest and Cypress
+- Relies on `onchange` native event to improve browsers compatibility
+- Supports HTML [`dir`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) left-to-right and right-to-left
+- Supports HTML [`autofocus`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/autofocus) by focusing either the first or the last input, depending on [`dir`]
+- Supports [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes
+- Handles [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event)
 
 ## Installation
 
-```bash
-yarn add react-pin-field
-# or
+### Using npm
+
+```
 npm install react-pin-field
+```
+
+### Using yarn
+
+```
+yarn add react-pin-field
 ```
 
 ## Usage
@@ -20,148 +35,97 @@ npm install react-pin-field
 import PinField from "react-pin-field";
 ```
 
-## Props
+### Props
 
 ```typescript
-type PinFieldProps = {
-  ref?: React.Ref<HTMLInputElement[]>;
-  className?: string;
-  length?: number;
-  validate?: string | string[] | RegExp | ((key: string) => boolean);
-  format?: (char: string) => string;
-  onResolveKey?: (key: string, ref?: HTMLInputElement) => any;
-  onRejectKey?: (key: string, ref?: HTMLInputElement) => any;
-  onChange?: (code: string) => void;
-  onComplete?: (code: string) => void;
-  style?: React.CSSProperties;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+// React PIN Field inherits native props from HTMLInputElement,
+// except few event handlers that are overriden:
+type NativeProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "onKeyDown" | "onCompositionStart" | "onCompositionEnd"
+>;
 
-const defaultProps = {
-  ref: {current: []},
-  className: "",
-  length: 5,
-  validate: /^[a-zA-Z0-9]$/,
-  format: key => key,
-  formatAriaLabel: (idx, length) => `pin code ${idx} of ${length}`,
-  onResolveKey: () => {},
-  onRejectKey: () => {},
-  onChange: () => {},
-  onComplete: () => {},
-  style: {},
+type Props = NativeProps & {
+  length?: number;
+  format?: (char: string) => string;
+  formatAriaLabel?: (index: number, total: number) => string;
+  onChange?: (value: string) => void;
+  onComplete?: (value: string) => void;  
 };
 ```
 
-### Reference
+#### Props.length
 
-Every input can be controlled thanks to the React reference:
+The length of the PIN field, which represents the number of inputs.
 
-```typescript
+*Defaults to `5`*
+
+#### Props.format
+
+Characters can be formatted with any function of type `(char: string) => string`.
+
+*Defaults to identity function `char => char`*
+
+#### Props.formatAriaLabel
+
+This function is used to generate accessible labels for each input within the `<PinField />`. By default it renders the string `PIN field 1 of 6`, `PIN field 2 of 6`, etc., depending on the actual index of the input field and the total length of the pin field.
+
+You can customize the `aria-label` string by passing your own function. This can be useful for: i) site internationalisation (i18n); ii) simply describing each input with different semantics than the ones provided by `react-pin-field`.
+
+*Defaults to `(n, total) => "PIN field ${n} of ${total}"`*
+
+#### Props.onChange
+
+This function is called everytime the PIN field changes its value.
+
+#### Props.onComplete
+
+This function is called everytime the PIN field is completed. A PIN field is considered complete when:
+
+- Every input has a defined value
+- Every input passed the standard HTML validation (`required`, `pattern` etc)
+
+#### Reference
+
+React PIN Field exposes a special reference which is an array of `HTMLInputElement`:
+
+```tsx
+const ref = useRef<HTMLInputElement[]>();
+
 <PinField ref={ref} />;
-
-// reset all inputs
-ref.current.forEach(input => (input.value = ""));
 
 // focus the third input
 ref.current[2].focus();
 ```
 
-### Style
+#### Style
 
-The pin field can be styled either with `style` or `className`. This
-last one allows you to use pseudo-classes like `:nth-of-type`,
-`:focus`, `:hover`, `:valid`, `:invalid`…
+React PIN Field can be styled either with `style` or `className`. This last one allows you to use pseudo-classes like `:nth-of-type`, `:focus`, `:hover`, `:valid`, `:invalid`…
 
-### Length
+### Hook
 
-Length of the code (number of characters).
+By default, React PIN Field is an [uncontrolled](https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components) component, which means that its internal state cannot be changed. You can only listen to changes via `onChange` and `onComplete`.
 
-### Validate
+To control the React PIN Field state, you can use the `usePinField()` custom hook:
 
-Characters can be validated with a validator. A validator can take the
-form of:
+```tsx
+const handler = usePinField();
 
-- a String of allowed characters: `abcABC123`
-- an Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
-- a RegExp: `/^[a-zA-Z0-9]$/`
-- a predicate: `(char: string) => boolean`
+// The handler exposes a value and setValue to control the PIN code,
+// as well as a state and dispatch for advanced usage.
 
-### Format
-
-Characters can be formatted with a formatter `(char: string) => string`.
-
-### Format Aria Label(s)
-
-This function is used to generate accessible labels for each input within the
-`<PinField />`. By default it renders the string `pin code 1 of 6`,
-`pin code 2 of 6`, etc., depending on the actual index of the input field
-and the total length of the pin field.
-
-You can customize the aria-label string by passing your own function. This can
-be useful for: i) site internationalisation (i18n); ii) simply describing
-each input with different semantics than the ones provided by `react-pin-field`.
-
-### Events
-
-- `onResolveKey`: when a key passes the validator
-- `onRejectKey`: when a key is rejected by the validator
-- `onChange`: when the code changes
-- `onComplete`: when the code has been fully filled
-
-## Examples
-
-See the [live demo](https://soywod.github.io/react-pin-field/).
-
-## Development
-
-```bash
-git clone https://github.com/soywod/react-pin-field.git
-cd react-pin-field
-yarn install
-```
-
-To start the development server:
-
-```bash
-yarn start
-```
-
-To build the lib:
-
-```bash
-yarn build
-```
-
-To build the demo:
-
-```bash
-yarn build:demo
-```
-
-## Tests
-
-### Unit tests
-
-Unit tests are handled by [Jest](https://jestjs.io/) (`.test` files)
-and [Enzyme](https://airbnb.io/enzyme/) (`.spec` files).
-
-```bash
-yarn test:unit
-```
-
-### End-to-end tests
-
-End-to-end tests are handled by [Cypress](https://www.cypress.io)
-(`.e2e` files).
-
-```bash
-yarn start
-yarn test:e2e
+// Let know the PIN field that you want to use this custom state
+// instead of its internal one.
+return <PinField handler={handler} />
 ```
 
 ## Sponsoring
 
-[![github](https://img.shields.io/badge/-GitHub%20Sponsors-fafbfc?logo=GitHub%20Sponsors&style=flat-square)](https://github.com/sponsors/soywod)
-[![paypal](https://img.shields.io/badge/-PayPal-0079c1?logo=PayPal&logoColor=ffffff&style=flat-square)](https://www.paypal.com/paypalme/soywod)
-[![ko-fi](https://img.shields.io/badge/-Ko--fi-ff5e5a?logo=Ko-fi&logoColor=ffffff&style=flat-square)](https://ko-fi.com/soywod)
-[![buy-me-a-coffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?logo=Buy%20Me%20A%20Coffee&logoColor=000000&style=flat-square)](https://www.buymeacoffee.com/soywod)
-[![liberapay](https://img.shields.io/badge/-Liberapay-f6c915?logo=Liberapay&logoColor=222222&style=flat-square)](https://liberapay.com/soywod)
+If you appreciate the project, feel free to donate using one of the following providers:
+
+[![GitHub](https://img.shields.io/badge/-GitHub%20Sponsors-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/soywod)
+[![Ko-fi](https://img.shields.io/badge/-Ko--fi-ff5e5a?logo=Ko-fi&logoColor=ffffff)](https://ko-fi.com/soywod)
+[![Buy Me a Coffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?logo=Buy%20Me%20A%20Coffee&logoColor=000000)](https://www.buymeacoffee.com/soywod)
+[![Liberapay](https://img.shields.io/badge/-Liberapay-f6c915?logo=Liberapay&logoColor=222222)](https://liberapay.com/soywod)
+[![thanks.dev](https://img.shields.io/badge/-thanks.dev-000000?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQuMDk3IiBoZWlnaHQ9IjE3LjU5NyIgY2xhc3M9InctMzYgbWwtMiBsZzpteC0wIHByaW50Om14LTAgcHJpbnQ6aW52ZXJ0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05Ljc4MyAxNy41OTdINy4zOThjLTEuMTY4IDAtMi4wOTItLjI5Ny0yLjc3My0uODktLjY4LS41OTMtMS4wMi0xLjQ2Mi0xLjAyLTIuNjA2di0xLjM0NmMwLTEuMDE4LS4yMjctMS43NS0uNjc4LTIuMTk1LS40NTItLjQ0Ni0xLjIzMi0uNjY5LTIuMzQtLjY2OUgwVjcuNzA1aC41ODdjMS4xMDggMCAxLjg4OC0uMjIyIDIuMzQtLjY2OC40NTEtLjQ0Ni42NzctMS4xNzcuNjc3LTIuMTk1VjMuNDk2YzAtMS4xNDQuMzQtMi4wMTMgMS4wMjEtMi42MDZDNS4zMDUuMjk3IDYuMjMgMCA3LjM5OCAwaDIuMzg1djEuOTg3aC0uOTg1Yy0uMzYxIDAtLjY4OC4wMjctLjk4LjA4MmExLjcxOSAxLjcxOSAwIDAgMC0uNzM2LjMwN2MtLjIwNS4xNTYtLjM1OC4zODQtLjQ2LjY4Mi0uMTAzLjI5OC0uMTU0LjY4Mi0uMTU0IDEuMTUxVjUuMjNjMCAuODY3LS4yNDkgMS41ODYtLjc0NSAyLjE1NS0uNDk3LjU2OS0xLjE1OCAxLjAwNC0xLjk4MyAxLjMwNXYuMjE3Yy44MjUuMyAxLjQ4Ni43MzYgMS45ODMgMS4zMDUuNDk2LjU3Ljc0NSAxLjI4Ny43NDUgMi4xNTR2MS4wMjFjMCAuNDcuMDUxLjg1NC4xNTMgMS4xNTIuMTAzLjI5OC4yNTYuNTI1LjQ2MS42ODIuMTkzLjE1Ny40MzcuMjYuNzMyLjMxMi4yOTUuMDUuNjIzLjA3Ni45ODQuMDc2aC45ODVabTE0LjMxNC03LjcwNmgtLjU4OGMtMS4xMDggMC0xLjg4OC4yMjMtMi4zNC42NjktLjQ1LjQ0NS0uNjc3IDEuMTc3LS42NzcgMi4xOTVWMTQuMWMwIDEuMTQ0LS4zNCAyLjAxMy0xLjAyIDIuNjA2LS42OC41OTMtMS42MDUuODktMi43NzQuODloLTIuMzg0di0xLjk4OGguOTg0Yy4zNjIgMCAuNjg4LS4wMjcuOTgtLjA4LjI5Mi0uMDU1LjUzOC0uMTU3LjczNy0uMzA4LjIwNC0uMTU3LjM1OC0uMzg0LjQ2LS42ODIuMTAzLS4yOTguMTU0LS42ODIuMTU0LTEuMTUydi0xLjAyYzAtLjg2OC4yNDgtMS41ODYuNzQ1LTIuMTU1LjQ5Ny0uNTcgMS4xNTgtMS4wMDQgMS45ODMtMS4zMDV2LS4yMTdjLS44MjUtLjMwMS0xLjQ4Ni0uNzM2LTEuOTgzLTEuMzA1LS40OTctLjU3LS43NDUtMS4yODgtLjc0NS0yLjE1NXYtMS4wMmMwLS40Ny0uMDUxLS44NTQtLjE1NC0xLjE1Mi0uMTAyLS4yOTgtLjI1Ni0uNTI2LS40Ni0uNjgyYTEuNzE5IDEuNzE5IDAgMCAwLS43MzctLjMwNyA1LjM5NSA1LjM5NSAwIDAgMC0uOTgtLjA4MmgtLjk4NFYwaDIuMzg0YzEuMTY5IDAgMi4wOTMuMjk3IDIuNzc0Ljg5LjY4LjU5MyAxLjAyIDEuNDYyIDEuMDIgMi42MDZ2MS4zNDZjMCAxLjAxOC4yMjYgMS43NS42NzggMi4xOTUuNDUxLjQ0NiAxLjIzMS42NjggMi4zNC42NjhoLjU4N3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://thanks.dev/soywod)
+[![PayPal](https://img.shields.io/badge/-PayPal-0079c1?logo=PayPal&logoColor=ffffff)](https://www.paypal.com/paypalme/soywod)

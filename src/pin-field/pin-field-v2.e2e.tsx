@@ -26,7 +26,7 @@ describe("PIN Field", () => {
     cy.get(nthInput(5)).should("be.focused").should("have.value", "f");
   });
 
-  it.only("should remove values on backspace or delete", () => {
+  it.only("should remove values on backspace", () => {
     cy.get(nthInput(1)).focus();
     cy.focused().type("abc{backspace}");
     // A second backspace is needed due to event.isTrusted = false.
