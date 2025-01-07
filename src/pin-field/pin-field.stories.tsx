@@ -149,7 +149,7 @@ export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: str
     className: "pin-field",
     pattern: "[0-9]+",
     required: false,
-    autoFocus: true,
+    autoFocus: false,
     disabled: false,
     autoCorrect: "off",
     autoComplete: "off",
