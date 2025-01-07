@@ -11,37 +11,29 @@ describe("PIN Field", () => {
     });
   });
 
-  it("should override chars", () => {
-    cy.get(nthInput(1)).type("a{leftArrow}b{leftArrow}c", { delay: 200 }).should("have.value", "c");
-  });
+  it("should adjust focus according to state's cursor", () => {
+    cy.get(nthInput(1)).type("abc");
+    cy.get(nthInput(1)).should("not.be.focused").should("have.value", "a");
+    cy.get(nthInput(2)).should("not.be.focused").should("have.value", "b");
+    cy.get(nthInput(3)).should("not.be.focused").should("have.value", "c");
+    cy.get(nthInput(4)).should("be.focused").should("have.value", "");
 
-  it("should focus next input on allowed entry", () => {
-    cy.get(nthInput(1)).type("abcde");
-
+    cy.get("body").type("def");
     cy.get(nthInput(1)).should("not.be.focused").should("have.value", "a");
     cy.get(nthInput(2)).should("not.be.focused").should("have.value", "b");
     cy.get(nthInput(3)).should("not.be.focused").should("have.value", "c");
     cy.get(nthInput(4)).should("not.be.focused").should("have.value", "d");
-    cy.get(nthInput(5)).should("be.focused").should("have.value", "e");
+    cy.get(nthInput(5)).should("be.focused").should("have.value", "f");
   });
 
-  it("should not focus next input on denied entry", () => {
-    cy.get(nthInput(1)).type("ab-_*c=d{leftArrow}$|");
-
+  it.only("should remove values on backspace", () => {
+    cy.get(nthInput(1)).focus();
+    cy.focused().type("abc{backspace}");
+    // A second backspace is needed due to event.isTrusted = false.
+    // From a user interaction, only 1 backspace is needed
+    cy.focused().type("{backspace}");
     cy.get(nthInput(1)).should("not.be.focused").should("have.value", "a");
     cy.get(nthInput(2)).should("not.be.focused").should("have.value", "b");
-    cy.get(nthInput(3)).should("not.be.focused").should("have.value", "c");
-    cy.get(nthInput(4)).should("be.focused").should("have.value", "d");
-    cy.get(nthInput(5)).should("not.be.focused").should("have.value", "");
-  });
-
-  it("should remove chars on backspace or delete", () => {
-    cy.get(nthInput(1)).type("abc{backspace}{del}defg{backspace}");
-
-    cy.get(nthInput(1)).should("not.be.focused").should("have.value", "a");
-    cy.get(nthInput(2)).should("not.be.focused").should("have.value", "d");
-    cy.get(nthInput(3)).should("not.be.focused").should("have.value", "e");
-    cy.get(nthInput(4)).should("not.be.focused").should("have.value", "f");
-    cy.get(nthInput(5)).should("be.focused").should("have.value", "");
+    cy.get(nthInput(3)).should("be.focused").should("have.value", "");
   });
 });

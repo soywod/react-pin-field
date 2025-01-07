@@ -1,336 +1,442 @@
-import React, { FC, forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-
-import keyboardEventPolyfill from "../polyfills/keyboard-evt";
-import { noop, range, omit } from "../utils";
-import { EffectReducer, StateReducer, useBireducer } from "./use-bireducer";
-
 import {
-  PinFieldDefaultProps as DefaultProps,
-  PinFieldInputProps as InputProps,
-  PinFieldProps as Props,
-  PinFieldNotifierProps as NotifierProps,
-  PinFieldState as State,
-  PinFieldAction as Action,
-  PinFieldEffect as Effect,
-} from "./pin-field.types";
+  InputHTMLAttributes,
+  useEffect,
+  useReducer,
+  useRef,
+  KeyboardEventHandler,
+  KeyboardEvent,
+  ChangeEventHandler,
+  useCallback,
+  CompositionEventHandler,
+  forwardRef,
+  useImperativeHandle,
+  RefObject,
+  ActionDispatch,
+  useMemo,
+} from "react";
 
-export const NO_EFFECTS: Effect[] = [];
-export const PROP_KEYS = ["autoFocus", "length", "validate", "format", "formatAriaLabel", "debug"];
-export const HANDLER_KEYS = ["onResolveKey", "onRejectKey", "onChange", "onComplete"];
-export const IGNORED_META_KEYS = ["Alt", "Control", "Enter", "Meta", "Shift", "Tab"];
+import { noop, range } from "../utils";
 
-export const defaultProps: DefaultProps = {
-  ref: { current: [] },
+export const BACKSPACE = 8;
+export const DELETE = 46;
+
+export type InnerProps = {
+  length: number;
+  format: (char: string) => string;
+  formatAriaLabel: (index: number, total: number) => string;
+  onChange: (value: string) => void;
+  onComplete: (value: string) => void;
+};
+
+export const defaultProps: InnerProps = {
   length: 5,
-  validate: /^[a-zA-Z0-9]$/,
-  format: key => key,
-  formatAriaLabel: (idx: number, codeLength: number) => `pin code ${idx} of ${codeLength}`,
-  onResolveKey: noop,
-  onRejectKey: noop,
+  format: char => char,
+  formatAriaLabel: (index: number, total: number) => `PIN field ${index} of ${total}`,
   onChange: noop,
   onComplete: noop,
-  debug: false,
 };
 
-export function defaultState(props: Pick<DefaultProps, "validate" | "length">): State {
-  return {
-    focusIdx: 0,
-    codeLength: props.length,
-    isKeyAllowed: isKeyAllowed(props.validate),
-    fallback: null,
+export type NativeProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "onKeyDown" | "onCompositionStart" | "onCompositionEnd"
+>;
+
+export const defaultNativeProps: NativeProps = {
+  type: "text",
+  inputMode: "text",
+  autoCapitalize: "off",
+  autoCorrect: "off",
+  autoComplete: "off",
+};
+
+export type Props = NativeProps &
+  Partial<InnerProps> & {
+    handler?: Handler;
   };
-}
 
-export function getPrevFocusIdx(currFocusIdx: number) {
-  return Math.max(0, currFocusIdx - 1);
-}
+export type StateProps = Pick<NativeProps, "dir"> & Pick<InnerProps, "length" | "format">;
 
-export function getNextFocusIdx(currFocusIdx: number, lastFocusIdx: number) {
-  if (lastFocusIdx === 0) return 0;
-  return Math.min(currFocusIdx + 1, lastFocusIdx - 1);
-}
+export type State = StateProps & {
+  cursor: number;
+  values: string[];
+  backspace: boolean;
+  composition: boolean;
+  ready: boolean;
+  dirty: boolean;
+};
 
-export function isKeyAllowed(predicate: DefaultProps["validate"]) {
-  return (key: string) => {
-    if (!key) return false;
-    if (key.length > 1) return false;
-    if (typeof predicate === "string") return predicate.split("").includes(key);
-    if (predicate instanceof Array) return predicate.includes(key);
-    if (predicate instanceof RegExp) return predicate.test(key);
-    return predicate(key);
-  };
-}
+export const defaultState: State = {
+  length: defaultProps.length,
+  format: defaultProps.format,
+  dir: "ltr",
+  cursor: 0,
+  values: Array(defaultProps.length),
+  backspace: false,
+  composition: false,
+  ready: false,
+  dirty: false,
+};
 
-export function pasteReducer(state: State, idx: number, val: string): [State, Effect[]] {
-  const areAllKeysAllowed = val.split("").slice(0, state.codeLength).every(state.isKeyAllowed);
+export type NoOpAction = {
+  type: "noop";
+};
 
-  if (!areAllKeysAllowed) {
-    return [
-      state,
-      [
-        { type: "set-input-val", idx: state.focusIdx, val: "" },
-        { type: "reject-key", idx, key: val },
-        { type: "handle-code-change" },
-      ],
-    ];
-  }
+export type UpdatePropsAction = {
+  type: "update-props";
+  props: Partial<StateProps>;
+};
 
-  const pasteLen = Math.min(val.length, state.codeLength - state.focusIdx);
-  const nextFocusIdx = getNextFocusIdx(pasteLen + state.focusIdx - 1, state.codeLength);
-  const effects: Effect[] = range(0, pasteLen).flatMap(idx => [
-    {
-      type: "set-input-val",
-      idx: idx + state.focusIdx,
-      val: val[idx],
-    },
-    {
-      type: "resolve-key",
-      idx: idx + state.focusIdx,
-      key: val[idx],
-    },
-  ]);
+export type HandleCompositionStartAction = {
+  type: "start-composition";
+  index: number;
+};
 
-  if (state.focusIdx !== nextFocusIdx) {
-    effects.push({ type: "focus-input", idx: nextFocusIdx });
-  }
+export type HandleCompositionEndAction = {
+  type: "end-composition";
+  index: number;
+  value: string;
+};
 
-  effects.push({ type: "handle-code-change" });
+export type HandleKeyChangeAction = {
+  type: "handle-change";
+  index: number;
+  value: string | null;
+  reset?: boolean;
+};
 
-  return [{ ...state, focusIdx: nextFocusIdx }, effects];
-}
+export type HandleKeyDownAction = {
+  type: "handle-key-down";
+  index: number;
+} & Partial<Pick<KeyboardEvent<HTMLInputElement>, "key" | "code" | "keyCode" | "which">>;
 
-export const stateReducer: StateReducer<State, Action, Effect> = (state, action) => {
+export type Action =
+  | NoOpAction
+  | UpdatePropsAction
+  | HandleCompositionStartAction
+  | HandleCompositionEndAction
+  | HandleKeyChangeAction
+  | HandleKeyDownAction;
+
+export function reducer(prevState: State, action: Action): State {
   switch (action.type) {
+    case "update-props": {
+      // merge previous state with action's props
+      const state = { ...prevState, ...action.props };
+
+      // adjust cursor in case the new length exceed the previous one
+      state.cursor = Math.min(state.cursor, state.length - 1);
+
+      // slice values according to the new length
+      //
+      // NOTE: use slice because splice does not keep empty items and
+      // therefore messes up with values length
+      state.values = state.values.slice(0, state.cursor + 1);
+
+      // state is now ready
+      state.ready = true;
+
+      return state;
+    }
+
+    case "start-composition": {
+      return { ...prevState, dirty: true, composition: true };
+    }
+
+    case "end-composition": {
+      const state: State = { ...prevState };
+
+      if (action.value) {
+        state.values[action.index] = action.value;
+      } else {
+        delete state.values[action.index];
+      }
+
+      const dir = state.values[action.index] ? 1 : 0;
+      state.cursor = Math.min(action.index + dir, state.length - 1);
+
+      state.composition = false;
+      state.dirty = true;
+
+      return state;
+    }
+
+    case "handle-change": {
+      if (prevState.composition) {
+        break;
+      }
+
+      const state: State = { ...prevState };
+
+      if (action.reset) {
+        state.values.splice(action.index, state.length);
+      }
+
+      if (action.value) {
+        const values = action.value.split("").map(state.format);
+        const length = Math.min(state.length - action.index, values.length);
+        state.values.splice(action.index, length, ...values.slice(0, length));
+        state.cursor = Math.min(action.index + length, state.length - 1);
+      } else {
+        delete state.values[action.index];
+        const dir = state.backspace ? 0 : 1;
+        state.cursor = Math.max(0, action.index - dir);
+      }
+
+      state.backspace = false;
+      state.dirty = true;
+
+      return state;
+    }
+
     case "handle-key-down": {
-      switch (action.key) {
-        case "Unidentified":
-        case "Process": {
-          return [{ ...state, fallback: { idx: state.focusIdx, val: action.val } }, NO_EFFECTS];
-        }
+      // determine if a deletion key is pressed
+      const fromKey = action.key === "Backspace" || action.key === "Delete";
+      const fromCode = action.code === "Backspace" || action.code === "Delete";
+      const fromKeyCode = action.keyCode === BACKSPACE || action.keyCode === DELETE;
+      const fromWhich = action.which === BACKSPACE || action.which === DELETE;
+      const deletion = fromKey || fromCode || fromKeyCode || fromWhich;
 
-        case "Dead": {
-          return [
-            state,
-            [
-              { type: "set-input-val", idx: state.focusIdx, val: "" },
-              { type: "reject-key", idx: state.focusIdx, key: action.key },
-              { type: "handle-code-change" },
-            ],
-          ];
-        }
+      // return the same state reference if no deletion detected
+      if (!deletion) {
+        break;
+      }
 
-        case "ArrowLeft": {
-          const prevFocusIdx = getPrevFocusIdx(state.focusIdx);
-          return [{ ...state, focusIdx: prevFocusIdx }, [{ type: "focus-input", idx: prevFocusIdx }]];
-        }
+      // Deletion is a bit tricky and requires special attention.
+      //
+      // When the field under cusor has a value and a deletion key is
+      // pressed, we want to let the browser to do the deletion for
+      // us, like a regular deletion in a normal input via the
+      // `onchange` event. For this to happen, we need to return the
+      // same state reference in order not to trigger any change. The
+      // state will be automatically updated by the handle-change
+      // action, when the deleted value will trigger the `onchange`
+      // event.
+      if (prevState.values[action.index]) {
+        break;
+      }
 
-        case "ArrowRight": {
-          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-          return [{ ...state, focusIdx: nextFocusIdx }, [{ type: "focus-input", idx: nextFocusIdx }]];
-        }
+      // But when the field under cursor is empty, deletion cannot
+      // happen by itself. The trick is to manually move the cursor
+      // backwards: the browser will then delete the value under this
+      // new cursor and perform the changes via the triggered
+      // `onchange` event.
+      else {
+        const state: State = { ...prevState };
 
-        case "Delete":
-        case "Backspace": {
-          return [state, [{ type: "handle-delete", idx: state.focusIdx }, { type: "handle-code-change" }]];
-        }
+        state.cursor = Math.max(0, action.index - 1);
 
-        default: {
-          if (!state.isKeyAllowed(action.key)) {
-            return [state, [{ type: "reject-key", idx: state.focusIdx, key: action.key }]];
-          }
+        // let know the handle-change action that we already moved
+        // backwards and that we don't need to touch the cursor
+        // anymore
+        state.backspace = true;
 
-          const nextFocusIdx = getNextFocusIdx(state.focusIdx, state.codeLength);
-          return [
-            { ...state, focusIdx: nextFocusIdx },
-            [
-              { type: "set-input-val", idx: state.focusIdx, val: action.key },
-              { type: "resolve-key", idx: state.focusIdx, key: action.key },
-              { type: "focus-input", idx: nextFocusIdx },
-              { type: "handle-code-change" },
-            ],
-          ];
-        }
+        state.dirty = true;
+
+        return state;
       }
     }
 
-    case "handle-key-up": {
-      if (!state.fallback) {
-        return [state, NO_EFFECTS];
-      }
-
-      const nextState: State = { ...state, fallback: null };
-      const effects: Effect[] = [];
-      const { idx, val: prevVal } = state.fallback;
-      const val = action.val;
-
-      if (prevVal === "" && val === "") {
-        effects.push({ type: "handle-delete", idx }, { type: "handle-code-change" });
-      } else if (val !== "") {
-        return pasteReducer(nextState, idx, val);
-      }
-
-      return [nextState, effects];
-    }
-
-    case "handle-paste": {
-      return pasteReducer(state, action.idx, action.val);
-    }
-
-    case "focus-input": {
-      return [{ ...state, focusIdx: action.idx }, [{ type: "focus-input", idx: action.idx }]];
-    }
-
-    default: {
-      return [state, NO_EFFECTS];
-    }
+    case "noop":
+    default:
+      break;
   }
+
+  return prevState;
+}
+
+export type Handler = {
+  refs: RefObject<HTMLInputElement[]>;
+  state: State;
+  dispatch: ActionDispatch<[Action]>;
+  value: string;
+  setValue: (value: string) => void;
 };
 
-export function useEffectReducer({ refs, ...props }: NotifierProps): EffectReducer<Effect, Action> {
-  return useCallback(
-    effect => {
-      switch (effect.type) {
-        case "focus-input": {
-          refs.current[effect.idx].focus();
-          break;
-        }
+export function usePinField(): Handler {
+  const refs = useRef<HTMLInputElement[]>([]);
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
-        case "set-input-val": {
-          const val = props.format(effect.val);
-          refs.current[effect.idx].value = val;
-          break;
-        }
+  const value = useMemo(() => {
+    let value = "";
+    for (let index = 0; index < state.length; index++) {
+      value += index in state.values ? state.values[index] : "";
+    }
+    return value;
+  }, [state]);
 
-        case "resolve-key": {
-          refs.current[effect.idx].setCustomValidity("");
-          props.onResolveKey(effect.key, refs.current[effect.idx]);
-          break;
-        }
-
-        case "reject-key": {
-          refs.current[effect.idx].setCustomValidity("Invalid key");
-          props.onRejectKey(effect.key, refs.current[effect.idx]);
-          break;
-        }
-
-        case "handle-delete": {
-          const prevVal = refs.current[effect.idx].value;
-          refs.current[effect.idx].setCustomValidity("");
-          refs.current[effect.idx].value = "";
-
-          if (!prevVal) {
-            const prevIdx = getPrevFocusIdx(effect.idx);
-            refs.current[prevIdx].focus();
-            refs.current[prevIdx].setCustomValidity("");
-            refs.current[prevIdx].value = "";
-          }
-
-          break;
-        }
-
-        case "handle-code-change": {
-          const dir = (props.dir || document.documentElement.getAttribute("dir") || "ltr").toLowerCase();
-          const codeArr = refs.current.map(r => r.value.trim());
-          const code = (dir === "rtl" ? codeArr.reverse() : codeArr).join("");
-          props.onChange(code);
-          code.length === props.length && props.onComplete(code);
-          break;
-        }
-
-        default: {
-          break;
-        }
-      }
+  const setValue = useCallback(
+    (value: string) => {
+      dispatch({ type: "handle-change", index: 0, value, reset: true });
     },
-    [props, refs],
+    [dispatch, state.cursor],
+  );
+
+  return useMemo(
+    () => ({ refs, state, dispatch, value, setValue }),
+    [refs, state, dispatch, value, setValue],
   );
 }
 
-export const PinField: FC<Props> = forwardRef((customProps, fwdRef) => {
-  const props: DefaultProps & InputProps = { ...defaultProps, ...customProps };
-  const { autoFocus, formatAriaLabel, length: codeLength } = props;
-  const inputProps: InputProps = omit([...PROP_KEYS, ...HANDLER_KEYS], props);
-  const refs = useRef<HTMLInputElement[]>([]);
-  const effectReducer = useEffectReducer({ refs, ...props });
-  const dispatch = useBireducer(stateReducer, effectReducer, defaultState(props))[1];
+export const PinField = forwardRef<HTMLInputElement[], Props>(
+  (
+    {
+      length = defaultProps.length,
+      format = defaultProps.format,
+      formatAriaLabel = defaultProps.formatAriaLabel,
+      onChange: handleChange = defaultProps.onChange,
+      onComplete: handleComplete = defaultProps.onComplete,
+      handler: customHandler,
+      autoFocus,
+      ...nativeProps
+    },
+    fwdRef,
+  ) => {
+    const internalHandler = usePinField();
+    const { refs, state, dispatch } = customHandler || internalHandler;
 
-  useImperativeHandle(fwdRef, () => refs.current, [refs]);
+    useImperativeHandle(fwdRef, () => refs.current, [refs]);
 
-  function handleFocus(idx: number) {
-    return function () {
-      dispatch({ type: "focus-input", idx });
-    };
-  }
+    function setRefAt(index: number): (ref: HTMLInputElement) => void {
+      return ref => {
+        if (ref) {
+          refs.current[index] = ref;
+        }
+      };
+    }
 
-  function handleKeyDown(idx: number) {
-    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
-      const key = keyboardEventPolyfill.getKey(evt.nativeEvent);
-      if (
-        !IGNORED_META_KEYS.includes(key) &&
-        !evt.ctrlKey &&
-        !evt.altKey &&
-        !evt.metaKey &&
-        evt.nativeEvent.target instanceof HTMLInputElement
-      ) {
-        evt.preventDefault();
-        dispatch({ type: "handle-key-down", idx, key, val: evt.nativeEvent.target.value });
+    function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
+      return event => {
+        console.log("keyDown", index, event);
+        const { key, code, keyCode, which } = event;
+        dispatch({ type: "handle-key-down", index, key, code, keyCode, which });
+      };
+    }
+
+    function handleChangeAt(index: number): ChangeEventHandler<HTMLInputElement> {
+      return event => {
+        if (event.nativeEvent instanceof InputEvent) {
+          const value = event.nativeEvent.data;
+          dispatch({ type: "handle-change", index, value });
+        } else {
+          const { value } = event.target;
+          dispatch({ type: "handle-change", index, value, reset: true });
+        }
+      };
+    }
+
+    function startCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
+      return () => {
+        dispatch({ type: "start-composition", index });
+      };
+    }
+
+    function endCompositionAt(index: number): CompositionEventHandler<HTMLInputElement> {
+      return event => {
+        dispatch({ type: "end-composition", index, value: event.data });
+      };
+    }
+
+    // initial props to state update
+    useEffect(() => {
+      if (state.ready) return;
+      const dir =
+        nativeProps.dir?.toLowerCase() ||
+        document.documentElement.getAttribute("dir")?.toLowerCase();
+      dispatch({ type: "update-props", props: { length, format, dir } });
+    }, [state.ready, dispatch, length, format]);
+
+    // props.length to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      if (length === state.length) return;
+      dispatch({ type: "update-props", props: { length } });
+    }, [state.ready, length, state.length, dispatch]);
+
+    // props.format to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      if (format === state.format) return;
+      dispatch({ type: "update-props", props: { format } });
+    }, [state.ready, format, state.format, dispatch]);
+
+    // nativeProps.dir to state update
+    useEffect(() => {
+      if (!state.ready) return;
+      const dir =
+        nativeProps.dir?.toLowerCase() ||
+        document.documentElement.getAttribute("dir")?.toLowerCase();
+      if (dir === state.dir) return;
+      dispatch({ type: "update-props", props: { dir } });
+    }, [state.ready, nativeProps.dir, state.dir, dispatch]);
+
+    // state to view update
+    useEffect(() => {
+      if (!refs.current) return;
+      if (!state.ready) return;
+      if (!state.dirty) return;
+
+      let innerFocus = false;
+      let completed = state.values.length == state.length;
+      let value = "";
+
+      for (let index = 0; index < state.length; index++) {
+        const char = index in state.values ? state.values[index] : "";
+        refs.current[index].value = char;
+        innerFocus = innerFocus || hasFocus(refs.current[index]);
+        completed = completed && index in state.values && refs.current[index].checkValidity();
+        value += char;
       }
-    };
-  }
 
-  function handleKeyUp(idx: number) {
-    return function (evt: React.KeyboardEvent<HTMLInputElement>) {
-      if (evt.nativeEvent.target instanceof HTMLInputElement) {
-        dispatch({ type: "handle-key-up", idx, val: evt.nativeEvent.target.value });
+      if (innerFocus) {
+        refs.current[state.cursor].focus();
       }
-    };
-  }
 
-  function handlePaste(idx: number) {
-    return function (evt: React.ClipboardEvent<HTMLInputElement>) {
-      evt.preventDefault();
-      const val = evt.clipboardData.getData("Text");
-      dispatch({ type: "handle-paste", idx, val });
-    };
-  }
-
-  function setRefAtIndex(idx: number) {
-    return function (ref: HTMLInputElement) {
-      if (ref) {
-        refs.current[idx] = ref;
+      if (handleChange) {
+        handleChange(value);
       }
-    };
-  }
 
-  function hasAutoFocus(idx: number) {
-    return Boolean(idx === 0 && autoFocus);
-  }
+      if (handleComplete && completed) {
+        handleComplete(value);
+      }
+    }, [refs, state, handleChange, handleComplete]);
 
-  return (
-    <>
-      {range(0, codeLength).map(idx => (
-        <input
-          type="text"
-          autoCapitalize="off"
-          autoCorrect="off"
-          autoComplete="off"
-          inputMode="text"
-          {...inputProps}
-          aria-disabled={inputProps.disabled ? "true" : undefined}
-          aria-label={formatAriaLabel(idx + 1, codeLength)}
-          aria-readonly={inputProps.readOnly ? "true" : undefined}
-          aria-required="true"
-          key={idx}
-          ref={setRefAtIndex(idx)}
-          autoFocus={hasAutoFocus(idx)}
-          onFocus={handleFocus(idx)}
-          onKeyDown={handleKeyDown(idx)}
-          onKeyUp={handleKeyUp(idx)}
-          onPaste={handlePaste(idx)}
-        />
-      ))}
-    </>
-  );
-});
+    if (!state.ready) {
+      return null;
+    }
+
+    const inputs = range(0, state.length).map(index => (
+      <input
+        {...defaultNativeProps}
+        {...nativeProps}
+        key={index}
+        ref={setRefAt(index)}
+        autoFocus={index === 0 && autoFocus}
+        onKeyDown={handleKeyDownAt(index)}
+        onChange={handleChangeAt(index)}
+        onCompositionStart={startCompositionAt(index)}
+        onCompositionEnd={endCompositionAt(index)}
+        aria-label={formatAriaLabel(index + 1, state.length)}
+        aria-required={nativeProps.required ? "true" : undefined}
+        aria-disabled={nativeProps.disabled ? "true" : undefined}
+        aria-readonly={nativeProps.readOnly ? "true" : undefined}
+      />
+    ));
+
+    if (state.dir === "rtl") {
+      inputs.reverse();
+    }
+
+    return inputs;
+  },
+);
+
+export function hasFocus(el: HTMLElement): boolean {
+  try {
+    const matches = el.webkitMatchesSelector || el.matches;
+    return matches.call(el, ":focus");
+  } catch (err: any) {
+    return false;
+  }
+}
 
 export default PinField;

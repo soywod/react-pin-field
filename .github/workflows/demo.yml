@@ -1,12 +1,15 @@
-name: publish
+name: demo
 
 on:
   push:
-    tags:
-      - v*
+    branches:
+      - master
+
+permissions:
+  contents: write
 
 jobs:
-  publish:
+  demo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +22,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-24.11
           enable_kvm: true
       - run: nix-shell --run 'yarn install --frozen-lockfile --immutable'
-      - run: nix-shell --run 'yarn build'
-      - run: nix-shell --run 'yarn publish --access public'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}          
+      - run: nix-shell --run 'yarn storybook:build'
+      - uses: jamesives/github-pages-deploy-action@v4
+        with:
+          folder: dist

@@ -1,20 +1,18 @@
-import { FC, useRef, useState, StrictMode as ReactStrictMode } from "react";
+import { FC, StrictMode as ReactStrictMode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import cn from "classnames";
 
-import type { PinFieldProps } from "./pin-field.types";
-import { PinField, defaultProps } from "./pin-field";
+import PinField, { defaultProps, Props, usePinField, InnerProps } from "./pin-field";
 
 import "./pin-field.stories.scss";
 
 const defaultArgs = {
   length: defaultProps.length,
-  onResolveKey: fn(),
-  onRejectKey: fn(),
+  format: defaultProps.format,
+  formatAriaLabel: defaultProps.formatAriaLabel,
   onChange: fn(),
   onComplete: fn(),
-} satisfies PinFieldProps;
+} satisfies InnerProps;
 
 /**
  * The `<PinField />` component is a simple wrapper around a list of HTML inputs.
@@ -35,6 +33,9 @@ export const Default: StoryObj<typeof PinField> = {
   args: defaultArgs,
 };
 
+/**
+ * Story to detect inconsistent behaviours in React Strict Mode.
+ */
 export const StrictMode: StoryObj<typeof PinField> = {
   render: props => (
     <ReactStrictMode>
@@ -45,61 +46,49 @@ export const StrictMode: StoryObj<typeof PinField> = {
 };
 
 /**
- * Every HTML input can be controlled thanks to a React reference.
+ * The `usePinField()` hook exposes a handler to control the PIN field:
+ *
+ * - `refs`: the list of HTML input elements that composes the PIN field
+ * - `value`: the current value of the PIN field
+ * - `setValue`: change the current value of the PIN field
+ *
+ * It also exposes the internal `state` and `dispatch` for advance usage.
+ *
+ * The handler returned by `usePinField()` needs to be passed down to the composant for the control to work:
+ *
+ * ```tsx
+ * const handler = usePinField();
+ * return <PinField handler={handler} />
+ * ```
  */
-export const Reference: StoryObj<typeof PinField> = {
-  render: props => {
-    const ref = useRef<HTMLInputElement[]>([]);
+export const Controlled: StoryObj<FC<{ controlled: boolean }>> = {
+  render: ({ controlled }) => {
+    const handler = usePinField();
 
     return (
       <>
         <div>
-          <PinField {...props} ref={ref} />
+          <PinField handler={controlled ? handler : undefined} />
         </div>
-        <div>
-          <button onClick={() => ref && ref.current && ref.current[1].focus()}>Focus 2nd input</button>
-          <button onClick={() => ref && ref.current && ref.current.forEach(input => (input.value = ""))}>
-            Reset values
-          </button>
-        </div>
+        <button onClick={() => handler.refs.current[0]?.focus()}>focus first</button>
+        <input
+          type="text"
+          placeholder="custom pin"
+          value={handler.value}
+          onChange={event => handler.setValue(event.target.value)}
+        />
       </>
     );
   },
-  args: defaultArgs,
-};
-
-/**
- * Characters can be validated with a validator. A validator can take the form of:
- *
- * - a String of allowed characters: `abcABC123`
- * - an Array of allowed characters: `["a", "b", "c", "1", "2", "3"]`
- * - a RegExp: `/^[a-zA-Z0-9]$/`
- * - a predicate: `(char: string) => boolean`
- */
-export const Validate: StoryObj<FC<PinFieldProps & { validateRegExp: string }>> = {
-  render: ({ validateRegExp, ...props }) => {
-    try {
-      const validate = new RegExp(validateRegExp);
-      return <PinField {...props} validate={validate} />;
-    } catch (err: any) {
-      return <div>Invalid RegExp: {err.toString()}</div>;
-    }
-  },
-  argTypes: {
-    validateRegExp: {
-      name: "validate (RegExp)",
-    },
-  },
   args: {
-    validateRegExp: "[0-9]",
-    ...defaultArgs,
+    controlled: true,
   },
 };
 
 /**
  * Characters can be formatted with a formatter `(char: string) => string`.
  */
-export const Format: StoryObj<FC<PinFieldProps & { formatEval: string }>> = {
+export const Format: StoryObj<FC<Props & { formatEval: string }>> = {
   render: ({ formatEval, ...props }) => {
     try {
       let format = eval(formatEval);
@@ -122,14 +111,21 @@ export const Format: StoryObj<FC<PinFieldProps & { formatEval: string }>> = {
 };
 
 /**
- * Props inherit from `InputHTMLAttributes`.
+ * Characters can be validated using the HTML input attribute `pattern`:
  */
-export const HTMLInputAttributes: StoryObj<FC<PinFieldProps & { formatAriaLabelEval: string }>> = {
+export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: string }>> = {
   render: ({ formatAriaLabelEval, ...props }) => {
     try {
       let formatAriaLabel = eval(formatAriaLabelEval);
       formatAriaLabel(0, 0);
-      return <PinField {...props} formatAriaLabel={formatAriaLabel} />;
+      return (
+        <form>
+          <div>
+            <PinField {...props} formatAriaLabel={formatAriaLabel} />
+          </div>
+          <button type="submit">submit</button>
+        </form>
+      );
     } catch (err: any) {
       return <div>Invalid format aria label function: {err.toString()}</div>;
     }
@@ -143,48 +139,22 @@ export const HTMLInputAttributes: StoryObj<FC<PinFieldProps & { formatAriaLabelE
       control: "select",
       options: ["text", "number", "password"],
     },
+    dir: {
+      control: "select",
+      options: ["ltr", "rtl"],
+    },
   },
   args: {
     type: "password",
-    autoFocus: true,
+    className: "pin-field",
+    pattern: "[0-9]+",
+    required: false,
+    autoFocus: false,
     disabled: false,
     autoCorrect: "off",
     autoComplete: "off",
+    dir: "ltr",
     formatAriaLabelEval: "(i, n) => `field ${i}/${n}`",
-    ...defaultArgs,
-  },
-};
-
-/**
- * Finally, the pin field can be styled either with `style` or `className`.
- *
- * This last one allows you to use pseudo-classes like `:nth-of-type`,`:focus`, `:hover`,`:valid`,`:invalid`…
- */
-export const Styled: StoryObj<typeof PinField> = {
-  render: props => {
-    const [done, setDone] = useState(false);
-    const className = cn(props.className, { complete: done });
-    const format = (val: string) => val.toUpperCase();
-    const handleComplete = (code: string) => {
-      setDone(true);
-      if (props.onComplete) props.onComplete(code);
-    };
-
-    return (
-      <PinField
-        className={className}
-        format={format}
-        autoFocus
-        disabled={done}
-        autoComplete="one-time-password"
-        {...props}
-        onComplete={handleComplete}
-      />
-    );
-  },
-  args: {
-    className: "pin-field",
-    style: {},
     ...defaultArgs,
   },
 };
