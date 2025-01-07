@@ -21,15 +21,16 @@
   "bugs": {
     "url": "https://github.com/soywod/react-pin-field/issues"
   },
-  "main": "./dist/react-pin-field.umd.cjs",
-  "types": "./dist/index.d.ts",
-  "module": "./dist/react-pin-field.js",
   "type": "module",
   "files": [
     "dist"
   ],
+  "types": "./dist/index.d.ts",
+  "module": "./dist/react-pin-field.js",
+  "main": "./dist/react-pin-field.umd.cjs",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/react-pin-field.js",
       "require": "./dist/react-pin-field.umd.cjs"
     }
@@ -56,7 +57,6 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
-    "@vitejs/plugin-react": "^4.3.4",
     "babel-jest": "^29.7.0",
     "babel-loader": "^9.2.1",
     "classnames": "^2.5.1",
@@ -74,8 +74,7 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.7",
     "vite-plugin-dts": "^4.4.0",
-    "webpack": "^5.97.1",
-    "yarn-upgrade-all": "^0.7.4"
+    "webpack": "^5.97.1"
   },
   "peerDependencies": {
     "react": "^16.8 || ^17 || ^18 || ^19"
