@@ -1,6 +1,7 @@
-import { FC } from '../../node_modules/react';
+import { FC } from '../node_modules/react';
 import { Meta, StoryObj } from '@storybook/react';
-import { default as PinField, Props } from './pin-field';
+import { default as PinField } from './pin-field';
+import { Props } from './props';
 /**
  * The `<PinField />` component is a simple wrapper around a list of HTML inputs.
  *
