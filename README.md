@@ -52,19 +52,19 @@ type Props = NativeProps & {
 };
 ```
 
-#### Props.length
+#### `length`
 
 The length of the PIN field, which represents the number of inputs.
 
 *Defaults to `5`*
 
-#### Props.format
+#### `format`
 
 Characters can be formatted with any function of type `(char: string) => string`.
 
 *Defaults to identity function `char => char`*
 
-#### Props.formatAriaLabel
+#### `formatAriaLabel`
 
 This function is used to generate accessible labels for each input within the `<PinField />`. By default it renders the string `PIN field 1 of 6`, `PIN field 2 of 6`, etc., depending on the actual index of the input field and the total length of the pin field.
 
@@ -72,11 +72,11 @@ You can customize the `aria-label` string by passing your own function. This can
 
 *Defaults to `(n, total) => "PIN field ${n} of ${total}"`*
 
-#### Props.onChange
+#### `onChange`
 
 This function is called everytime the PIN field changes its value.
 
-#### Props.onComplete
+#### `onComplete`
 
 This function is called everytime the PIN field is completed. A PIN field is considered complete when:
 
