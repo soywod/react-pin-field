@@ -20,7 +20,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-24.11
           enable_kvm: true
       - run: nix-shell --run 'npm ci'
-      - run: nix-shell --run 'npm start -p 3000 &'
+      - run: nix-shell --run 'npm start -- -p 3000 &'
       - run: nix-shell --run 'npm run test'
       - uses: codecov/codecov-action@v5
         with:
