@@ -40,7 +40,6 @@ export const PinField = forwardRef<HTMLInputElement[], Props>(
 
     function handleKeyDownAt(index: number): KeyboardEventHandler<HTMLInputElement> {
       return event => {
-        console.log("keyDown", index, event);
         const { key, code, keyCode, which } = event;
         dispatch({ type: "handle-key-down", index, key, code, keyCode, which });
       };
@@ -144,6 +143,7 @@ export const PinField = forwardRef<HTMLInputElement[], Props>(
         {...nativeProps}
         key={index}
         ref={setRefAt(index)}
+        value={index in state.values ? state.values[index] : ""}
         autoFocus={index === 0 && autoFocus}
         onKeyDown={handleKeyDownAt(index)}
         onChange={handleChangeAt(index)}
