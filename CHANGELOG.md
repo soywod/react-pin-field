@@ -29,7 +29,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added React 19 support. [#93]
-- Added support for [key composnition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event). Only the final, composed key is now added to the field.
+- Added support for [key composition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event). Only the final, composed key is now added to the field.
 - Added `usePinField()` custom hook to use the controlled version of the PIN field. See the controlled section of the live [demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).
 
 ### Changed
