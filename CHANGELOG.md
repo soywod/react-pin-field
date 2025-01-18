@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [4.0.2] - 2025-01-18
+
+### Fixed
+
+- Fixed re-render issues. [#96]
+
 ## [4.0.1] - 2025-01-07
 
 ### Changed
@@ -16,13 +22,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed missing `exports.types` in `package.json` [#95].
+- Fixed missing `exports.types` in `package.json`. [#95]
 
 ## [4.0.0] - 2025-01-07
 
 ### Added
 
-- Added React 19 support [#93].
+- Added React 19 support. [#93]
 - Added support for [key composnition](https://developer.mozilla.org/en-US/docs/Web/API/Element/compositionstart_event). Only the final, composed key is now added to the field.
 - Added `usePinField()` custom hook to use the controlled version of the PIN field. See the controlled section of the live [demo](https://soywod.github.io/react-pin-field/?path=/docs/pinfield--docs#controlled).
 
@@ -34,7 +40,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed wrong behaviour in React [`<StrictMode>`](https://react.dev/reference/react/StrictMode) [#91].
+- Fixed wrong behaviour in React [`<StrictMode>`](https://react.dev/reference/react/StrictMode). [#91]
 
 ### Removed
 
@@ -46,13 +52,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Upgraded all packages.
-- Improved accessibility [#84].
+- Improved accessibility. [#84]
 
 ## [3.1.4] - 2023-09-09
 
 ### Fixed
 
-- Fixed pasting code on Firefox Android [#63].
+- Fixed pasting code on Firefox Android. [#63]
 
 ## [3.1.3] - 2023-02-09
 
@@ -70,7 +76,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed local `dir` prop override [#71].
+- Fixed local `dir` prop override. [#71]
 
 ## [3.1.0] - 2022-12-13
 
@@ -82,8 +88,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed swipe style keyboard entry [#62].
-- ~~Fixed pasting code from messages on iOS [#63].~~
+- Fixed swipe style keyboard entry. [#62]
+- ~~Fixed pasting code from messages on iOS. [#63]~~
 
 ## [3.0.15] - 2022-06-12
 
@@ -140,7 +146,7 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 
 ### Fixed
 
-- Added support for all browsers [#19] and mobile [#26].
+- Added support for all browsers and mobile. [#19] [#26]
 
 ### Deprecated
 
@@ -150,7 +156,7 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 
 ### Changed
 
-- Upgraded React version to `^17` [#23].
+- Upgraded React version to `^17`. [#23]
 
 ## [1.0.5] - 2020-10-02
 
@@ -162,19 +168,19 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 
 ### Fixed
 
-- Fixed tsconfig module type [#20].
+- Fixed tsconfig module type. [#20]
 
 ## [1.0.3] - 2020-03-28
 
 ### Fixed
 
-- Kept previous val on reject key [#16].
+- Kept previous val on reject key. [#16]
 
 ## [1.0.2] - 2020-03-27
 
 ### Fixed
 
-- Fixed missing delete key [#15].
+- Fixed missing delete key. [#15]
 
 ## [1.0.1] - 2020-03-19
 
@@ -189,20 +195,20 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 
 - Added docs (readme, license, changelog).
 - Adedd new event onReceiveKey.
-- Added end-to-end tests with Cypress [#3].
-- Added unit tests with Jest + Enzyme [#2].
-- Handled clipboard paste event [#11].
-- Added Right-to-left support [#9].
-- Added ref support [#14].
+- Added end-to-end tests with Cypress. [#3]
+- Added unit tests with Jest + Enzyme. [#2]
+- Handled clipboard paste event. [#11]
+- Added Right-to-left support. [#9]
+- Added ref support. [#14]
 
 ### Fixed
 
-- Fixed base system on evt.key instead of evt.keyCode, to avoid
-  conflicts (uppercase/lowercase, numeric keypad) [#1].
+- Fixed base system on evt.key instead of evt.keyCode, to avoid conflicts (uppercase/lowercase, numeric keypad). [#1]
 - Fixed unnecessary re-renders (useMVU).
-- Fixed paste on MacOS [#13].
+- Fixed paste on MacOS. [#13]
 
-[unreleased]: https://github.com/soywod/react-pin-field/compare/v4.0.1...HEAD
+[unreleased]: https://github.com/soywod/react-pin-field/compare/v4.0.2...HEAD
+[4.0.2]: https://github.com/soywod/react-pin-field/compare/v4.0.1...v4.0.2
 [4.0.1]: https://github.com/soywod/react-pin-field/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/soywod/react-pin-field/compare/v3.1.5...v4.0.0
 [3.1.5]: https://github.com/soywod/react-pin-field/compare/v3.1.4...v3.1.5
@@ -247,3 +253,4 @@ React PIN Field is now a React wrapper for [PIN Field](https://github.com/soywod
 [#91]: https://github.com/soywod/react-pin-field/issues/91
 [#93]: https://github.com/soywod/react-pin-field/issues/93
 [#95]: https://github.com/soywod/react-pin-field/issues/95
+[#96]: https://github.com/soywod/react-pin-field/issues/96
