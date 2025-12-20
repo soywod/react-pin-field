@@ -68,6 +68,7 @@
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.69.0",
     "sass": "^1.83.0",
     "size-limit": "^11.1.6",
     "storybook": "^8.4.7",

@@ -1,4 +1,5 @@
-import { FC, StrictMode as ReactStrictMode } from "react";
+import React, { FC } from "react";
+import { Controller, useForm } from "react-hook-form";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
@@ -40,9 +41,9 @@ export const Default: StoryObj<typeof PinField> = {
  */
 export const StrictMode: StoryObj<typeof PinField> = {
   render: props => (
-    <ReactStrictMode>
+    <React.StrictMode>
       <PinField {...props} />
-    </ReactStrictMode>
+    </React.StrictMode>
   ),
   args: defaultArgs,
 };
@@ -163,6 +164,31 @@ export const HTMLInputAttributes: StoryObj<FC<Props & { formatAriaLabelEval: str
     formatAriaLabelEval: "(i, n) => `field ${i}/${n}`",
     ...defaultArgs,
   },
+};
+
+/**
+ * Exemple with react-hook-form.
+ * Refs: https://github.com/soywod/react-pin-field/issues/109
+ */
+export const ReactHookForm: StoryObj<typeof PinField> = {
+  render: () => {
+    const { control, handleSubmit } = useForm();
+
+    return (
+      <form onSubmit={handleSubmit(console.log)}>
+        <Controller
+          name="pin"
+          control={control}
+          render={({ field: { onChange } }) => (
+            <PinField autoFocus length={6} placeholder="0" onChange={onChange} />
+          )}
+        />
+        <button type="submit">Submit</button>
+      </form>
+    );
+  },
+  argTypes: {},
+  args: {},
 };
 
 export default meta;
