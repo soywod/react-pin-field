@@ -44,4 +44,9 @@ export declare const Format: StoryObj<FC<Props & {
 export declare const HTMLInputAttributes: StoryObj<FC<Props & {
     formatAriaLabelEval: string;
 }>>;
+/**
+ * Exemple with react-hook-form.
+ * Refs: https://github.com/soywod/react-pin-field/issues/109
+ */
+export declare const ReactHookForm: StoryObj<typeof PinField>;
 export default meta;
